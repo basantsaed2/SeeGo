@@ -2,6 +2,16 @@ import { useLocation } from "react-router-dom"; // مهم لتحديد المس�
 import { 
   Home, Map, Building2, Building, User, Settings, Users, CreditCard, DollarSign 
 } from "lucide-react";
+import { FaBuildingUser } from "react-icons/fa6";
+import { TbBeach } from "react-icons/tb";
+import { MdOutlinePool } from "react-icons/md";
+import { RiCustomerServiceLine } from "react-icons/ri";
+import { MdOutlineSyncProblem } from "react-icons/md";
+import { GrHostMaintenance } from "react-icons/gr";
+import { MdOutlineSupervisedUserCircle } from "react-icons/md";
+import { GiSecurityGate } from "react-icons/gi";
+import { GiOpenGate } from "react-icons/gi";
+import { FaUserSecret } from "react-icons/fa";
 
 import {
   Sidebar,
@@ -17,18 +27,15 @@ import { useTranslation } from 'react-i18next';
 
 const navItems = [
   { label: "Home", to: "/", icon: <Home size={20} /> },
-  { label: "Owners", to: "/owners", icon: <Map size={20} /> },
-  { label: "Villages", to: "/villages", icon: <Building2 size={20} /> },
-  { label: "Apartment Types", to: "/apartments", icon: <Building size={20} /> },
-  { label: "Users", to: "/users", icon: <User size={20} /> },
-  { label: "Service Types", to: "/services", icon: <Settings size={20} /> },
-  { label: "Providers", to: "/providers", icon: <Users size={20} /> },
-  { label: "Subscription", to: "/subscriptions", icon: <CreditCard size={20} /> },
-  { label: "Subscribers", to: "/subscribers", icon: <Users size={20} /> },
-  { label: "Payments", to: "/payments", icon: <DollarSign size={20} /> },
-  { label: "Payment Methods", to: "/payment-methods", icon: <CreditCard size={20} /> },
-  { label: "For Rent", to: "/for-rent", icon: <Building2 size={20} /> },
-  { label: "For Sale", to: "/for-sale", icon: <Building2 size={20} /> },
+  { label: "Owners", to: "/owners", icon: <FaBuildingUser size={20} /> },
+  { label: "Beaches", to: "/beaches", icon: <TbBeach size={20} /> },
+  { label: "Pools", to: "/pools", icon: <MdOutlinePool size={20} /> },
+  { label: "Services", to: "/services", icon: <RiCustomerServiceLine size={20} /> },
+  { label: "Visits", to: "/visits", icon: <MdOutlineSupervisedUserCircle size={20} /> },
+  { label: "Problems", to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
+  { label: "Maintenance", to: "/maintenance", icon: <GrHostMaintenance size={20} /> },
+  { label: "Gates", to: "/gates", icon: <GiOpenGate size={20} /> },
+  { label: "Security Men", to: "/security_man", icon: <FaUserSecret size={20} /> },
 ];
 
 export function AppSidebar() {

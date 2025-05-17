@@ -12,13 +12,13 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
 import { useChangeState } from "@/Hooks/useChangeState";
-import { useOwnerForm, OwnerFormFields } from "./OwnerForm";
+import { SecurityManFormFields, useSecurityManForm } from "./SecurityManForm";
 import { usePost } from "@/Hooks/UsePost";
 
-const Owners = () => {
+const SecurityMan = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
-  const [owners, setOwners] = useState([]);
+  const [Securitys, setSecuritys] = useState([]);
   const [selectedRow, setselectedRow] = useState(null);
   const [rowEdit, setRowEdit] = useState(null);
   const { changeState, loadingChange, responseChange } = useChangeState();
@@ -26,32 +26,33 @@ const Owners = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const { refetch: refetchOwner, loading: loadingOwner, data: OwnerData } = useGet({ url: `${apiUrl}/owner` });
-  const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/owner/update/${selectedRow?.id}` });
+  const { refetch: refetchSecuritys, loading: loadingSecuritys, data: SecuritysData } = useGet({ url: `${apiUrl}/security` });
+  const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/security/update/${selectedRow?.id}` });
 
   const {
     formData,
     fields,
-    loadingOwnerParent,
     handleFieldChange,
     prepareFormData
-  } = useOwnerForm(apiUrl, true, rowEdit); // true for edit mode
+  } = useSecurityManForm(apiUrl, true, rowEdit); // true for edit mode
 
   useEffect(() => {
-    refetchOwner();
-  }, [refetchOwner]);
+    refetchSecuritys();
+  }, [refetchSecuritys]);
 
   useEffect(() => {
-    if (OwnerData && OwnerData.owners) {
-      console.log("Owner Data:", OwnerData);
-      const formatted = OwnerData?.owners?.map((u) => {
+    if (SecuritysData && SecuritysData.security) {
+      console.log("Securitys Data:", SecuritysData);
+      const formatted = SecuritysData?.security?.map((u) => {
         return {
           id: u.id,
           name: u.name || "—",
-          parent: u.parent?.name || "—",
           email: u.email || "—",
           phone: u.phone || "—",
-          gender: u.gender || "—",
+          map: u.location || "—",
+          type: u.type || "—",
+          from: u.shift_from || "—",
+          to: u.shift_to || "—",
           status: u.status === 1 ? "Active" : "Inactive",
           img: u.image_link ? (
             <img
@@ -64,28 +65,25 @@ const Owners = () => {
               <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
             </Avatar>
           ),
-          password: "",
-          birthDate: u.birthDate || "",
         };
       });
-      setOwners(formatted);
+      setSecuritys(formatted);
     }
-  }, [OwnerData]);
+  }, [SecuritysData]);
 
-  const handleEdit = (owner) => {
-    const fullOwnerData = OwnerData?.owners.find(o => o.id === owner.id);
-    setselectedRow(owner);
+  const handleEdit = (Securitys) => {
+    const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
+    setselectedRow(Securitys);
     setIsEditOpen(true);
     setRowEdit({
-      ...fullOwnerData,
-      parent_user_id: fullOwnerData?.parent?.id?.toString() || "",
-      image_link: fullOwnerData?.image_link || null,
-      status: owner.status ,
+      ...fullSecuritysData,
+      image_link: fullSecuritysData?.image_link || null,
+      status: Securitys.status,
     });
   };
 
-  const handleDelete = (owner) => {
-    setselectedRow(owner);
+  const handleDelete = (Securitys) => {
+    setselectedRow(Securitys);
     setIsDeleteOpen(true);
   };
 
@@ -94,24 +92,24 @@ const Owners = () => {
       if (response) {
         setIsEditOpen(false);
         setselectedRow(null);
-        refetchOwner();
+        refetchSecuritys();
       }
     }
   }, [response, loadingPost]);
 
   const handleSave = async () => {
     const body = prepareFormData();
-    postData(body, "Owner updated successfully!")
+    postData(body, "Security Man updated successfully!")
   };
 
   const handleDeleteConfirm = async () => {
-    const success = await deleteData(`${apiUrl}/owner/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
+    const success = await deleteData(`${apiUrl}/security/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
 
     if (success) {
       setIsDeleteOpen(false);
-      setOwners(
-        owners.filter((owner) =>
-          owner.id !== selectedRow.id
+      setSecuritys(
+        Securitys.filter((Securitys) =>
+          Securitys.id !== selectedRow.id
         )
       );
     }
@@ -119,13 +117,13 @@ const Owners = () => {
 
   const handleToggleStatus = async (row, newStatus) => {
     const response = await changeState(
-      `${apiUrl}/owner/status/${row.id}?status=${newStatus}`,
+      `${apiUrl}/security/status/${row.id}?status=${newStatus}`,
       `${row.name} Changed Status.`,
     );
     if (response) {
-      setOwners((prev) =>
-        prev.map((owner) =>
-          owner.id === row.id ? { ...owner, status: newStatus === 1 ? "Active" : "Inactive" } : owner
+      setSecuritys((prev) =>
+        prev.map((Securitys) =>
+          Securitys.id === row.id ? { ...Securitys, status: newStatus === 1 ? "Active" : "Inactive" } : Securitys
         )
       );
     }
@@ -133,49 +131,48 @@ const Owners = () => {
 
   const columns = [
     { key: "img", label: "Image" },
-    { key: "name", label: "Owner Name" },
-    { key: "birthDate", label: "BirthDate" },
-    { key: "parent", label: "Owner Parent" },
-    { key: "email", label: "Email" },
+    { key: "name", label: "Security Man" },
     { key: "phone", label: "Phone" },
+    { key: "email", label: "Email" },
+    { key: "from", label: "Shift From" },
+    { key: "to", label: "Shift To" },
+    { key: "type", label: "Type" },
+    { key: "map", label: "Location" },
     { key: "status", label: "Status" },
-    { key: "gender", label: "Gender" },
   ];
-  if (isLoading || loadingPost || loadingOwner) {
+  if (isLoading || loadingPost || loadingSecuritys) {
     return <FullPageLoader />;
   }
   return (
     <div className="p-4">
       <ToastContainer />
       <DataTable
-        data={owners}
+        data={Securitys}
         columns={columns}
-        addRoute="/owners/add"
+        addRoute="/security_man/add"
         onEdit={handleEdit}
         onDelete={handleDelete}
         onToggleStatus={handleToggleStatus}
-        pageDetailsRoute={true}
       />
       {selectedRow && (
         <>
           <EditDialog
-            title="Edit Owner"
+            title="Edit Security Man"
             open={isEditOpen}
             onOpenChange={setIsEditOpen}
             onSave={handleSave}
             selectedRow={selectedRow}
             onCancel={() => setIsEditOpen(false)}
             onChange={handleFieldChange}
-            isLoading={loadingOwner}
+            isLoading={loadingSecuritys}
           >
             <div className="w-full max-h-[60vh] p-4 overflow-y-auto">
               <Tabs defaultValue="english" className="w-full">
                 <TabsContent value="english">
-                  <OwnerFormFields
+                  <SecurityManFormFields
                     fields={fields}
                     formData={formData}
                     handleFieldChange={handleFieldChange}
-                    loading={loadingOwnerParent}
                   />
                 </TabsContent>
               </Tabs>
@@ -195,4 +192,4 @@ const Owners = () => {
   );
 };
 
-export default Owners;
+export default SecurityMan;

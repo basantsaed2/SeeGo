@@ -15,14 +15,15 @@ export default function EditDialog({
   selectedRow,
   children,
   onSave,
+  title
 }) {
   if (!selectedRow) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white !p-6 rounded-lg shadow-lg max-w-3xl">
+      <DialogContent className="bg-white !p-6 rounded-lg shadow-lg w-full">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-bg-primary">Edit User</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-bg-primary">{title || 'Edit'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">{children}</div>
         <DialogFooter className="!pt-6">

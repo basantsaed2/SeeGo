@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
 
 export const usePost = ({ url, login = false, type = false }) => {
       const { user } = useSelector((state) => state.auth); // Get user from Redux store
@@ -25,16 +26,16 @@ export const usePost = ({ url, login = false, type = false }) => {
                      const response = await axios.post(url, data, config);
 
                      if (response.status === 200 || response.status === 201) {
-                            setResponse(response);
                             { name ? toast.success(name) : '' }   
+                            setResponse(response);
                      }
               } 
               catch (error) {
                      console.error('Error post JSON:', error);
                    
-                     // Check if the error response contains 'errors' or just a message
+                     // Check if the error response contains 'error' or just a message
                      if (error?.response?.data?.errors) {
-                       // Check if errors are an object (field-based errors)
+                       // Check if error are an object (field-based error)
                        if (typeof error.response.data.errors === 'object') {
                          Object.entries(error.response.data.errors).forEach(([field, messages]) => {
                            // If messages is an array, loop through them
@@ -48,11 +49,12 @@ export const usePost = ({ url, login = false, type = false }) => {
                            }
                          });
                        } else {
-                         // If errors is not an object, assume it's just a message
-                         toast.error(error.response.data.errors);
+                         // If error is not an object, assume it's just a message
+                         toast.error(error.response.data.error);
                        }
-                     } else if (error?.response?.data?.message) {
-                       // If there's a general message outside of the 'errors' object
+                     }
+                     else if (error?.response?.data?.message) {
+                       // If there's a general message outside of the 'error' object
                        toast.error(error.response.data.message); // Display the general error message
                      } else {
                        // If no specific error messages are found, just display a fallback message

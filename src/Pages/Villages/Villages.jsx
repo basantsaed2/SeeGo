@@ -248,7 +248,7 @@ const Villages = () => {
     imageFile: file, // قم بتخزين الملف
    }));
      }
-     };
+  };
 
   const handleToggleStatus = async (row, newStatus) => {
     const { id } = row;

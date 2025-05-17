@@ -1,22 +1,27 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "./Pages/Home";
 import MainLayout from "./Layout/MainLayout";
-import Zones from "./Pages/Zones/Zones";
 import { SidebarProvider } from "./components/ui/sidebar";
-import ZoneAdd from "./Pages/Zones/ZoneAdd";
 import ProtAuth from "./Auth/ProtAuth";
 import Login from "./components/Login/Login";
 import NotFound from "./Pages/NotFound";
-import Villages from "./Pages/Villages/Villages";
-import VillageAdd from "./Pages/Villages/VillageAdd";
-import Apartment from "./Pages/Apartment/Apartment";
-import ApartmentAdd from "./Pages/Apartment/ApartmentAdd";
-import Users from "./Pages/Owners/Owners";
-import UsersAdd from "./Pages/Owners/OwnersAdd";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 import AuthLayout from "./Layout/AuthLayout";
 import Owners from "./Pages/Owners/Owners";
 import OwnersAdd from "./Pages/Owners/OwnersAdd";
+import Beaches from "./Pages/Beaches/Beaches";
+import BeachesAdd from "./Pages/Beaches/BeachesAdd";
+import Pools from "./Pages/Pools/Pools";
+import PoolsAdd from "./Pages/Pools/PoolsAdd";
+import Services from "./Pages/Services/Services";
+import Problems from "./Pages/Problems/Problems";
+import Maintenance from "./Pages/Maintenance/Maintenance";
+import Visits from "./Pages/Visits/Visits";
+import Gates from "./Pages/Gates/Gates";
+import GatesAdd from "./Pages/Gates/GatesAdd";
+import SecurityMan from "./Pages/SecurityMan/SecurityMan";
+import SecurityManAdd from "./Pages/SecurityMan/SecurityManAdd";
+import OwnerDetails from "./Pages/Owners/OwnerDetails";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -55,29 +60,61 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Owners /> },
           { path: "add", element: <OwnersAdd /> },
+          { path: "details/:id", element: <OwnerDetails /> },
         ],
       },
-      // {
-      //   path: "villages",
-      //   children: [
-      //     { index: true, element: <Villages /> },
-      //     { path: "add", element: <VillageAdd /> },
-      //   ],
-      // },
-      // {
-      //   path: "apartments",
-      //   children: [
-      //     { index: true, element: <Apartment /> },
-      //     { path: "add", element: <ApartmentAdd /> },
-      //   ],
-      // },
-      // {
-      //   path: "users",
-      //   children: [
-      //     { index: true, element: <Users /> },
-      //     { path: "add", element: <UsersAdd /> },
-      //   ],
-      // },
+      {
+        path: "beaches",
+        children: [
+          { index: true, element: <Beaches /> },
+          { path: "add", element: <BeachesAdd /> },
+        ],
+      },
+      {
+        path: "pools",
+        children: [
+          { index: true, element: <Pools /> },
+          { path: "add", element: <PoolsAdd /> },
+        ],
+      },
+      {
+        path: "services",
+        children: [
+          { index: true, element: <Services /> },
+        ],
+      },
+      {
+        path: "visits",
+        children: [
+          { index: true, element: <Visits /> },
+        ],
+      },
+      {
+        path: "problems",
+        children: [
+          { index: true, element: <Problems /> },
+        ],
+      },
+      {
+        path: "maintenance",
+        children: [
+          { index: true, element: <Maintenance /> },
+        ],
+      },
+      {
+        path: "gates",
+        children: [
+          { index: true, element: <Gates /> },
+          { path: "add", element: <GatesAdd /> },
+        ],
+      },
+      {
+        path: "security_man",
+        children: [
+          { index: true, element: <SecurityMan /> },
+          { path: "add", element: <SecurityManAdd /> },
+        ],
+      },
       {
         path: "*",
         element: <NotFound />,
