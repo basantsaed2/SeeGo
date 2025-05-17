@@ -81,7 +81,7 @@ const Login = () => {
                 className="w-full xl:w-[70%] rounded-[10px] bg-bg-primary cursor-pointer hover:bg-teal-600 text-white"
                 type="submit"
               >
-                Send
+                Login
               </Button>
             </form>
           </CardContent>
