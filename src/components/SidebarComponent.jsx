@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom"; // مهم لتحديد المسار الحالي
-import { 
-  Home, Map, Building2, Building, User, Settings, Users, CreditCard, DollarSign 
+import {
+  Home, Map, Building2, Building, User, Settings, Users, CreditCard, DollarSign
 } from "lucide-react";
 import { FaBuildingUser } from "react-icons/fa6";
 import { TbBeach } from "react-icons/tb";
@@ -12,6 +12,7 @@ import { MdOutlineSupervisedUserCircle } from "react-icons/md";
 import { GiSecurityGate } from "react-icons/gi";
 import { GiOpenGate } from "react-icons/gi";
 import { FaUserSecret } from "react-icons/fa";
+import { RiCommunityFill } from "react-icons/ri";
 
 import {
   Sidebar,
@@ -28,12 +29,13 @@ import { useTranslation } from 'react-i18next';
 const navItems = [
   { label: "Home", to: "/", icon: <Home size={20} /> },
   { label: "Owners", to: "/owners", icon: <FaBuildingUser size={20} /> },
+  { label: "Appartments", to: "/appartments", icon: <RiCommunityFill size={20} /> },
   { label: "Beaches", to: "/beaches", icon: <TbBeach size={20} /> },
   { label: "Pools", to: "/pools", icon: <MdOutlinePool size={20} /> },
-  { label: "Services", to: "/services", icon: <RiCustomerServiceLine size={20} /> },
+  { label: "Service Provider", to: "/services", icon: <RiCustomerServiceLine size={20} /> },
   { label: "Visits", to: "/visits", icon: <MdOutlineSupervisedUserCircle size={20} /> },
   { label: "Problems", to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
-  { label: "Maintenance", to: "/maintenance", icon: <GrHostMaintenance size={20} /> },
+  { label: "Maintenance Type", to: "/maintenance", icon: <GrHostMaintenance size={20} /> },
   { label: "Gates", to: "/gates", icon: <GiOpenGate size={20} /> },
   { label: "Security Men", to: "/security_man", icon: <FaUserSecret size={20} /> },
 ];
@@ -47,10 +49,10 @@ export function AppSidebar() {
 
   return (
     <Sidebar side={isRTL ? 'right' : 'left'} className="bg-teal-600 rtl:rounded-bl-4xl ltr:rounded-br-4xl  border-none sm:border-none rtl:rounded-tl-4xl ltr:rounded-tr-4xl overflow-x-hidden !pb-10 !pt-10 h-full shadow-lg transition-all duration-300">
-      <SidebarContent 
+      <SidebarContent
         className={`bg-teal-600 !p-6 text-white mt-10 border-none overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden`}
-          style={{ 
-          msOverflowStyle: 'none', 
+        style={{
+          msOverflowStyle: 'none',
           scrollbarWidth: 'none'
         }}
       >
@@ -71,10 +73,9 @@ export function AppSidebar() {
                         isActive={isActive}
                         className={`flex justify-start items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-sm font-medium
                           ${isSidebarOpen ? "rounded-full" : ""}
-                          ${
-                            isActive
-                              ? "bg-white text-bg-primary shadow-md"
-                              : "hover:bg-white hover:text-bg-primary"
+                          ${isActive
+                            ? "bg-white text-bg-primary shadow-md"
+                            : "hover:bg-white hover:text-bg-primary"
                           }`}
                       >
                         {item.icon}

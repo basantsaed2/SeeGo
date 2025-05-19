@@ -53,8 +53,18 @@ export const useOwnerForm = (apiUrl, isEdit = false, initialData = null) => {
                     value: parent.id.toString(),
                 }))
             );
+
+            // If in edit mode, update form data with the loaded options
+            if (isEdit && initialData) {
+                setFormData(prev => ({
+                    en: {
+                        ...prev.en,
+                        parent_user_id: initialData.parent_user_id || ""
+                    }
+                }));
+            }
         }
-    }, [ownerParentData]);
+    }, [ownerParentData, isEdit, initialData]);
 
     const handleFieldChange = (lang, name, value) => {
         setFormData(prev => ({
@@ -122,6 +132,7 @@ export const useOwnerForm = (apiUrl, isEdit = false, initialData = null) => {
             placeholder: "Owner Parent",
             name: "parent_user_id",
             options: ownerParents,
+            value: formData.en.parent_user_id // Make sure this is included
         },
         {
             type: "switch",

@@ -106,7 +106,7 @@ export default function Add({ fields, lang, values, onChange }) {
                         <SelectTrigger className={`w-full !px-5 !py-6 ${commonInputClass}`}>
                           <SelectValue placeholder={field.placeholder} />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border-teal-600 rounded-md shadow-lg !p-3">
+                        <SelectContent className="bg-white border-teal-600 rounded-md shadow-lg !p-3 z-[1000]">
                           {field.options?.map((option, i) => (
                             <SelectItem key={i} value={option.value}>
                               {option.label}

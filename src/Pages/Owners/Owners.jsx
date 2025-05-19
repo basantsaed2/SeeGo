@@ -78,9 +78,9 @@ const Owners = () => {
     setIsEditOpen(true);
     setRowEdit({
       ...fullOwnerData,
-      parent_user_id: fullOwnerData?.parent?.id?.toString() || "",
+      parent_user_id: fullOwnerData?.parent?.id?.toString() || "", // Ensure string type
       image_link: fullOwnerData?.image_link || null,
-      status: owner.status ,
+      status: fullOwnerData?.status || 0 // Ensure status is properly set
     });
   };
 

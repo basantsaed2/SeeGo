@@ -22,6 +22,9 @@ import GatesAdd from "./Pages/Gates/GatesAdd";
 import SecurityMan from "./Pages/SecurityMan/SecurityMan";
 import SecurityManAdd from "./Pages/SecurityMan/SecurityManAdd";
 import OwnerDetails from "./Pages/Owners/OwnerDetails";
+import Appartments from "./Pages/Appartment/Appartments";
+import AppartmentsAdd from "./Pages/Appartment/AppartmentsAdd";
+import UnitCode from "./Pages/Appartment/UnitCode";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -61,6 +64,14 @@ const router = createBrowserRouter([
           { index: true, element: <Owners /> },
           { path: "add", element: <OwnersAdd /> },
           { path: "details/:id", element: <OwnerDetails /> },
+        ],
+      },
+      {
+        path: "appartments",
+        children: [
+          { index: true, element: <Appartments /> },
+          { path: "add", element: <AppartmentsAdd /> },
+          { path: "create_code", element: <UnitCode /> },
         ],
       },
       {

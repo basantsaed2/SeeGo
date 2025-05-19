@@ -37,13 +37,13 @@ const Services = () => {
                     type: u.service_type || "—",
                     img: u.image ? (
                         <img
-                          src={u.image}
-                          alt={u.name}
-                          className="w-12 h-12 object-cover rounded-md"
+                            src={u.image}
+                            alt={u.name}
+                            className="w-12 h-12 object-cover rounded-md"
                         />
-                      ) : (
+                    ) : (
                         <Avatar className="w-12 h-12">
-                          <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     ),
                     map: u.location || "—",
@@ -56,12 +56,12 @@ const Services = () => {
 
     const columns = [
         { key: "img", label: "Image" },
-        { key: "name", label: "Service Name" },
+        { key: "name", label: "Provider Name" },
+        { key: "type", label: "Service Type" },
         { key: "phone", label: "Phone" },
         { key: "map", label: "Location" },
         { key: "from", label: "Opening Time" },
         { key: "to", label: "Closing Time" },
-        { key: "type", label: "Service Type" },
         { key: "rate", label: "Rate" },
         { key: "statusText", label: "Status" },
     ];
