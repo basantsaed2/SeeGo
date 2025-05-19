@@ -23,7 +23,7 @@ export default function UnitCode() {
     en: {
       type: "",
       appartment: "",
-      user: "",
+      // user: "",
       people: "",
       from: "",
       to: "",
@@ -36,7 +36,7 @@ export default function UnitCode() {
   }, [refetchAppartment]);
 
   useEffect(() => {
-    if (AppartmentData && AppartmentData.appartments && AppartmentData.users) {
+    if (AppartmentData && AppartmentData.appartments) {
       console.log("Appartment Data:", AppartmentData);
 
       setAppartments(
@@ -45,12 +45,12 @@ export default function UnitCode() {
           value: appartment.id.toString(),
         }))
       );
-      setUsers(
-        AppartmentData.users.map((user) => ({
-          label: user.name,
-          value: user.id.toString(),
-        }))
-      );
+      // setUsers(
+      //   AppartmentData.users.map((user) => ({
+      //     label: user.name,
+      //     value: user.id.toString(),
+      //   }))
+      // );
 
     }
   }, [AppartmentData]);
@@ -80,21 +80,21 @@ export default function UnitCode() {
     }));
   };
 
-      const formatDate = (dateStr) => {
-        if (!dateStr) return "";
-        const date = new Date(dateStr);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = new FormData();
     body.append("appartment_id", formData.en.appartment);
     body.append("type", formData.en.type);
-    body.append("user_id", formData.en.user);
+    // body.append("user_id", formData.en.user);
     body.append("from", formatDate(formData.en.from));
     body.append("to", formatDate(formData.en.to));
     body.append("people", formData.en.people);
@@ -123,13 +123,13 @@ export default function UnitCode() {
         { value: "renter", label: "Renter" },
       ],
     },
-    {
-      type: "select",
-      placeholder: "User",
-      name: "user",
-      options: users,
-      value: formData.en.user
-    },
+    // {
+    //   type: "select",
+    //   placeholder: "User",
+    //   name: "user",
+    //   options: users,
+    //   value: formData.en.user
+    // },
     {
       type: "select",
       placeholder: "Appartment",
@@ -137,15 +137,15 @@ export default function UnitCode() {
       options: appartments,
       value: formData.en.appartment
     },
+    {
+      type: "input",
+      inputType: "number",
+      placeholder: "Number Of People",
+      name: "people",
+      required: true
+    },
     // Only show these fields when type is "renter"
     ...(formData.en.type === "renter" ? [
-      {
-        type: "input",
-        inputType: "number",
-        placeholder: "Number Of People",
-        name: "people",
-        required: true
-      },
       {
         type: "input", inputType: "date",
         name: "from",
