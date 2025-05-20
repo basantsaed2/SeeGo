@@ -35,7 +35,7 @@ const navItems = [
   { label: "Service Provider", to: "/services", icon: <RiCustomerServiceLine size={20} /> },
   { label: "Visits", to: "/visits", icon: <MdOutlineSupervisedUserCircle size={20} /> },
   { label: "Problems", to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
-  { label: "Maintenance Type", to: "/maintenance", icon: <GrHostMaintenance size={20} /> },
+  { label: "Maintenance Request", to: "/maintenance", icon: <GrHostMaintenance size={20} /> },
   { label: "Gates", to: "/gates", icon: <GiOpenGate size={20} /> },
   { label: "Security Men", to: "/security_man", icon: <FaUserSecret size={20} /> },
 ];
