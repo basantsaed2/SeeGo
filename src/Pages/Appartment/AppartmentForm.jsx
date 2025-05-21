@@ -6,9 +6,9 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
     const [formData, setFormData] = useState({
         en: {
             unit: "",
-            floors: "",
+            // floors: "",
             type: "",
-            zone: "",
+            // zone: "",
             image: null,
         },
     });
@@ -22,9 +22,9 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
             setFormData({
                 en: {
                     unit: initialData.unit || "",
-                    floors: initialData.floors || "",
+                    // floors: initialData.floors || "",
                     type: initialData.type || "",
-                    zone: initialData.zone || "",
+                    // zone: initialData.zone || "",
                     image_link: initialData.image_link || null,
                     image: initialData.image_link || null
                 }
@@ -76,9 +76,9 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
     const prepareFormData = () => {
         const body = new FormData();
         body.append("unit", formData.en.unit);
-        body.append("number_floors", formData.en.floors);
+        // body.append("number_floors", formData.en.floors);
         body.append("appartment_type_id", formData.en.type);
-        body.append("zone_id", formData.en.zone);
+        // body.append("zone_id", formData.en.zone);
         if (formData.en.image) {
             body.append("image", formData.en.image);
         }

@@ -25,6 +25,12 @@ import OwnerDetails from "./Pages/Owners/OwnerDetails";
 import Appartments from "./Pages/Appartment/Appartments";
 import AppartmentsAdd from "./Pages/Appartment/AppartmentsAdd";
 import UnitCode from "./Pages/Appartment/UnitCode";
+import MaintenanceFees from "./Pages/MaintenanceFees/MaintenanceFees";
+import RentSale from "./Pages/Rent&Sale/Rent&Sale";
+import Rent from "./Pages/Rent/Rent";
+import Payments from "./Pages/Payments/Payment";
+import MaintenanceType from "./Pages/MaintenanceType/MaintenanceType";
+import MaintenanceTypeAdd from "./Pages/MaintenanceType/MaintenanceTypeAdd";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -67,7 +73,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "appartments",
+        path: "units",
         children: [
           { index: true, element: <Appartments /> },
           { path: "add", element: <AppartmentsAdd /> },
@@ -107,9 +113,23 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "maintenance",
+        path: "maintenance_request",
         children: [
           { index: true, element: <Maintenance /> },
+        ],
+      },
+      {
+        path: "maintenance_fees",
+        children: [
+          { index: true, element: <MaintenanceFees /> },
+          // { path: "details/:id", element: <OwnerDetails /> },
+        ],
+      },
+      {
+        path: "maintenance_type",
+        children: [
+          { index: true, element: <MaintenanceType /> },
+          { path: "add", element: <MaintenanceTypeAdd /> },
         ],
       },
       {
@@ -124,6 +144,24 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <SecurityMan /> },
           { path: "add", element: <SecurityManAdd /> },
+        ],
+      },
+      {
+        path: "rent_sale",
+        children: [
+          { index: true, element: <RentSale /> },
+        ],
+      },
+      {
+        path: "rents",
+        children: [
+          { index: true, element: <Rent /> },
+        ],
+      },
+      {
+        path: "payments",
+        children: [
+          { index: true, element: <Payments /> },
         ],
       },
       {

@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom"; // مهم لتحديد المسار الحالي
 import {
-  Home, Map, Building2, Building, User, Settings, Users, CreditCard, DollarSign
+  Home, CircleDollarSign, Building2, Building, User, Settings, Users, CreditCard, DollarSign
 } from "lucide-react";
 import { FaBuildingUser } from "react-icons/fa6";
 import { TbBeach } from "react-icons/tb";
@@ -25,19 +25,25 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useTranslation } from 'react-i18next';
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 
 const navItems = [
   { label: "Home", to: "/", icon: <Home size={20} /> },
   { label: "Owners", to: "/owners", icon: <FaBuildingUser size={20} /> },
-  { label: "Appartments", to: "/appartments", icon: <RiCommunityFill size={20} /> },
+  { label: "Units", to: "/units", icon: <RiCommunityFill size={20} /> },
   { label: "Beaches", to: "/beaches", icon: <TbBeach size={20} /> },
   { label: "Pools", to: "/pools", icon: <MdOutlinePool size={20} /> },
   { label: "Service Provider", to: "/services", icon: <RiCustomerServiceLine size={20} /> },
   { label: "Visits", to: "/visits", icon: <MdOutlineSupervisedUserCircle size={20} /> },
   { label: "Problems", to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
-  { label: "Maintenance Request", to: "/maintenance", icon: <GrHostMaintenance size={20} /> },
+  { label: "Maintenance Request", to: "/maintenance_request", icon: <GrHostMaintenance size={20} /> },
+  { label: "Maintenance Fees", to: "/maintenance_fees", icon: <FaMoneyBillTransfer size={20} /> },
+  { label: "Maintenance Type", to: "/maintenance_type", icon: <FaMoneyBillTransfer size={20} /> },
   { label: "Gates", to: "/gates", icon: <GiOpenGate size={20} /> },
   { label: "Security Men", to: "/security_man", icon: <FaUserSecret size={20} /> },
+  { label: "Rent & Sale", to: "/rent_sale", icon: <Building2 size={20} /> },
+  { label: "Rent", to: "/rents", icon: <Building size={20} /> },
+  { label: "Payments", to: "/payments", icon: <CircleDollarSign size={20} /> },
 ];
 
 export function AppSidebar() {

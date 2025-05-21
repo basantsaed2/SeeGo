@@ -98,7 +98,7 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
             placeholder: "Shift To",
         },
         { type: "file", placeholder: "Gate Image", name: "image", accept: "image/*" },
-        { type: "map", placeholder: "Enter Location", name: "location" },
+        { type: "map", placeholder: "Select Location", name: "location" },
         {
             type: "switch",
             name: "status",

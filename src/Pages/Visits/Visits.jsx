@@ -37,13 +37,13 @@ const Visits = () => {
                     type: u.Visit_type || "—",
                     img: u.image ? (
                         <img
-                          src={u.image}
-                          alt={u.name}
-                          className="w-12 h-12 object-cover rounded-md"
+                            src={u.image}
+                            alt={u.name}
+                            className="w-12 h-12 object-cover rounded-md"
                         />
-                      ) : (
+                    ) : (
                         <Avatar className="w-12 h-12">
-                          <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     ),
                     map: u.location || "—",
@@ -56,13 +56,10 @@ const Visits = () => {
 
     const columns = [
         { key: "img", label: "Image" },
-        { key: "name", label: "Visit Name" },
-        { key: "phone", label: "Phone" },
-        { key: "map", label: "Location" },
-        { key: "from", label: "Opening Time" },
-        { key: "to", label: "Closing Time" },
-        { key: "type", label: "Visit Type" },
-        { key: "rate", label: "Rate" },
+        { key: "name", label: "Owner Name" },
+        { key: "name", label: "Visitor Name" },
+        { key: "date", label: "Date" },
+        { key: "date", label: "Time" },
         { key: "statusText", label: "Status" },
     ];
 

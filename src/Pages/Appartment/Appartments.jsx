@@ -136,9 +136,7 @@ const Appartments = () => {
     const columns = [
         { key: "img", label: "Image" },
         { key: "unit", label: "Unit" },
-        { key: "name", label: "Zone" },
         { key: "type", label: "Type" },
-        { key: "floors", label: "Floors Number" },
     ];
     if (isLoading || loadingPost || loadingAppartment) {
         return <FullPageLoader />;
@@ -148,19 +146,19 @@ const Appartments = () => {
             <DataTable
                 data={Appartments}
                 columns={columns}
-                addRoute="/appartments/add"
+                addRoute="/units/add"
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onToggleStatus={handleToggleStatus}
                 pageDetailsRoute={false}
-                additionalLink="/appartments/create_code"
+                additionalLink="/units/create_code"
                 additionalLinkLabel={"Create Code"}
 
             />
             {selectedRow && (
                 <>
                     <EditDialog
-                        title="Edit Appartment"
+                        title="Edit Unit"
                         open={isEditOpen}
                         onOpenChange={setIsEditOpen}
                         onSave={handleSave}

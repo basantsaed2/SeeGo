@@ -64,8 +64,8 @@ const Problems = () => {
 
     const columns = [
         { key: "img", label: "Image" },
-        { key: "name", label: "Problem Owner" },
-        { key: "type", label: "Owner Type" },
+        { key: "name", label: "User Problem" },
+        { key: "type", label: "User Type" },
         { key: "map", label: "Location" },
         { key: "status", label: "Problem Status" },
     ];
@@ -85,6 +85,7 @@ const Problems = () => {
                     active: "Resolved",
                     inactive: "Pending"
                 }}
+                showActionColumns={false}
             />
         </div>
     );

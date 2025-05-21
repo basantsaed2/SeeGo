@@ -76,6 +76,7 @@ const Services = () => {
                 data={Services}
                 columns={columns}
                 showAddButton={false}
+                showActionColumns={false}
             />
         </div>
     );

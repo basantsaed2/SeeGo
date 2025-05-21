@@ -487,7 +487,8 @@ export default function DataTable({
   detailsData,
   pageDetailsRoute,
   statusLabels = { active: "Active", inactive: "Inactive" },
-  additionalLink,additionalLinkLabel
+  statusLabelsText = { active: "Active", inactive: "Inactive" },
+  additionalLink, additionalLinkLabel
 }) {
   const [searchValue, setSearchValue] = useState("");
   const [filterValue, setFilterValue] = useState("");
@@ -552,11 +553,11 @@ export default function DataTable({
       const isActive = row.status?.toLowerCase() === "active";
       return (
         <span
-          className={`inline-flex items-center !px-3 !py-1 rounded-full text-xs font-medium ${
-            isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-          }`}
+          className={`inline-flex items-center !px-3 !py-1 rounded-full text-xs font-medium ${isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
         >
-          {row[col.key]}
+          {isActive ? statusLabelsText.active : statusLabelsText.inactive}
+
         </span>
       );
     }
@@ -701,7 +702,7 @@ export default function DataTable({
             </Button>
           )}
           {additionalLink && (
-             <Button
+            <Button
               onClick={() => navigate(additionalLink)}
               className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3"
             >
@@ -773,23 +774,30 @@ export default function DataTable({
                   {showActionColumns && (
                     <TableCell className="w-[100px]">
                       <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            console.log("Edit clicked for row:", row);
-                            onEdit?.(row);
-                          }}
-                        >
-                          <Edit className="w-4 h-4 text-bg-primary" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onDelete?.(row)}
-                        >
-                          <Trash className="w-4 h-4 text-red-600" />
-                        </Button>
+                        {
+                          onEdit && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                console.log("Edit clicked for row:", row);
+                                onEdit?.(row);
+                              }}
+                            >
+                              <Edit className="w-4 h-4 text-bg-primary" />
+                            </Button>
+                          )
+                        }
+                        {
+                          onDelete && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onDelete?.(row)}
+                            >
+                              <Trash className="w-4 h-4 text-red-600" />
+                            </Button>
+                          )}
                       </div>
                     </TableCell>
                   )}

@@ -44,7 +44,7 @@ export default function AppartmentsAdd() {
       {isLoading && <FullPageLoader />}
       <ToastContainer />
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
-        <TitleSection text={"Add Appartment"}/>
+        <TitleSection text={"Add Unit"}/>
       </h2>
       <Tabs defaultValue="english" className="w-full">
         <TabsContent value="english">

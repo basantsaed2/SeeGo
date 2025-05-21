@@ -116,8 +116,7 @@ const Pools = () => {
     };
 
     const columns = [
-        { key: "name", label: "Pool Name (En)" },
-        { key: "nameAr", label: "Pool Name (Ar)" },
+        { key: "name", label: "Pool Name" },
         { key: "from", label: "Opening Time" },
         { key: "to", label: "Closing Time" },
         { key: "status", label: "Status" },

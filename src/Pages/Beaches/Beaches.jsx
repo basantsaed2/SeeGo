@@ -48,7 +48,6 @@ const Beaches = () => {
                 return {
                     id: u.id,
                     name: u.name || "—",
-                    nameAr: u.ar_name || "—",
                     from: u.from || "—",
                     to: u.to || "—",
                     fromTo: `${u.from || "—"} - ${u.to || "—"}`,
@@ -116,8 +115,7 @@ const Beaches = () => {
     };
 
     const columns = [
-        { key: "name", label: "Beach Name (En)" },
-        { key: "nameAr", label: "Beach Name (Ar)" },
+        { key: "name", label: "Beach Name" },
         { key: "from", label: "Opening Time" },
         { key: "to", label: "Closing Time" },
         { key: "status", label: "Status" },

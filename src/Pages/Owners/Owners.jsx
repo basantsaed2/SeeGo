@@ -52,6 +52,7 @@ const Owners = () => {
           email: u.email || "—",
           phone: u.phone || "—",
           gender: u.gender || "—",
+          appartment: u.appartment?.unit || "—",
           status: u.status === 1 ? "Active" : "Inactive",
           img: u.image_link ? (
             <img
@@ -136,9 +137,10 @@ const Owners = () => {
     { key: "name", label: "Owner Name" },
     { key: "birthDate", label: "BirthDate" },
     { key: "parent", label: "Owner Parent" },
+    { key: "appartment", label: "Unit" },
     { key: "email", label: "Email" },
     { key: "phone", label: "Phone" },
-    { key: "status", label: "Status" },
+    // { key: "status", label: "Status" },
     { key: "gender", label: "Gender" },
   ];
   if (isLoading || loadingPost || loadingOwner) {
@@ -150,13 +152,14 @@ const Owners = () => {
       <DataTable
         data={owners}
         columns={columns}
-        addRoute="/owners/add"
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onToggleStatus={handleToggleStatus}
+        showAddButton={false}
+        showActionColumns={false}
+        // onEdit={handleEdit}
+        // onDelete={handleDelete}
+        // onToggleStatus={handleToggleStatus}
         pageDetailsRoute={true}
       />
-      {selectedRow && (
+      {/* {selectedRow && (
         <>
           <EditDialog
             title="Edit Owner"
@@ -190,7 +193,7 @@ const Owners = () => {
             isLoading={loadingDelete}
           />
         </>
-      )}
+      )} */}
     </div>
   );
 };
