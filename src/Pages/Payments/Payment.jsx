@@ -8,7 +8,16 @@ import FullPageLoader from "@/components/Loading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
 import { useChangeState } from "@/Hooks/useChangeState";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
+import { ZoomIn, ZoomOut } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 const Payments = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
@@ -17,6 +26,13 @@ const Payments = () => {
     const [PaymentsHistory, setPaymentsHistory] = useState([]);
     const { changeState, loadingChange } = useChangeState();
 
+    const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+    const [selectedReceiptUrl, setSelectedReceiptUrl] = useState("");
+
+    const [zoomLevel, setZoomLevel] = useState(1);
+
+    const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.2, 2));
+    const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.2, 0.5));
     const { refetch: refetchPayment, loading: loadingPayment, data: PaymentData } = useGet({
         url: `${apiUrl}/payment_request`,
     });
@@ -34,8 +50,10 @@ const Payments = () => {
                     phone: u.user.phone || "—",
                     maintenance: u.maintenance.name || "—",
                     paid: u.paid || "—",
-                    receipt: u.receipt || "—",
-                    status: u.status === "accepted" ? "Active" : "Inactive",
+                    receipt: u.receipt_link ? {
+                        link: u.receipt_link,
+                        thumbnail: u.receipt_link
+                    } : null, status: u.status === "accepted" ? "Active" : "Inactive",
                 };
             });
             setPaymentsUpcoming(formattedUpcoming);
@@ -46,8 +64,10 @@ const Payments = () => {
                     phone: u.user.phone || "—",
                     maintenance: u.maintenance.name || "—",
                     paid: u.paid || "—",
-                    receipt: u.receipt || "—",
-                    status: u.status === "accepted" ? "Active" : "Inactive",
+                    receipt: u.receipt_link ? {
+                        link: u.receipt_link,
+                        thumbnail: u.receipt_link
+                    } : null, status: u.status === "accepted" ? "Active" : "Inactive",
                 };
             });
             setPaymentsHistory(formattedHistory);
@@ -79,14 +99,66 @@ const Payments = () => {
         { key: "phone", label: "Phone" },
         { key: "maintenance", label: "Maintenance Name" },
         { key: "paid", label: "Paid" },
-        { key: "statusText", label: "Status" },
-    ];
+        {
+            key: "receipt",
+            label: "Receipt",
+            render: (row) => (
+                row.receipt ? (
+                    <div className="flex items-center gap-2">
+                        <img
+                            src={row.receipt.thumbnail}
+                            alt="receipt"
+                            className="w-12 h-12 object-cover rounded-md"
+                        />
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedReceiptUrl(row.receipt.link);
+                                setIsReceiptModalOpen(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                            View
+                        </button>
+                    </div>
+                ) : (
+                    <span className="text-gray-400 italic">—</span>
+                )
+            )
+        }];
 
     const baseColumns = [
         { key: "name", label: "User Name" },
         { key: "phone", label: "Phone" },
         { key: "maintenance", label: "Maintenance Name" },
         { key: "paid", label: "Paid" },
+        {
+            key: "receipt",
+            label: "Receipt",
+            render: (row) => (
+                row.receipt ? (
+                    <div className="flex items-center gap-2">
+                        <img
+                            src={row.receipt.thumbnail}
+                            alt="receipt"
+                            className="w-12 h-12 object-cover rounded-md"
+                        />
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedReceiptUrl(row.receipt.link);
+                                setIsReceiptModalOpen(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                            View
+                        </button>
+                    </div>
+                ) : (
+                    <span className="text-gray-400 italic">—</span>
+                )
+            )
+        }
     ];
 
     const actionColumn = {
@@ -195,6 +267,26 @@ const Payments = () => {
                 </TabsContent>
             </Tabs>
             <ToastContainer />
+
+            {/* Receipt Modal */}
+            <Dialog open={isReceiptModalOpen} onOpenChange={setIsReceiptModalOpen}>
+                <DialogContent className="w-xl max-h-[100vh] p-4 bg-white rounded-lg shadow-md border border-gray-100">
+                    {selectedReceiptUrl && (
+                        <motion.div
+                            className="flex justify-center items-center"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <img
+                                src={selectedReceiptUrl}
+                                alt="Receipt"
+                                className="w-full h-[80vh] object-contain rounded-md"
+                            />
+                        </motion.div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom"; // مهم لتحديد المسار الحالي
 import {
-  Home, CircleDollarSign, Building2, Building, User, Settings, Users, CreditCard, DollarSign
+  Home, CircleDollarSign, Building2, Building, User, Settings, Users, CreditCard, DollarSign,UserRoundCog,Wrench
 } from "lucide-react";
 import { FaBuildingUser } from "react-icons/fa6";
 import { TbBeach } from "react-icons/tb";
@@ -33,7 +33,7 @@ const navItems = [
   { label: "Units", to: "/units", icon: <RiCommunityFill size={20} /> },
   { label: "Beaches", to: "/beaches", icon: <TbBeach size={20} /> },
   { label: "Pools", to: "/pools", icon: <MdOutlinePool size={20} /> },
-  { label: "Service Provider", to: "/services", icon: <RiCustomerServiceLine size={20} /> },
+  { label: "Service Provider", to: "/services", icon: <UserRoundCog size={20} /> },
   { label: "Visits", to: "/visits", icon: <MdOutlineSupervisedUserCircle size={20} /> },
   { label: "Problems", to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
   { label: "Maintenance Request", to: "/maintenance_request", icon: <GrHostMaintenance size={20} /> },
@@ -44,6 +44,7 @@ const navItems = [
   { label: "Rent & Sale", to: "/rent_sale", icon: <Building2 size={20} /> },
   { label: "Rent", to: "/rents", icon: <Building size={20} /> },
   { label: "Payments", to: "/payments", icon: <CircleDollarSign size={20} /> },
+  { label: "Services Type", to: "/service_type", icon: <Wrench size={20} /> },
 ];
 
 export function AppSidebar() {

@@ -31,6 +31,8 @@ import Rent from "./Pages/Rent/Rent";
 import Payments from "./Pages/Payments/Payment";
 import MaintenanceType from "./Pages/MaintenanceType/MaintenanceType";
 import MaintenanceTypeAdd from "./Pages/MaintenanceType/MaintenanceTypeAdd";
+import ServicesType from "./Pages/ServicesType/ServiceType";
+import ServiceTypeAdd from "./Pages/ServicesType/ServiceTypeAdd";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -162,6 +164,13 @@ const router = createBrowserRouter([
         path: "payments",
         children: [
           { index: true, element: <Payments /> },
+        ],
+      },
+      {
+        path: "service_type",
+        children: [
+          { index: true, element: <ServicesType /> },
+          { path: "add", element: <ServiceTypeAdd /> },
         ],
       },
       {

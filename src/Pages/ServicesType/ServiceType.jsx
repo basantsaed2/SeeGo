@@ -9,25 +9,35 @@ import { useDispatch, useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
+import { ServiceTypeFormFields, useServiceTypeForm } from "./ServiceTypeForm";
 
-const MaintenanceType = () => {
+const ServicesType = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
-  const [MaintenanceType, setMaintenanceType] = useState([]);
+  const [Services, setServices] = useState([]);
   const [selectedRow, setselectedRow] = useState(null);
+  const [rowEdit, setRowEdit] = useState(null);
   const { deleteData, loadingDelete, responseDelete } = useDelete();
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const { refetch: refetchMaintenanceType, loading: loadingMaintenanceType, data: MaintenanceTypeData } = useGet({ url: `${apiUrl}/maintenance_type` });
+  const { refetch: refetchServices, loading: loadingServices, data: ServicesData } = useGet({ url:`${apiUrl}/service_type` });
+
+  const {
+    formData,
+    fields,
+    handleFieldChange,
+    prepareFormData
+  } = useServiceTypeForm(apiUrl, true, rowEdit); // true for edit mode
 
   useEffect(() => {
-    refetchMaintenanceType();
-  }, [refetchMaintenanceType]);
+    refetchServices();
+  }, [refetchServices]);
 
   useEffect(() => {
-    if (MaintenanceTypeData && MaintenanceTypeData.my_maintenance_types) {
-      console.log("MaintenanceType Data:", MaintenanceTypeData);
-      const formatted = MaintenanceTypeData?.my_maintenance_types?.map((u) => {
+    if (ServicesData && ServicesData.my_service_type) {
+      console.log("Services Data:", ServicesData);
+      const formatted = ServicesData?.my_service_type?.map((u) => {
         return {
           id: u.id,
           name: u.name || "—",
@@ -45,44 +55,49 @@ const MaintenanceType = () => {
           ),
         };
       });
-      setMaintenanceType(formatted);
+      setServices(formatted);
     }
-  }, [MaintenanceTypeData]);
+  }, [ServicesData]);
 
-  const handleDelete = (MaintenanceType) => {
-    setselectedRow(MaintenanceType);
+  const handleDelete = (Services) => {
+    setselectedRow(Services);
     setIsDeleteOpen(true);
   };
 
   const handleDeleteConfirm = async () => {
-    const success = await deleteData(`${apiUrl}/maintenance_type/delete?maintenance_type_id=${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
+    const success = await deleteData(`${apiUrl}/service_type/delete?service_type_id=${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
 
     if (success) {
       setIsDeleteOpen(false);
-      setMaintenanceType(
-        MaintenanceType.filter((MaintenanceType) =>
-          MaintenanceType.id !== selectedRow.id
+      setServices(
+        Services.filter((Services) =>
+          Services.id !== selectedRow.id
         )
       );
     }
   };
 
+
   const columns = [
     { key: "img", label: "Image" },
-    { key: "name", label: "Maintenance Type" },
+    { key: "name", label: "Service Type" },
     { key: "statusText", label: "Status" },
   ];
-  if (isLoading || loadingMaintenanceType) {
+  if (isLoading || loadingServices) {
     return <FullPageLoader />;
   }
   return (
     <div className="p-4">
       <ToastContainer />
       <DataTable
-        data={MaintenanceType}
+        data={Services}
         columns={columns}
-        addRoute="/maintenance_type/add"
+        addRoute="/service_type/add"
         onDelete={handleDelete}
+        statusLabelsText={{
+          active: "Active",
+          inactive: "Inactive",
+        }}
       />
       {selectedRow && (
         <>
@@ -99,4 +114,4 @@ const MaintenanceType = () => {
   );
 };
 
-export default MaintenanceType;
+export default ServicesType;
