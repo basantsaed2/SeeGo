@@ -13,7 +13,6 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
         },
     });
     const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
-    const [zones, setZones] = useState([]);
     const [types, setTypes] = useState([]);
 
     // Initialize form data for edit mode
@@ -38,12 +37,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
 
     useEffect(() => {
         if (AppartmentData && AppartmentData.zones && AppartmentData.appartment_type) {
-            setZones(
-                AppartmentData.zones.map((zone) => ({
-                    label: zone.name || zone.zone, // Use whichever field exists
-                    value: zone.id.toString(),
-                }))
-            );
+
             setTypes(
                 AppartmentData.appartment_type.map((type) => ({
                     label: type.name,
@@ -96,13 +90,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
             options: types,
             value: formData.en.type // Ensure this is passed
         },
-        {
-            type: "select",
-            placeholder: "Zone",
-            name: "zone",
-            options: zones,
-            value: formData.en.zone // Ensure this is passed
-        },
+
         { type: "file", placeholder: "Appartment Image", name: "image", accept: "image/*" },
     ];
 

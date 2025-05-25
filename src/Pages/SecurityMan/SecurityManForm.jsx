@@ -26,9 +26,6 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
                     email: initialData.email || "",
                     password: initialData.password || "",
                     type: initialData.type || "",
-                    from: initialData.shift_from || "",
-                    to: initialData.shift_to || "",
-                    location: initialData.location || '',
                     status: initialData.status === "Active" ? 1 : 0,
                     image_link: initialData.image_link || null,
                     image: initialData.image_link || null
@@ -53,16 +50,13 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         body.append("phone", formData.en.phone);
         body.append("email", formData.en.email);
         body.append("password", formData.en.password);
-        body.append("shift_from", formData.en.from); // Fixed time format
-        body.append("shift_to", formData.en.to); // Fixed time format
+
 
         body.append("type", formData.en.type);
         body.append("status", formData.en.status.toString() || "0");
 
         // Handle location data - no JSON parsing needed
-        if (formData.en.location) {
-            body.append("location", formData.en.location);
-        }
+
         if (formData.en.image) {
             body.append("image", formData.en.image);
         }
@@ -76,7 +70,7 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         { type: "input", inputType: "email", placeholder: "Security Man Email", name: "email", required: true },
         { type: "input", inputType: "password", placeholder: "Security Man Password", name: "password", required: true },
         {
-            type: "select",
+            type: "multi-select",
             placeholder: "Security Gate Type",
             name: "type",
             required: true,
@@ -86,19 +80,8 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
                 { value: "gate", label: "Gate" },
             ],
         },
-        {
-            type: "time",
-            name: "from",
-            placeholder: "Shift From",
-            required: true
-        },
-        {
-            type: "time",
-            name: "to",
-            placeholder: "Shift To",
-        },
+
         { type: "file", placeholder: "Gate Image", name: "image", accept: "image/*" },
-        { type: "map", placeholder: "Select Location", name: "location" },
         {
             type: "switch",
             name: "status",

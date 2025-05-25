@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import EditDialog from "@/components/EditDialog";
 import DeleteDialog from "@/components/DeleteDialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
@@ -21,8 +21,8 @@ const SecurityMan = () => {
   const [Securitys, setSecuritys] = useState([]);
   const [selectedRow, setselectedRow] = useState(null);
   const [rowEdit, setRowEdit] = useState(null);
-  const { changeState, loadingChange, responseChange } = useChangeState();
-  const { deleteData, loadingDelete, responseDelete } = useDelete();
+  const { changeState } = useChangeState();
+  const { deleteData, loadingDelete } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -49,10 +49,7 @@ const SecurityMan = () => {
           name: u.name || "—",
           email: u.email || "—",
           phone: u.phone || "—",
-          map: u.location || "—",
           type: u.type || "—",
-          from: u.shift_from || "—",
-          to: u.shift_to || "—",
           status: u.status === 1 ? "Active" : "Inactive",
           img: u.image_link ? (
             <img
@@ -134,10 +131,7 @@ const SecurityMan = () => {
     { key: "name", label: "Security Man" },
     { key: "phone", label: "Phone" },
     { key: "email", label: "Email" },
-    { key: "from", label: "Shift From" },
-    { key: "to", label: "Shift To" },
     { key: "type", label: "Type" },
-    { key: "map", label: "Location" },
     { key: "status", label: "Status" },
   ];
   if (isLoading || loadingPost || loadingSecuritys) {

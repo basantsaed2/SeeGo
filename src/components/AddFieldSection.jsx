@@ -10,10 +10,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import MapLocationPicker from "./MapLocationPicker";
+import MultiSelectDropdown from "@/components/MultiSelectDropdown";
 
 export default function Add({ fields, lang, values, onChange }) {
   const commonInputClass =
-    "rounded-[15px] border border-gray-300  focus:border-bg-primary focus:ring-bg-primary";
+    "rounded-[15px] border border-gray-300 focus:border-bg-primary focus:ring-bg-primary";
 
   const handleChange = (name, value) => {
     if (onChange) {
@@ -27,12 +28,14 @@ export default function Add({ fields, lang, values, onChange }) {
 
   return (
     <div className="w-full space-y-6">
-
       {/* Render other fields in the grid layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {otherFields.map((field, index) => {
+          // Check for showIf condition before rendering
           if (field.showIf && !field.showIf(values)) return null;
           const value = values?.[field.name] || "";
+          // Define fieldId for multi-select (if needed, otherwise remove)
+          const fieldId = `${field.name}-${lang}-${index}`;
 
           return (
             <div key={index} className="space-y-2">
@@ -96,6 +99,22 @@ export default function Add({ fields, lang, values, onChange }) {
                       </div>
                     );
 
+                  case "multi-select":
+                    return (
+                      <MultiSelectDropdown
+                        id={fieldId} // Ensure fieldId is defined
+                        options={field.options}
+                        value={value}
+                        onChange={(val) =>
+                          // Note: Your original multi-select had field.lang in onChange,
+                          // but the outer handleChange expects just name and value.
+                          // Assuming you meant to pass 'lang' from props, not field.lang.
+                          onChange(lang, field.name, val)
+                        }
+                        placeholder={field.placeholder}
+                      />
+                    );
+
                   case "select":
                     return (
                       <Select
@@ -152,7 +171,7 @@ export default function Add({ fields, lang, values, onChange }) {
                       </div>
                     );
 
-                  default:
+                  default: // Correct placement for the final default case
                     return null;
                 }
               })()}
@@ -164,7 +183,7 @@ export default function Add({ fields, lang, values, onChange }) {
       {/* Render map fields first, outside the grid */}
       {mapFields.map((field, index) => {
         if (field.showIf && !field.showIf(values)) return null;
-        const value = values?.[field.name] || ""; // Changed from || {}
+        const value = values?.[field.name] || "";
 
         return (
           <div key={`map-${index}`} className="w-full space-y-2">
@@ -175,7 +194,7 @@ export default function Add({ fields, lang, values, onChange }) {
               {field.placeholder ? field.placeholder : field.name}
             </label>
             <MapLocationPicker
-              value={value} // Now passing string or undefined
+              value={value}
               onChange={(val) => handleChange(field.name, val)}
               placeholder={field.placeholder}
             />

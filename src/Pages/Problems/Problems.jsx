@@ -11,8 +11,7 @@ const Problems = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
     const [Problems, setProblems] = useState([]);
-    const [selectedRow, setSelectedRow] = useState(null);
-    const { changeState, loadingChange, responseChange } = useChangeState();
+    const { changeState } = useChangeState();
 
     const { refetch: refetchProblem, loading: loadingProblem, data: ProblemData } = useGet({
         url: `${apiUrl}/problem`,
@@ -28,7 +27,6 @@ const Problems = () => {
                 return {
                     id: u.id,
                     name: u.owner || "—",
-                    type: u.owner_type || "—",
                     map: u.google_map || "—",
                     img: u.image ? (
                         <img
@@ -65,7 +63,6 @@ const Problems = () => {
     const columns = [
         { key: "img", label: "Image" },
         { key: "name", label: "User Problem" },
-        { key: "type", label: "User Type" },
         { key: "map", label: "Location" },
         { key: "status", label: "Problem Status" },
     ];
