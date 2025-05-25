@@ -33,6 +33,9 @@ import MaintenanceType from "./Pages/MaintenanceType/MaintenanceType";
 import MaintenanceTypeAdd from "./Pages/MaintenanceType/MaintenanceTypeAdd";
 import ServicesType from "./Pages/ServicesType/ServiceType";
 import ServiceTypeAdd from "./Pages/ServicesType/ServiceTypeAdd";
+import Posts from "./Pages/Posts/Posts";
+import PostsAdd from "./Pages/Posts/PostsAdd";
+import VilliageSinglePage from "./Pages/Villiage/VilliageSinglePage";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -171,6 +174,19 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <ServicesType /> },
           { path: "add", element: <ServiceTypeAdd /> },
+        ],
+      },
+      {
+        path: "posts",
+        children: [
+          { index: true, element: <Posts /> },
+          { path: "add", element: <PostsAdd /> },
+        ],
+      },
+       {
+        path: "villiage_info",
+        children: [
+          { index: true, element: <VilliageSinglePage /> },
         ],
       },
       {

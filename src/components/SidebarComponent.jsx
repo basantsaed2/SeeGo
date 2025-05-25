@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom"; // مهم لتحديد المسار الحالي
 import {
-  Home, CircleDollarSign, Building2, Building, User, Settings, Users, CreditCard, DollarSign,UserRoundCog,Wrench
+  Home, CircleDollarSign, Building2, Building, Newspaper, Settings, Users, CreditCard, DollarSign, UserRoundCog, Wrench
 } from "lucide-react";
 import { FaBuildingUser } from "react-icons/fa6";
 import { TbBeach } from "react-icons/tb";
@@ -45,6 +45,8 @@ const navItems = [
   { label: "Rent", to: "/rents", icon: <Building size={20} /> },
   { label: "Payments", to: "/payments", icon: <CircleDollarSign size={20} /> },
   { label: "Services Type", to: "/service_type", icon: <Wrench size={20} /> },
+  { label: "News Feed", to: "/posts", icon: <Newspaper size={20} /> },
+  { label: "Villiage Single Page", to: "/villiage_info", icon: <Newspaper size={20} /> },
 ];
 
 export function AppSidebar() {

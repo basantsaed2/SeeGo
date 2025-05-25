@@ -78,8 +78,9 @@ export default function Add({ fields, lang, values, onChange }) {
                         key={index}
                         placeholder={field.placeholder}
                         value={value}
+                        rows={2}
                         onChange={(e) => handleChange(field.name, e.target.value)}
-                        className={`min-h-[40px] !px-5 !py-6 ${commonInputClass}`}
+                        className={`min-h-[40px] !px-5 !py-3 ${commonInputClass}`}
                       />
                     );
 
