@@ -9,6 +9,7 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
             from: "",
             to: "",
             status: isEdit ? 0 : 0,
+            image: null,
         },
         ar: {
             nameAr: "",
@@ -23,6 +24,7 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
                     from: initialData.from || "",
                     to: initialData.to || "",
                     status: initialData.status === "Active" ? 1 : 0,
+                    image: initialData.image || null,
                 },
                 ar: {
                     nameAr: initialData.ar_name || "",
@@ -48,6 +50,9 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
         body.append("from", formData.en.from);
         body.append("to", formData.en.to);
         body.append("status", formData.en.status.toString());
+        if (formData.en.image) {
+            body.append("images[]", formData.en.image);
+        }
         return body;
     };
 
@@ -64,8 +69,8 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
                 type: "time",
                 name: "to",
                 placeholder: "Closing Time",
-                step: "1800" // 30-minute increments (optional)
             },
+            { type: "file", placeholder: "Pool Image", name: "image", accept: "image/*" },
             {
                 type: "switch",
                 name: "status",
@@ -81,10 +86,10 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
     };
 
     const LanguageTabs = () => (
-        <TabsList className="grid w-full md:w-[50%] grid-cols-2 gap-4 bg-transparent mb-6">
+        <TabsList className="grid w-full md:w-[50%] grid-cols-2 gap-4 bg-transparent !mb-6">
             <TabsTrigger
                 value="english"
-                className="rounded-[10px] border text-bg-primary py-2 transition-all 
+                className="rounded-[10px] border text-bg-primary !py-2 transition-all 
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700"
             >
@@ -92,7 +97,7 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
             </TabsTrigger>
             <TabsTrigger
                 value="arabic"
-                className="rounded-[10px] border text-bg-primary py-2 transition-all 
+                className="rounded-[10px] border text-bg-primary !py-2 transition-all 
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700"
             >

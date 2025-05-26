@@ -7,22 +7,22 @@ import { useDispatch, useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
-import { useVillageAdminForm, VillageAdminFields } from "./VillageAdminForm";
+import { useVillageAdminForm, VillageAdminFields } from "./VilliageAdminForm";
 import TitleSection from "@/components/TitleSection";
 
 export default function VillageAdminAdd() {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
-    const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/pool/add` });
+    const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/admin_village/add` });
     const isLoading = useSelector((state) => state.loader.isLoading);
     const navigate = useNavigate();
 
-    const { formData, fields, handleFieldChange, prepareFormData, LanguageTabs } =
+    const { formData, fields, handleFieldChange, prepareFormData ,loadingPositions} =
         useVillageAdminForm(apiUrl);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const body = prepareFormData();
-        postData(body, "Pool added successfully!");
+        postData(body, "Admin added successfully!");
     };
 
     useEffect(() => {
@@ -38,24 +38,16 @@ export default function VillageAdminAdd() {
     return (
         <div className="w-full flex flex-col gap-5 p-6 relative">
             <h2 className="text-bg-primary text-center text-2xl font-semibold">
-                <TitleSection text={"Add Pool"} />
+                <TitleSection text={"Add Admin"} />
             </h2>
             <Tabs defaultValue="english" className="w-full">
-                <LanguageTabs />
                 <TabsContent value="english">
                     <VillageAdminFields
-                        fields={fields.en}
-                        formData={formData.en}
+                        fields={fields}
+                        formData={formData}
+                        loadingPositions={loadingPositions}
                         handleFieldChange={handleFieldChange}
                         language="en"
-                    />
-                </TabsContent>
-                <TabsContent value="arabic">
-                    <VillageAdminFields
-                        fields={fields.ar}
-                        formData={formData.ar}
-                        handleFieldChange={handleFieldChange}
-                        language="ar"
                     />
                 </TabsContent>
             </Tabs>

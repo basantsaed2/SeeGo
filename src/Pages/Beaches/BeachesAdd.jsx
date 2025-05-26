@@ -27,10 +27,7 @@ export default function BeachesAdd() {
 
     useEffect(() => {
         if (!loadingPost && response) {
-            const timer = setTimeout(() => {
                 navigate(-1);
-            }, 1500);
-            return () => clearTimeout(timer);
         }
     }, [response, loadingPost, navigate]);
 
@@ -39,7 +36,7 @@ export default function BeachesAdd() {
     }
 
     return (
-        <div className="w-full flex flex-col gap-5 p-6 relative">
+        <div className="w-full flex flex-col gap-5 !p-6 relative">
             <h2 className="text-bg-primary text-center text-2xl font-semibold">
                 <TitleSection text={"Add Beach"} />
             </h2>
@@ -62,7 +59,7 @@ export default function BeachesAdd() {
                     />
                 </TabsContent>
             </Tabs>
-            <div className="mt-4">
+            <div className="!mt-4">
                 <Button
                     onClick={handleSubmit}
                     className="bg-bg-primary mb-10 ms-3 cursor-pointer hover:bg-teal-600 px-5 py-6 text-white w-full md:w-[30%] rounded-[15px] transition-all duration-200"

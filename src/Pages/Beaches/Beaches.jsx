@@ -134,6 +134,8 @@ const Beaches = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onToggleStatus={handleToggleStatus}
+                pageDetailsRoute={"/beaches/details"}
+                pageDetailsLabel="Beach Gallery"
             />
             {selectedRow && (
                 <>

@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
 import { useChangeState } from "@/Hooks/useChangeState";
-import { useVillageAdminForm, VillageAdminFields } from "./VillageAdminForm";
+import { useVillageAdminForm, VillageAdminFields } from "./VilliageAdminForm";
 import { usePost } from "@/Hooks/UsePost";
 
 const VillageAdmin = () => {
@@ -32,7 +32,7 @@ const VillageAdmin = () => {
         url: `${apiUrl}/admin_village/update/${selectedRow?.id}`,
     });
 
-    const { formData, fields, handleFieldChange, prepareFormData, LanguageTabs } = useVillageAdminForm(
+    const { formData, fields, handleFieldChange, prepareFormData} = useVillageAdminForm(
         apiUrl,
         true,
         rowEdit
@@ -48,11 +48,10 @@ const VillageAdmin = () => {
                 return {
                     id: u.id,
                     name: u.name || "—",
-                    nameAr: u.ar_name || "—",
-                    from: u.from || "—",
-                    to: u.to || "—",
-                    fromTo: `${u.from || "—"} - ${u.to || "—"}`,
-                    status: u.status === 1 ? "Active" : "Inactive",
+                    phone: u.phone || "—",
+                    email: u.email || "—",
+                    admin_position: u.position?.name || "—",
+                    status: u.status === 1 ? "Active" : "Banned",
                 };
             });
             setVillageAdmin(formatted);
@@ -108,7 +107,7 @@ const VillageAdmin = () => {
             setVillageAdmin((prev) =>
                 prev.map((VillageAdmin) =>
                     VillageAdmin.id === row.id
-                        ? { ...VillageAdmin, status: newStatus === 1 ? "Active" : "Inactive" }
+                        ? { ...VillageAdmin, status: newStatus === 1 ? "Active" : "Banned" }
                         : VillageAdmin
                 )
             );
@@ -116,9 +115,10 @@ const VillageAdmin = () => {
     };
 
     const columns = [
-        { key: "name", label: "VillageAdmin Name" },
-        { key: "from", label: "Opening Time" },
-        { key: "to", label: "Closing Time" },
+        { key: "name", label: "Admin Name" },
+        { key: "phone", label: "Phone" },
+        { key: "email", label: "Email" },
+        { key: "admin_position", label: "Role" },
         { key: "status", label: "Status" },
     ];
 
@@ -131,15 +131,21 @@ const VillageAdmin = () => {
             <DataTable
                 data={VillageAdmin}
                 columns={columns}
-                addRoute="/village_admins/add"
+                addRoute="add_admin"
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onToggleStatus={handleToggleStatus}
+                statusLabels={
+                    {
+                        active: "Active",
+                        inactive: "Banned",
+                    }
+                }
             />
             {selectedRow && (
                 <>
                     <EditDialog
-                        title="Edit VillageAdmin"
+                        title="Edit Admin"
                         open={isEditOpen}
                         onOpenChange={setIsEditOpen}
                         onSave={handleSave}
@@ -150,23 +156,12 @@ const VillageAdmin = () => {
                     >
                         <div className="w-full max-h-[60vh] p-4 overflow-y-auto">
                             <Tabs defaultValue="english" className="w-full">
-                                <LanguageTabs />
                                 <TabsContent value="english">
                                     <VillageAdminFields
-                                        fields={fields.en}
+                                        fields={fields}
                                         formData={formData.en}
                                         handleFieldChange={handleFieldChange}
                                         loading={loadingVillageAdmin}
-                                        language="en"
-                                    />
-                                </TabsContent>
-                                <TabsContent value="arabic">
-                                    <VillageAdminFields
-                                        fields={fields.ar}
-                                        formData={formData.ar}
-                                        handleFieldChange={handleFieldChange}
-                                        loading={loadingVillageAdmin}
-                                        language="ar"
                                     />
                                 </TabsContent>
                             </Tabs>

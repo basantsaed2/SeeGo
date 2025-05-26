@@ -10,9 +10,9 @@ import {
   Calendar,
   Globe,
 } from "lucide-react";
-// import VAdmin from "@/Pages/Villages/VAdmin";
-// import PAdmin from "@/Pages/Providers/PAdmin";
 import { useLocation } from "react-router-dom";
+import VilliageAdmin from "@/Pages/Villiage/VilliageAdmins/VilliageAdmin";
+import VillageGallery from "@/Pages/Villiage/VillageGallery";
 // import Units from "@/Pages/Villages/Units";
 // import Gallery from "./Gallery";
 
@@ -23,7 +23,6 @@ export default function VillageDetailsCard({
   entityType,
 }) {
   const location = useLocation();
-  const isProviderPage = location.pathname.includes("/providers/");
   if (!data) return null;
 
   const formatDate = (dateString) => {
@@ -154,13 +153,13 @@ export default function VillageDetailsCard({
           </Card>
         </TabsContent>
         
-        {/* <TabsContent value="admin">
-          {isProviderPage ? <PAdmin /> : <VAdmin />}
+        <TabsContent value="admin">
+          {<VilliageAdmin />}
         </TabsContent>
         <TabsContent value="gallery">
-          <Gallery />
+          <VillageGallery />
         </TabsContent>
-        <TabsContent value="units">
+        {/* <TabsContent value="units">
           <Units />
         </TabsContent> */}
       </Tabs>

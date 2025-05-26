@@ -27,10 +27,7 @@ export default function PoolsAdd() {
 
     useEffect(() => {
         if (!loadingPost && response) {
-            const timer = setTimeout(() => {
                 navigate(-1);
-            }, 1500);
-            return () => clearTimeout(timer);
         }
     }, [response, loadingPost, navigate]);
 

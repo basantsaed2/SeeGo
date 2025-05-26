@@ -486,6 +486,7 @@ export default function DataTable({
   showActionColumns = true,
   detailsData,
   pageDetailsRoute,
+  pageDetailsLabel = "View Details",
   statusLabels = { active: "Active", inactive: "Inactive" },
   statusLabelsText = { active: "Active", inactive: "Inactive" },
   additionalLink, additionalLinkLabel
@@ -726,8 +727,8 @@ export default function DataTable({
                 </TableHead>
               ))}
               {(detailsData || pageDetailsRoute) && (
-                <TableHead className="text-bg-primary font-semibold w-[100px]">
-                  Details
+                <TableHead className="text-bg-primary font-semibold w-auto">
+                  {detailsData ? "Details" : pageDetailsLabel}
                 </TableHead>
               )}
               {showActionColumns && (
@@ -767,7 +768,7 @@ export default function DataTable({
                         to={`details/${row.id}`}
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        View Details
+                        {pageDetailsLabel}
                       </Link>
                     </TableCell>
                   )}
