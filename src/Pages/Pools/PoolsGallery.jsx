@@ -12,7 +12,7 @@ import { usePost } from "@/Hooks/UsePost";
 import { useParams } from "react-router-dom";
 import { XCircleIcon, UploadIcon, ImageIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-const BeachesGallery = () => {
+const PoolsGallery = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
     const [galleries, setGalleries] = useState([]);
@@ -26,39 +26,32 @@ const BeachesGallery = () => {
 
     const { id } = useParams();
 
-    const { refetch: refetchBeach, loading: loadingBeach, data: beachData, error: fetchError } = useGet({
-        url: `${apiUrl}/beach/view_gallery/${id || ""}`,
+    const { refetch: refetchPool, loading: loadingPool, data: PoolData, error: fetchError } = useGet({
+        url: `${apiUrl}/pool/view_gallery/${id || ""}`,
     });
     const { postData, loadingPost, response, error: postError } = usePost({
-        url: `${apiUrl}/beach/add_gallery/${id}`,
+        url: `${apiUrl}/pool/add_gallery/${id}`,
     });
     const { deleteData, loadingDelete, error: deleteError } = useDelete();
 
     useEffect(() => {
-        refetchBeach();
-    }, [refetchBeach]);
+        refetchPool();
+    }, [refetchPool]);
 
     useEffect(() => {
-        if (beachData && beachData.gallary) {
-            setGalleries(beachData.gallary || []);
+        if (PoolData && PoolData.gallary) {
+            setGalleries(PoolData.gallary || []);
         }
-        if (fetchError) {
-            toast.error("Failed to fetch gallery: " + fetchError.message);
-        }
-    }, [beachData, fetchError]);
+    }, [PoolData]);
 
     useEffect(() => {
         if (!loadingPost && response) {
             setIsModelOpen(false);
             setSelectedFiles([]);
             setPreviewImages([]);
-            refetchBeach();
-            toast.success("Images uploaded successfully!");
+            refetchPool();
         }
-        if (postError) {
-            toast.error("Upload failed: " + postError.message);
-        }
-    }, [response, loadingPost, postError, refetchBeach]);
+    }, [response, loadingPost]);
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
@@ -71,7 +64,9 @@ const BeachesGallery = () => {
         setPreviewImages(previews);
     };
 
-    const handleUpload = async () => {
+    const handleUpload =  async (e) => {
+        e.preventDefault();
+
         if (selectedFiles.length === 0) {
             toast.error("Please select images to upload");
             return;
@@ -82,7 +77,7 @@ const BeachesGallery = () => {
             formData.append(`images[${index}]`, file);
         });
 
-        await postData(formData, "Images uploaded successfully!");
+        postData(formData, "Images uploaded successfully!");
     };
 
     const handleDelete = (gallery) => {
@@ -91,15 +86,15 @@ const BeachesGallery = () => {
     };
 
     const handleDeleteConfirm = async () => {
-            const success = await deleteData(
-                `${apiUrl}/beach/delete_gallery/${selectedRow.id}`,
-                "Image deleted successfully!"
-            );
+        const success = await deleteData(
+            `${apiUrl}/pool/delete_gallery/${selectedRow.id}`,
+            "Image deleted successfully!"
+        );
 
-            if (success) {
-                setIsDeleteOpen(false);
-                setGalleries(galleries.filter((gallery) => gallery.id !== selectedRow.id));
-            } 
+        if (success) {
+            setIsDeleteOpen(false);
+            setGalleries(galleries.filter((gallery) => gallery.id !== selectedRow.id));
+        }
     };
 
     // Pagination logic
@@ -184,7 +179,7 @@ const BeachesGallery = () => {
         </div>
     );
 
-    if (isLoading || loadingPost || loadingBeach || loadingDelete) {
+    if (isLoading || loadingPost || loadingPool || loadingDelete) {
         return <FullPageLoader />;
     }
 
@@ -193,7 +188,7 @@ const BeachesGallery = () => {
             <ToastContainer />
 
             <div className="flex justify-between items-center !mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">Beach Gallery</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Pool Gallery</h1>
                 <button
                     onClick={() => setIsModelOpen(true)}
                     className="flex items-center gap-2 !px-4 !py-2 bg-bg-primary text-white rounded-lg hover:bg-bg-primary hover:text-white transition"
@@ -240,7 +235,7 @@ const BeachesGallery = () => {
                         >
                             <img
                                 src={gallery.image_link}
-                                alt={gallery.name || "Beach image"}
+                                alt={gallery.name || "Pool image"}
                                 className="w-full h-48 object-cover transition-transform group-hover:scale-105"
                             />
                             {/* <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all" /> */}
@@ -269,4 +264,4 @@ const BeachesGallery = () => {
     );
 };
 
-export default BeachesGallery;
+export default PoolsGallery;

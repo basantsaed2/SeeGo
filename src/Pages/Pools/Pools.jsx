@@ -135,6 +135,8 @@ const Pools = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onToggleStatus={handleToggleStatus}
+                pageDetailsRoute={"/pools/details"}
+                pageDetailsLabel="Pool Gallery"
             />
             {selectedRow && (
                 <>

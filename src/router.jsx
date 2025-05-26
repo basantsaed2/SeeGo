@@ -38,6 +38,7 @@ import PostsAdd from "./Pages/Posts/PostsAdd";
 import VilliageSinglePage from "./Pages/Villiage/VilliageSinglePage";
 import VillageAdminAdd from "./Pages/Villiage/VilliageAdmins/VilliageAdminAdd";
 import BeachesGallery from "./Pages/Beaches/BeachesGallery";
+import PoolsGallery from "./Pages/Pools/PoolsGallery";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -100,6 +101,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Pools /> },
           { path: "add", element: <PoolsAdd /> },
+          { path: "details/:id", element: <PoolsGallery /> }, // Assuming this is for gallery
         ],
       },
       {
@@ -186,11 +188,11 @@ const router = createBrowserRouter([
           { path: "add", element: <PostsAdd /> },
         ],
       },
-       {
+      {
         path: "villiage_info",
         children: [
           { index: true, element: <VilliageSinglePage /> },
-           { path: "add_admin", element: <VillageAdminAdd /> },
+          { path: "add_admin", element: <VillageAdminAdd /> },
         ],
       },
       {
