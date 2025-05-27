@@ -47,6 +47,7 @@ const navItems = [
   { label: "Services Type", to: "/service_type", icon: <Wrench size={20} /> },
   { label: "News Feed", to: "/posts", icon: <Newspaper size={20} /> },
   { label: "Villiage Single Page", to: "/villiage_info", icon: <Newspaper size={20} /> },
+  { label: "Visitor Limit", to: "/visitor_limit", icon: <Newspaper size={20} /> },
 ];
 
 export function AppSidebar() {
