@@ -30,18 +30,18 @@ export const usePost = ({ url, login = false, type = false }) => {
                             setResponse(response);
                      }
               } 
-              catch (error) {
+             catch (error) {
                      console.error('Error post JSON:', error);
                    
-                     // Check if the error response contains 'error' or just a message
+                     // Check if the error response contains 'errors' or just a message
                      if (error?.response?.data?.errors) {
-                       // Check if error are an object (field-based error)
+                       // Check if errors are an object (field-based errors)
                        if (typeof error.response.data.errors === 'object') {
                          Object.entries(error.response.data.errors).forEach(([field, messages]) => {
                            // If messages is an array, loop through them
                            if (Array.isArray(messages)) {
                              messages.forEach(message => {
-                              toast.error(message); // Display the error messages
+                               toast.error(message); // Display the error messages
                              });
                            } else {
                              // If it's not an array, display the message directly
@@ -49,12 +49,11 @@ export const usePost = ({ url, login = false, type = false }) => {
                            }
                          });
                        } else {
-                         // If error is not an object, assume it's just a message
-                         toast.error(error.response.data.error);
+                         // If errors is not an object, assume it's just a message
+                         toast.error(error.response.data.errors);
                        }
-                     }
-                     else if (error?.response?.data?.message) {
-                       // If there's a general message outside of the 'error' object
+                     } else if (error?.response?.data?.message) {
+                       // If there's a general message outside of the 'errors' object
                        toast.error(error.response.data.message); // Display the general error message
                      } else {
                        // If no specific error messages are found, just display a fallback message

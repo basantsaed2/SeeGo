@@ -9,6 +9,7 @@ import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
 import { SecurityManFormFields ,useSecurityManForm } from "./SecurityManForm";
 import TitleSection from "@/components/TitleSection";
+import { ToastContainer } from "react-toastify";
 
 export default function SecurityManAdd() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -36,6 +37,7 @@ export default function SecurityManAdd() {
 
   return (
     <div className="w-full flex flex-col gap-5 p-6 relative">
+      {/* <ToastContainer/> */}
       {isLoading && <FullPageLoader />}
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
         <TitleSection text={"Add Security Man"}/>

@@ -224,7 +224,7 @@ const Problems = () => {
         <TabsList className="grid w-full grid-cols-2 gap-4 text-lg bg-transparent !mb-6">
           <TabsTrigger
             value="pending"
-            className="rounded-[10px] text-md border text-bg-primary !py-2 transition-all 
+            className="rounded-[10px] border text-bg-primary !py-2 transition-all 
             data-[state=active]:bg-bg-primary data-[state=active]:text-white 
             hover:bg-teal-100 hover:text-teal-700"
           >
@@ -232,7 +232,7 @@ const Problems = () => {
           </TabsTrigger>
           <TabsTrigger
             value="resolved"
-            className="rounded-[10px] text-md border text-bg-primary !py-2 transition-all 
+            className="rounded-[10px] border text-bg-primary !py-2 transition-all 
             data-[state=active]:bg-bg-primary data-[state=active]:text-white 
             hover:bg-teal-100 hover:text-teal-700"
           >
