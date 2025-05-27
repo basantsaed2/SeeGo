@@ -41,7 +41,7 @@ export default function BeachesAdd() {
                 <TitleSection text={"Add Beach"} />
             </h2>
             <Tabs defaultValue="english" className="w-full">
-                <LanguageTabs />
+                {/* <LanguageTabs /> */}
                 <TabsContent value="english">
                     <BeachesFields
                         fields={fields.en}
@@ -50,14 +50,14 @@ export default function BeachesAdd() {
                         language="en"
                     />
                 </TabsContent>
-                <TabsContent value="arabic">
+                {/* <TabsContent value="arabic">
                     <BeachesFields
                         fields={fields.ar}
                         formData={formData.ar}
                         handleFieldChange={handleFieldChange}
                         language="ar"
                     />
-                </TabsContent>
+                </TabsContent> */}
             </Tabs>
             <div className="!mt-4">
                 <Button

@@ -57,17 +57,17 @@ const Appartments = () => {
     }, [AppartmentData]);
 
     // Fix the initial data format in handleEdit
-    const handleEdit = (Appartment) => {
-        const fullAppartmentData = AppartmentData?.appartments.find(o => o.id === Appartment.id);
-        setselectedRow(Appartment);
-        setIsEditOpen(true);
-        setRowEdit({
-            name: fullAppartmentData?.unit || "",
-            type: fullAppartmentData?.type?.id?.toString() || "",
-            // Ensure these match your form's field names exactly
-            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "",
-        });
-    };
+   const handleEdit = (Appartment) => {
+    const fullAppartmentData = AppartmentData?.appartments.find(o => o.id === Appartment.id);
+    setselectedRow(Appartment);
+    setIsEditOpen(true);
+    setRowEdit({
+        name: fullAppartmentData?.unit || "",
+        type: fullAppartmentData?.type?.id?.toString() || "",
+        appartment_type_id: fullAppartmentData?.type?.id?.toString() || "",
+        map: fullAppartmentData?.location || "", // Add map field
+    });
+};
 
     const handleDelete = (Appartment) => {
         setselectedRow(Appartment);

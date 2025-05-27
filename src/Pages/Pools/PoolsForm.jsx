@@ -26,9 +26,6 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
                     status: initialData.status === "Active" ? 1 : 0,
                     image: initialData.image || null,
                 },
-                ar: {
-                    nameAr: initialData.ar_name || "",
-                },
             });
         }
     }, [initialData, isEdit]);
@@ -46,19 +43,20 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
     const prepareFormData = () => {
         const body = new FormData();
         body.append("name", formData.en.name);
-        body.append("ar_name", formData.ar.nameAr);
+        // body.append("ar_name", formData.ar.nameAr);
         body.append("from", formData.en.from);
         body.append("to", formData.en.to);
         body.append("status", formData.en.status.toString());
-        if (formData.en.image) {
+        if (formData.en.image && formData.en.image !== initialData?.image) {
             body.append("images[]", formData.en.image);
         }
+
         return body;
     };
 
     const fields = {
         en: [
-            { type: "input", placeholder: "Pool Name (En)", name: "name", required: true },
+            { type: "input", placeholder: "Pool Name", name: "name", required: true },
             {
                 type: "time",
                 name: "from",
@@ -79,9 +77,6 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
                 activeLabel: "Active",
                 inactiveLabel: "Inactive",
             },
-        ],
-        ar: [
-            { type: "input", placeholder: "Pool Name (Ar)", name: "nameAr", required: true },
         ],
     };
 
@@ -111,11 +106,11 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
         fields,
         handleFieldChange,
         prepareFormData,
-        LanguageTabs,
+        // LanguageTabs,
     };
 };
 
-export const PoolsFields = ({ fields, formData, handleFieldChange, loading, language }) => {
+export const PoolsFields = ({ fields, formData, handleFieldChange, loading }) => {
     if (loading) {
         return <div>Loading form data...</div>;
     }
@@ -125,7 +120,7 @@ export const PoolsFields = ({ fields, formData, handleFieldChange, loading, lang
     return (
         <Add
             fields={fieldsArray}
-            lang={language}
+            lang="en"
             values={formData}
             onChange={(lang, name, value) => handleFieldChange(lang, name, value)}
         />

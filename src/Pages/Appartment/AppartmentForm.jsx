@@ -7,7 +7,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
         en: {
             name: "",
             type: "",
-            location: '',
+            map: '',
         },
     });
     const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
@@ -20,7 +20,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
                 en: {
                     name: initialData.name || "",
                     type: initialData.type || "",
-                    location: initialData.location || '',
+                    map: initialData.map || '',
                 }
             });
         }
@@ -65,8 +65,8 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
         const body = new FormData();
         body.append("unit", formData.en.name);
         body.append("appartment_type_id", formData.en.type);
-        if (formData.en.location) {
-            body.append("location", formData.en.location);
+        if (formData.en.map) {
+            body.append("location", formData.en.map);
         }
 
         return body;
@@ -81,7 +81,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
             options: types,
             value: formData.en.type // Ensure this is passed
         },
-        { type: "map", placeholder: "Enter Location", name: "location" },
+        { type: "map", placeholder: "Enter Location", name: "map" },
 
         // { type: "file", placeholder: "Appartment Image", name: "image", accept: "image/*" },
     ];

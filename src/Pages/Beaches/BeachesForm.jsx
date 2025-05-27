@@ -26,9 +26,6 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
                     status: initialData.status === "Active" ? 1 : 0,
                     image: initialData.image || null,
                 },
-                ar: {
-                    nameAr: initialData.ar_name || "",
-                },
             });
         }
     }, [initialData, isEdit]);
@@ -46,19 +43,21 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
     const prepareFormData = () => {
         const body = new FormData();
         body.append("name", formData.en.name);
-        body.append("ar_name", formData.ar.nameAr);
+        // body.append("ar_name", formData.ar.nameAr);
         body.append("from", formData.en.from);
         body.append("to", formData.en.to);
         body.append("status", formData.en.status.toString());
-        if (formData.en.image) {
+
+        // Only append image if it's a new file (not the initial data)
+        if (formData.en.image && formData.en.image !== initialData?.image) {
             body.append("images[]", formData.en.image);
         }
+
         return body;
     };
-
     const fields = {
         en: [
-            { type: "input", placeholder: "Beach Name (En)", name: "name", required: true },
+            { type: "input", placeholder: "Beach Name", name: "name", required: true },
             {
                 type: "time",
                 name: "from",
@@ -69,7 +68,8 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
                 type: "time",
                 name: "to",
                 placeholder: "Closing Time",
-                required: true},
+                required: true
+            },
             { type: "file", placeholder: "Beach Image", name: "image", accept: "image/*" },
             {
                 type: "switch",
@@ -111,11 +111,11 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
         fields,
         handleFieldChange,
         prepareFormData,
-        LanguageTabs,
+        // LanguageTabs,
     };
 };
 
-export const BeachesFields = ({ fields, formData, handleFieldChange, loading, language }) => {
+export const BeachesFields = ({ fields, formData, handleFieldChange, loading, }) => {
     if (loading) {
         return <div>Loading form data...</div>;
     }
@@ -125,7 +125,7 @@ export const BeachesFields = ({ fields, formData, handleFieldChange, loading, la
     return (
         <Add
             fields={fieldsArray}
-            lang={language}
+            lang="en"
             values={formData}
             onChange={(lang, name, value) => handleFieldChange(lang, name, value)}
         />

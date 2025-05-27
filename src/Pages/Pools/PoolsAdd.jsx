@@ -41,7 +41,7 @@ export default function PoolsAdd() {
                 <TitleSection text={"Add Pool"} />
             </h2>
             <Tabs defaultValue="english" className="w-full">
-                <LanguageTabs />
+                {/* <LanguageTabs /> */}
                 <TabsContent value="english">
                     <PoolsFields
                         fields={fields.en}
@@ -50,14 +50,14 @@ export default function PoolsAdd() {
                         language="en"
                     />
                 </TabsContent>
-                <TabsContent value="arabic">
+                {/* <TabsContent value="arabic">
                     <PoolsFields
                         fields={fields.ar}
                         formData={formData.ar}
                         handleFieldChange={handleFieldChange}
                         language="ar"
                     />
-                </TabsContent>
+                </TabsContent> */}
             </Tabs>
             <div className="mt-4">
                 <Button

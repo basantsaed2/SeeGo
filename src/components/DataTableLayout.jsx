@@ -359,7 +359,7 @@ export default function DataTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto max-w-[1200px] mx-auto">
+      <div className="overflow-x-auto w-full mx-auto">
         <Table className="!min-w-[600px] table-fixed">
           <TableHeader>
             <TableRow>
