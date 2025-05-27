@@ -40,6 +40,7 @@ import VillageAdminAdd from "./Pages/Villiage/VilliageAdmins/VilliageAdminAdd";
 import BeachesGallery from "./Pages/Beaches/BeachesGallery";
 import PoolsGallery from "./Pages/Pools/PoolsGallery";
 import VisitorLimit from "./Pages/VisitorLimit/VisitorLimit";
+import UnitDetails from "./Pages/Appartment/UnitDetails";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -87,6 +88,7 @@ const router = createBrowserRouter([
           { index: true, element: <Appartments /> },
           { path: "add", element: <AppartmentsAdd /> },
           { path: "create_code", element: <UnitCode /> },
+          { path: "details/:id", element: <UnitDetails /> },
         ],
       },
       {

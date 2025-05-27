@@ -14,6 +14,7 @@ import { useDelete } from "@/Hooks/useDelete";
 import { useChangeState } from "@/Hooks/useChangeState";
 import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
+import { Link } from "react-router-dom";
 
 const Appartments = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -44,14 +45,12 @@ const Appartments = () => {
     useEffect(() => {
         if (AppartmentData && AppartmentData.appartments) {
             console.log("Appartment Data:", AppartmentData);
-            const formatted = AppartmentData?.appartments?.map((u) => {
-                return {
-                    id: u.id,
-                    name: u.unit || "—",
-                    type: u.type?.name || "—",
-                    map: u.location || "—",
-                };
-            });
+            const formatted = AppartmentData?.appartments?.map((u) => ({
+                id: u.id,
+                name: u.unit || "—", // Keep name as a string
+                type: u.type?.name || "—",
+                map: u.location || "—",
+            }));
             setAppartments(formatted);
             console.log("Formatted Appartments:", formatted);
         }
@@ -104,7 +103,18 @@ const Appartments = () => {
     };
 
     const columns = [
-        { key: "name", label: "Unit" },
+        {
+            key: "name",
+            label: "Unit",
+            render: (row) => (
+                <Link
+                    to={`details/${row.id}`}
+                    className="text-blue-600 hover:underline"
+                >
+                    {row.name || "—"}
+                </Link>
+            ),
+        },
         { key: "type", label: "Type" },
         { key: "map", label: "Location" },
     ];

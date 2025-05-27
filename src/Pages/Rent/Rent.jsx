@@ -73,14 +73,14 @@ const Rent = () => {
         { key: "phone", label: "Renter Phone" },
         { key: "owner", label: "Owner" },
         { key: "ownerPhone", label: "Owner Phone" },
-        { key: "code", label: "Code" },
+        // { key: "code", label: "Code" },
         { key: "from", label: "From" },
         { key: "to", label: "To" },
         { key: "people", label: "No.People" },
-        { key: "name", label: "User Name" },
-        { key: "phone", label: "User Phone" },
+        // { key: "name", label: "User Name" },
+        // { key: "phone", label: "User Phone" },
         { key: "unit", label: "Apartment Unit" },
-        { key: "floor", label: "Apartment Floor" },
+        // { key: "floor", label: "Apartment Floor" },
     ];
 
     if (isLoading || loadingRent) {

@@ -52,7 +52,7 @@ const Owners = () => {
           email: u.email || "—",
           phone: u.phone || "—",
           gender: u.gender || "—",
-          appartment: u.appartment?.unit || "—",
+          appartment: u.appartments?.unit || "—",
           status: u.status === 1 ? "Active" : "Inactive",
           img: u.image_link ? (
             <img
@@ -135,12 +135,11 @@ const Owners = () => {
   const columns = [
     { key: "img", label: "Image" },
     { key: "name", label: "Owner Name" },
-    { key: "birthDate", label: "BirthDate" },
-    { key: "parent", label: "Owner Parent" },
+    // { key: "birthDate", label: "BirthDate" },
+    { key: "parent", label: "Owner Type" },
     { key: "appartment", label: "Unit" },
     { key: "email", label: "Email" },
     { key: "phone", label: "Phone" },
-    // { key: "status", label: "Status" },
     { key: "gender", label: "Gender" },
   ];
   if (isLoading || loadingPost || loadingOwner) {

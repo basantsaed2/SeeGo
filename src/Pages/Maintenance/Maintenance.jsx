@@ -92,7 +92,6 @@ const Maintenance = () => {
         { key: "name", label: "User Name"},
         { key: "phone", label: "User Phone"},
         { key: "unit", label: "Apartment Unit"},
-        { key: "floor", label: "Apartment Floor"},
     ];
 
     if (isLoading || loadingMaintenance) {
