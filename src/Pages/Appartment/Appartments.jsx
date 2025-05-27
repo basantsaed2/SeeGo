@@ -47,21 +47,9 @@ const Appartments = () => {
             const formatted = AppartmentData?.appartments?.map((u) => {
                 return {
                     id: u.id,
-                    name: u.zone?.name || "",
-                    unit: u.unit || "—",
-                    floors: u.number_floors || "—",
+                    name: u.unit || "—",
                     type: u.type?.name || "—",
-                    img: u.image_link ? (
-                        <img
-                            src={u.image_link}
-                            alt={u.name}
-                            className="w-12 h-12 object-cover rounded-md"
-                        />
-                    ) : (
-                        <Avatar className="w-12 h-12">
-                            <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    ),
+                    map: u.location || "—",
                 };
             });
             setAppartments(formatted);
@@ -75,14 +63,10 @@ const Appartments = () => {
         setselectedRow(Appartment);
         setIsEditOpen(true);
         setRowEdit({
-            unit: fullAppartmentData?.unit || "",
-            floors: fullAppartmentData?.number_floors || "",
+            name: fullAppartmentData?.unit || "",
             type: fullAppartmentData?.type?.id?.toString() || "",
-            zone: fullAppartmentData?.zone?.id?.toString() || "",
-            image_link: fullAppartmentData?.image_link || null,
             // Ensure these match your form's field names exactly
             appartment_type_id: fullAppartmentData?.type?.id?.toString() || "",
-            zone_id: fullAppartmentData?.zone?.id?.toString() || ""
         });
     };
 
@@ -107,7 +91,7 @@ const Appartments = () => {
     };
 
     const handleDeleteConfirm = async () => {
-        const success = await deleteData(`${apiUrl}/appartment/delete/${selectedRow.id}`, `${selectedRow.unit} Deleted Success.`);
+        const success = await deleteData(`${apiUrl}/appartment/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
 
         if (success) {
             setIsDeleteOpen(false);
@@ -119,24 +103,10 @@ const Appartments = () => {
         }
     };
 
-    const handleToggleStatus = async (row, newStatus) => {
-        const response = await changeState(
-            `${apiUrl}/appartment/status/${row.id}?status=${newStatus}`,
-            `${row.name} Changed Status.`,
-        );
-        if (response) {
-            setAppartments((prev) =>
-                prev.map((Appartment) =>
-                    Appartment.id === row.id ? { ...Appartment, status: newStatus === 1 ? "Active" : "Inactive" } : Appartment
-                )
-            );
-        }
-    };
-
     const columns = [
-        { key: "img", label: "Image" },
-        { key: "unit", label: "Unit" },
+        { key: "name", label: "Unit" },
         { key: "type", label: "Type" },
+        { key: "map", label: "Location" },
     ];
     if (isLoading || loadingPost || loadingAppartment) {
         return <FullPageLoader />;
@@ -149,7 +119,6 @@ const Appartments = () => {
                 addRoute="/units/add"
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                onToggleStatus={handleToggleStatus}
                 pageDetailsRoute={false}
                 additionalLink="/units/create_code"
                 additionalLinkLabel={"Create Code"}
@@ -185,7 +154,7 @@ const Appartments = () => {
                         open={isDeleteOpen}
                         onOpenChange={setIsDeleteOpen}
                         onDelete={handleDeleteConfirm}
-                        name={selectedRow.unit}
+                        name={selectedRow.name}
                         isLoading={loadingDelete}
                     />
                 </>

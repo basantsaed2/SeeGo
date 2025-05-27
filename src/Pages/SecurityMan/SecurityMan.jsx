@@ -50,6 +50,9 @@ const SecurityMan = () => {
           email: u.email || "—",
           phone: u.phone || "—",
           type: u.type || "—",
+          pool_ids: u.pool.map((p) => p.id).join(", "),
+          beach_ids: u.beach.map((b) => b.id).join(", "),
+          gate_ids: u.gate.map((g) => g.id).join(", "),
           status: u.status === 1 ? "Active" : "Inactive",
           img: u.image_link ? (
             <img
@@ -74,6 +77,9 @@ const SecurityMan = () => {
     setIsEditOpen(true);
     setRowEdit({
       ...fullSecuritysData,
+      pool_ids: fullSecuritysData.pool_ids || [],
+      beach_ids: fullSecuritysData.beach_ids || [],
+      gate_ids: fullSecuritysData.gate_ids || [],
       image_link: fullSecuritysData?.image_link || null,
       status: Securitys.status,
     });

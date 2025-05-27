@@ -99,35 +99,22 @@ export default function Add({ fields, lang, values, onChange }) {
                       </div>
                     );
 
-                  // case "multi-select":
-                  //   return (
-                  //     <MultiSelectDropdown
-                  //       id={fieldId} // Ensure fieldId is defined
-                  //       options={field.options}
-                  //       value={value}
-                  //       onChange={(val) =>
-                  //         // Note: Your original multi-select had field.lang in onChange,
-                  //         // but the outer handleChange expects just name and value.
-                  //         // Assuming you meant to pass 'lang' from props, not field.lang.
-                  //         onChange(lang, field.name, val)
-                  //       }
-                  //       placeholder={field.placeholder}
-                  //     />
-                  //   );
-                  // In your Add component's multi-select case:
                   case "multi-select":
                     return (
                       <MultiSelectDropdown
-                        id={fieldId}
+                        id={fieldId} // Ensure fieldId is defined
                         options={field.options}
                         value={value}
-                        onChange={(val) => onChange(lang, field.name, val)}
+                        onChange={(val) =>
+                          // Note: Your original multi-select had field.lang in onChange,
+                          // but the outer handleChange expects just name and value.
+                          // Assuming you meant to pass 'lang' from props, not field.lang.
+                          onChange(lang, field.name, val)
+                        }
                         placeholder={field.placeholder}
-                        // Add these props to ensure proper display:
-                        getOptionLabel={(option) => option.label}
-                        getOptionValue={(option) => option.value}
                       />
                     );
+
                   case "select":
                     return (
                       <Select

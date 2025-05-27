@@ -33,17 +33,20 @@ export default function MultiSelectDropdown({
     <Select
       // onValueChange مش بنستخدمها هنا لأننا بنتعامل مع الاختيار يدويًا
       // الكومبوننت ده بيُستخدم بشكل أساسي عشان شكله (Trigger و Content)
-      onValueChange={() => {}}
+      onValueChange={() => { }}
       value={selectedValues.length > 0 ? "selected" : ""} // قيمة وهمية عشان نمنع التحذيرات، القيمة الفعلية بتُدار بواسطة الـ Checkboxes
     >
       <SelectTrigger className="w-full !ms-1 !px-5 !py-6 rounded-[15px] border border-gray-300 focus:border-bg-primary focus:ring-bg-primary">
         <SelectValue placeholder={placeholder}>
           {selectedValues.length > 0
-            ? selectedValues.join(", ") 
+            ? selectedValues
+              .map((val) => options.find((opt) => opt.value === val)?.label || val)
+              .join(", ")
             : placeholder}
+
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="bg-white border-teal-600 rounded-md shadow-lg !ms-3 !p-3">
+      <SelectContent className="bg-white border-teal-600 rounded-md shadow-lg !ms-3 !p-3 z-[1000]">
         {options.map((option) => (
           <div
             key={option.value}

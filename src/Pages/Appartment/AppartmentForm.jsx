@@ -5,11 +5,9 @@ import Add from "@/components/AddFieldSection";
 export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) => {
     const [formData, setFormData] = useState({
         en: {
-            unit: "",
-            // floors: "",
+            name: "",
             type: "",
-            // zone: "",
-            image: null,
+            location: '',
         },
     });
     const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
@@ -20,12 +18,9 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
         if (isEdit && initialData) {
             setFormData({
                 en: {
-                    unit: initialData.unit || "",
-                    // floors: initialData.floors || "",
+                    name: initialData.name || "",
                     type: initialData.type || "",
-                    // zone: initialData.zone || "",
-                    image_link: initialData.image_link || null,
-                    image: initialData.image_link || null
+                    location: initialData.location || '',
                 }
             });
         }
@@ -51,7 +46,6 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
                     en: {
                         ...prev.en,
                         type: initialData.type || initialData.appartment_type_id || "",
-                        zone: initialData.zone || initialData.zone_id || "",
                     }
                 }));
             }
@@ -69,20 +63,17 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
 
     const prepareFormData = () => {
         const body = new FormData();
-        body.append("unit", formData.en.unit);
-        // body.append("number_floors", formData.en.floors);
+        body.append("unit", formData.en.name);
         body.append("appartment_type_id", formData.en.type);
-        // body.append("zone_id", formData.en.zone);
-        if (formData.en.image) {
-            body.append("image", formData.en.image);
+        if (formData.en.location) {
+            body.append("location", formData.en.location);
         }
 
         return body;
     };
 
     const fields = [
-        { type: "input", placeholder: "Unit Name", name: "unit", required: true },
-        { type: "input", inputType: "number", placeholder: "Floor Number", name: "floors", required: true },
+        { type: "input", placeholder: "Unit Name", name: "name", required: true },
         {
             type: "select",
             placeholder: "Type",
@@ -90,8 +81,9 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
             options: types,
             value: formData.en.type // Ensure this is passed
         },
+        { type: "map", placeholder: "Enter Location", name: "location" },
 
-        { type: "file", placeholder: "Appartment Image", name: "image", accept: "image/*" },
+        // { type: "file", placeholder: "Appartment Image", name: "image", accept: "image/*" },
     ];
 
     return {
