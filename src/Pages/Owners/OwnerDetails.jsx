@@ -57,14 +57,14 @@ const OwnerDetails = () => {
       className="!space-y-6"
     >
       <Card className="overflow-hidden border-0 shadow-2xl bg-gradient-to-br from-teal-50/50 to-white rounded-3xl">
-        <CardHeader className="flex flex-col sm:flex-row items-center sm:items-start space-x-0 sm:space-x-6 space-y-4 sm:space-y-0 !p-6">
+        <CardHeader className="flex flex-col sm:flex-row items-center sm:items-start ! space-x-0 sm:space-x-6 space-y-4 sm:space-y-0 !p-6">
           <Avatar className="h-28 w-28 border-4 border-white shadow-lg rounded-full">
             <AvatarImage src={owner.image_link} />
             <AvatarFallback className="bg-teal-100 text-teal-800 text-4xl font-bold">
               {owner.name.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <div className="space-y-3 text-center sm:text-left">
+          <div className="!space-y-3 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row items-center !space-y-2 sm:!space-y-0 !space-x-4">
               <h2 className="HolmesBold text-4xl font-bold text-gray-800">{owner.name}</h2>
               <Badge
@@ -208,7 +208,7 @@ const OwnerDetails = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center !py-10">
               <DoorOpen className="h-12 w-12 !mx-auto text-gray-400" />
               <p className="text-gray-500 !mt-3">No gate entrances recorded</p>
             </div>
@@ -235,7 +235,7 @@ const OwnerDetails = () => {
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                       <h4 className="font-medium text-lg text-teal-800">{beach.beach.name}</h4>
-                      <p className="text-sm text-gray-500 flex items-center mt-1">
+                      <p className="text-sm text-gray-500 flex items-center !mt-1">
                         <Clock className="h-4 w-4 !mr-1" />
                         Entered at: {beach.time}
                       </p>
@@ -258,7 +258,7 @@ const OwnerDetails = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center !py-10">
               <Waves className="h-12 w-12 !mx-auto text-gray-400" />
               <p className="text-gray-500 !mt-3">No beach entrances recorded</p>
               {/* <Button variant="outline" className="mt-4 border-teal-600 text-teal-600 hover:bg-teal-50">
@@ -288,7 +288,7 @@ const OwnerDetails = () => {
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                       <h4 className="font-medium text-lg text-blue-800">{pool.pool.name}</h4>
-                      <p className="text-sm text-gray-500 flex items-center mt-1">
+                      <p className="text-sm text-gray-500 flex items-center !mt-1">
                         <Clock className="h-4 w-4 !mr-1" />
                         Entered at: {pool.time}
                       </p>
@@ -311,7 +311,7 @@ const OwnerDetails = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center !py-10">
               <Droplets className="h-12 w-12 !mx-auto text-gray-400" />
               <p className="text-gray-500 !mt-3">No pool entrances recorded</p>
               {/* <Button variant="outline" className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50">
@@ -340,7 +340,7 @@ const OwnerDetails = () => {
         </CardHeader>
         <CardContent className="!p-6">
           {problem_request.length > 0 ? (
-            <div className="space-y-4">
+            <div className="!space-y-4">
               {problem_request.map((request) => (
                 <motion.div
                   key={request.id}
@@ -392,7 +392,7 @@ const OwnerDetails = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center !py-10">
               <AlertCircle className="h-12 w-12 !mx-auto text-gray-400" />
               <p className="text-gray-500 !mt-3">No problem reports submitted</p>
               {/* <Button variant="outline" className="mt-4 border-amber-600 text-amber-600 hover:bg-amber-50">
@@ -421,7 +421,7 @@ const OwnerDetails = () => {
         </CardHeader>
         <CardContent className="!p-6">
           {maintenance_request.length > 0 ? (
-            <div className="space-y-4">
+            <div className="!space-y-4">
               {maintenance_request.map((request) => (
                 <motion.div
                   key={request.id}
@@ -448,7 +448,7 @@ const OwnerDetails = () => {
                     <p className="!mt-1 text-gray-800">{request.description || "No description provided"}</p>
                   </div>
                   {request.image_link && (
-                    <div className="mt-4">
+                    <div className="!mt-4">
                       <p className="text-gray-500">Image</p>
                       <img
                         src={request.image_link}
@@ -473,7 +473,7 @@ const OwnerDetails = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center !py-10">
               <Wrench className="h-12 w-12 !mx-auto text-gray-400" />
               <p className="text-gray-500 !mt-3">No maintenance requests submitted</p>
               {/* <Button variant="outline" className="mt-4 border-purple-600 text-purple-600 hover:bg-purple-50">
@@ -524,7 +524,7 @@ const OwnerDetails = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <p className="text-gray-500">Apartment Details</p>
-                      <div className="flex items-center space-x-2 !mt-1">
+                      <div className="flex items-center !space-x-2 !mt-1">
                         <span className="font-medium text-gray-800">{visit.appartment.unit}</span>
                         <span className="text-gray-500 text-xs">
                           ({visit.appartment.number_floors} floors)
@@ -536,7 +536,7 @@ const OwnerDetails = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center !py-10">
               <Users className="h-12 w-12 !mx-auto text-gray-400" />
               <p className="text-gray-500 !mt-3">No visit requests recorded</p>
               {/* <Button variant="outline" className="mt-4 border-indigo-600 text-indigo-600 hover:bg-indigo-50">
@@ -563,7 +563,7 @@ const OwnerDetails = () => {
               data-[state=active]:bg-teal-600 data-[state=active]:text-white 
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
-            <User className="h-4 w-4 mr-2" />
+            <User className="h-4 w-4 !mr-2" />
             Profile
           </TabsTrigger>
           <TabsTrigger
@@ -572,7 +572,7 @@ const OwnerDetails = () => {
               data-[state=active]:bg-teal-600 data-[state=active]:text-white 
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
-            <MapPin className="h-4 w-4 mr-2" />
+            <MapPin className="h-4 w-4 !mr-2" />
             Entrances
           </TabsTrigger>
           <TabsTrigger
@@ -581,7 +581,7 @@ const OwnerDetails = () => {
               data-[state=active]:bg-teal-600 data-[state=active]:text-white 
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
-            <AlertCircle className="h-4 w-4 mr-2" />
+            <AlertCircle className="h-4 w-4 !mr-2" />
             Problems
           </TabsTrigger>
           <TabsTrigger
@@ -590,7 +590,7 @@ const OwnerDetails = () => {
               data-[state=active]:bg-teal-600 data-[state=active]:text-white 
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
-            <Wrench className="h-4 w-4 mr-2" />
+            <Wrench className="h-4 w-4 !mr-2" />
             Maintenance
           </TabsTrigger>
           <TabsTrigger
@@ -599,7 +599,7 @@ const OwnerDetails = () => {
               data-[state=active]:bg-teal-600 data-[state=active]:text-white 
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
-            <Users className="h-4 w-4 mr-2" />
+            <Users className="h-4 w-4 !mr-2" />
             Visits
           </TabsTrigger>
         </TabsList>
