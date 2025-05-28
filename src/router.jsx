@@ -41,6 +41,9 @@ import BeachesGallery from "./Pages/Beaches/BeachesGallery";
 import PoolsGallery from "./Pages/Pools/PoolsGallery";
 import VisitorLimit from "./Pages/VisitorLimit/VisitorLimit";
 import UnitDetails from "./Pages/Appartment/UnitDetails";
+import InvoiceCard from "./Pages/Invoice/Invoice";
+import MaintenancesAdd from "./Pages/MaintenanceFees/MaintenanceAdd";
+import FeesDetails from "./Pages/MaintenanceFees/FeesDetails";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -135,7 +138,8 @@ const router = createBrowserRouter([
         path: "maintenance_fees",
         children: [
           { index: true, element: <MaintenanceFees /> },
-          // { path: "details/:id", element: <OwnerDetails /> },
+          { path: "add", element: <MaintenancesAdd /> },
+          { path: "details/:id", element: <FeesDetails /> },
         ],
       },
       {
@@ -202,6 +206,12 @@ const router = createBrowserRouter([
         path: "visitor_limit",
         children: [
           { index: true, element: <VisitorLimit /> },
+        ],
+      },
+      {
+        path: "invoice",
+        children: [
+          { index: true, element: <InvoiceCard /> },
         ],
       },
       {

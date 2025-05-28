@@ -33,7 +33,8 @@ const Services = () => {
                     descriptionAr: u.ar_description || "—",
                     from: u.from || "—",
                     to: u.to || "—",
-                    rate: u.rate || "—",
+                    // rate: u.rate || "—",
+                    status: u.status === 1 ? "Active" : "Inactive",
                     type: u.service_type || "—",
                     img: u.image ? (
                         <img
@@ -47,7 +48,6 @@ const Services = () => {
                         </Avatar>
                     ),
                     map: u.location || "—",
-                    statusText: u.status === 1 ? "Active" : "Inactive",
                 };
             });
             setServices(formatted);
@@ -62,7 +62,7 @@ const Services = () => {
         { key: "map", label: "Location" },
         { key: "from", label: "Opening Time" },
         { key: "to", label: "Closing Time" },
-        { key: "rate", label: "Rate" },
+        // { key: "rate", label: "Rate" },
         { key: "statusText", label: "Status" },
     ];
 

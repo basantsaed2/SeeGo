@@ -153,6 +153,7 @@ const navItems = [
   { label: "News Feed", to: "/posts", icon: <Newspaper size={20} /> },
   { label: "Village Single Page", to: "/villiage_info", icon: <Newspaper size={20} /> },
   { label: "Visitor Limit", to: "/visitor_limit", icon: <Newspaper size={20} /> },
+  { label: "Invoice", to: "/invoice", icon: <Newspaper size={20} /> },
 ];
 
 export function AppSidebar() {
@@ -179,17 +180,19 @@ export function AppSidebar() {
         }}
       >
         <SidebarGroup>
-          <SidebarGroupLabel className="!p-6 text-white text-3xl font-semibold flex items-center text-center">
+          <SidebarGroupLabel className="text-white flex flex-col items-center justify-center gap-3">
             {villageImage && (
               <img
                 src={villageImage}
-                alt={villageName}
-                className="w-10 h-10 rounded-full object-cover"
+                alt={villageName || "Village"}
+                className="w-20 h-20 rounded-full object-cover shadow-lg border-2 border-white/30 hover:scale-105 transition-transform duration-200"
               />
             )}
-            {villageName}
+            <span className="text-xl font-semibold text-center tracking-wide text-white drop-shadow-md">
+              {villageName || "Unknown Village"}
+            </span>
           </SidebarGroupLabel>
-            <hr className="w-full border-white !mt-3 !mb-6" />
+          <hr className="w-full border-white !mt-2 !mb-3" />
 
           <SidebarGroupContent>
             <SidebarMenu className="list-none p-0 bg-teal-600 flex flex-col gap-3">
