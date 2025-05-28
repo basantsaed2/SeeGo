@@ -14,6 +14,7 @@ import {
   FaWrench 
 } from "react-icons/fa";
 import { MdReportProblem } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -51,7 +52,8 @@ const Home = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
         {/* Units Number */}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        
+        <Link to={"units"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaStore className="text-6xl text-[#0E7490]" />
           </div>
@@ -59,10 +61,10 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.units_count}</div>
             <div className="">Number Of Units</div>
           </div>
-        </div>
+        </Link>
 
         {/* Today’s Visits */}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"visits"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaUserFriends className="text-6xl text-[#0E7490]" />
           </div>
@@ -70,10 +72,10 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.visits_village}</div>
             <div className="">Today’s Visits</div>
           </div>
-        </div>
+        </Link>
 
         {/* Main Request Problem */}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"problems"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <MdReportProblem className="text-6xl text-[#0E7490]" />
           </div>
@@ -81,10 +83,10 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.problem_report_count}</div>
             <div className="">Problem Request</div>
           </div>
-        </div>
+        </Link>
 
         {/*Rents Count*/}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"rents"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaUsers className="text-6xl text-[#0E7490]" />
           </div>
@@ -92,10 +94,10 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.rents_count}</div>
             <div className="">Number Of Rental Units</div>
           </div>
-        </div>
+        </Link>
 
         {/* Beach Entries */}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"beaches"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaUmbrellaBeach className="text-6xl text-[#0E7490]" />
           </div>
@@ -103,10 +105,10 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.users_beach}</div>
             <div className="">Beach Occupancy</div>
           </div>
-        </div>
+        </Link>
 
         {/* Pool Entries */}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"pools"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaSwimmingPool className="text-6xl text-[#0E7490]" />
           </div>
@@ -114,12 +116,12 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.users_pool}</div>
             <div className="">Pool Occupancy</div>
           </div>
-        </div>
+        </Link>
 
 
 
         {/* Units for Rent */}
-        <div className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"maintenance_request"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaWrench  className="text-6xl text-[#0E7490]" />
           </div>
@@ -127,11 +129,7 @@ const Home = () => {
             <div className="text-3xl font-bold">{homeStats.maintenance_request_count}</div>
             <div className="">Maintenance Request</div>
           </div>
-        </div>
-
-
-
-
+        </Link>
       </div>
     </div>
   );

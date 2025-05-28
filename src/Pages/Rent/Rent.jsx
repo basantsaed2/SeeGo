@@ -68,7 +68,7 @@ const Rent = () => {
     }, [RentData]);
 
     const columns = [
-        { key: "img", label: "Image" },
+        { key: "img", label: "Image ID" },
         { key: "renter", label: "Renter" },
         { key: "phone", label: "Renter Phone" },
         { key: "owner", label: "Owner" },
@@ -79,7 +79,7 @@ const Rent = () => {
         { key: "people", label: "No.People" },
         // { key: "name", label: "User Name" },
         // { key: "phone", label: "User Phone" },
-        { key: "unit", label: "Apartment Unit" },
+        { key: "unit", label: "Unit" },
         // { key: "floor", label: "Apartment Floor" },
     ];
 

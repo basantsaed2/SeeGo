@@ -42,7 +42,7 @@ export const usePostsForm = (apiUrl, isEdit = false, initialData = null) => {
 
     const fields = {
         en: [
-            { type: "textarea", placeholder: "Post Description", name: "description", required: true },
+            { type: "textarea", placeholder: "Post", name: "description", required: true },
             { type: "file", placeholder: "Post Image", name: "image", accept: "image/*" },
         ]
     };
