@@ -58,6 +58,7 @@ const Beaches = () => {
         to: u.to || "—",
         fromTo: `${u.from || "—"} - ${u.to || "—"}`,
         status: u.status === 1 ? "Active" : "Inactive",
+        image: u.gallery[0].image_link || "/placeholder-beach.jpg", // Placeholder image
       }));
       setBeaches(formatted);
     }
@@ -153,11 +154,11 @@ const Beaches = () => {
               className="relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300"
             >
               {/* Beach Image Placeholder */}
-              <div className="h-40 bg-gradient-to-r from-blue-400 to-teal-400 flex items-center justify-center">
+              <div className="h-50 bg-gradient-to-r from-blue-400 to-teal-400 flex items-center justify-center">
                 <img
-                  src={beach.image_link || "/placeholder-beach.jpg"} // Replace with actual image URL
+                  src={beach.image || "/placeholder-beach.jpg"} // Replace with actual image URL
                   alt={beach.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-fit"
                 />
               </div>
 

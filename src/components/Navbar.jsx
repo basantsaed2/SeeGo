@@ -1,64 +1,8 @@
-// import React, { useContext } from 'react';
-// import { useTranslation } from 'react-i18next';
-// import { LanguageContext } from './../context/LanguageContext';
-// import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-// import { LogOut } from "lucide-react";
-// import { useNavigate } from "react-router-dom";
-// import { Button } from "./ui/button";
-
-// export default function Navbar() {
-//   const userData = JSON.parse(localStorage.getItem("user"));
-//   const navigate = useNavigate();
-//   const userName = userData?.village?.name; 
-//   const userInitials = userName
-//     ? userName.split(" ").slice(0, 2).map((word) => word[0]).join("") 
-//     : "AD";
-//     const handleLogout = () => {
-//       localStorage.removeItem("user");
-//       localStorage.removeItem("token");
-//       navigate("/login");
-//     };
-
-//   const { t } = useTranslation();
-//   const { changeLanguage } = useContext(LanguageContext);
-//   return (
-//     <header className="w-full h-16 flex items-center justify-between !p-6">
-//       {/* Left: Welcome text with Avatar */}
-//       <div className="flex items-center gap-2 text-teal-600 font-semibold text-lg">
-//         <Avatar className="w-9 h-9 bg-gray-300 text-white font-bold text-sm">
-//           <AvatarFallback>{userInitials}</AvatarFallback>
-//         </Avatar>
-//         Hello {userName || "Admin"}
-//       </div>
-
-//       {/* <div>
-//       <h1 className="text-2xl font-bold">{t('welcome')}</h1>
-//       <button onClick={() => changeLanguage('en')}>English</button>
-//       <button onClick={() => changeLanguage('ar')}>العربية</button>
-//     </div> */}
-
-//       {/* Right: Icons */}
-//       <div className="flex items-center gap-6 text-teal-600 font-semibold">
-//       <Button
-//           variant="ghost"
-//           onClick={handleLogout}
-//           className="text-bg-primary cursor-pointer flex items-center gap-2 hover:text-teal-700"
-//         >
-//           <LogOut className="w-4 h-4" />
-//           Logout
-//         </Button>
-//       </div>
-//     </header>
-//   );
-// }
-
-
-
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageContext } from "./../context/LanguageContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Bell, Wrench, AlertTriangle } from "lucide-react";
+import { LogOut, Bell, Wrench, AlertTriangle, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
@@ -80,7 +24,7 @@ export default function Navbar() {
   const userInitials = userName
     ? userName.split(" ").slice(0, 2).map((word) => word[0]).join("")
     : "AD";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { changeLanguage } = useContext(LanguageContext);
 
   // Retrieve totals from Redux store
@@ -110,6 +54,12 @@ export default function Navbar() {
     navigate("/login");
   };
 
+  // Language options with labels and icons
+  const languages = [
+    { code: "en", label: t("english"), flag: "EN" },
+    { code: "ar", label: t("arabic"), flag: "AR" },
+  ];
+
   return (
     <header className="w-full h-16 flex items-center justify-between !px-6">
       {/* Left: Welcome text with Avatar */}
@@ -120,20 +70,56 @@ export default function Navbar() {
         {t("Hello")} {userName || "Admin"}
       </div>
 
-    <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4 text-center">
+      {/* Right: Icons and Language Switcher */}
+      <div className="flex items-center gap-4">
+        {/* Language Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="!p-2 rounded-full hover:bg-teal-50 focus:ring-2 focus:ring-teal-200"
+              aria-label={t("change_language")}
+            >
+              <Globe className="w-5 h-5 text-teal-600" />
+              <span className="ml-2 text-teal-700 font-medium hidden sm:inline">
+                {languages.find((lang) => lang.code === i18n.language)?.label || "Language"}
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 bg-white shadow-lg rounded-lg border border-gray-100 !p-2">
+            <DropdownMenuLabel className="text-base font-semibold text-teal-700 !px--3 !py--1.5">
+              {t("select_language")}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator className="bg-gray-200" />
+            {languages.map((lang) => (
+              <DropdownMenuItem
+                key={lang.code}
+                onClick={() => changeLanguage(lang.code)}
+                className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${
+                  i18n.language === lang.code
+                    ? "bg-teal-100 text-teal-800 font-semibold"
+                    : "hover:bg-teal-50 focus:bg-teal-50"
+                }`}
+                aria-selected={i18n.language === lang.code}
+              >
+                <span className="text-lg">{lang.flag}</span>
+                <span className="flex-1">{lang.label}</span>
+                {i18n.language === lang.code && (
+                  <svg
+                    className="w-4 h-4 text-teal-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-  <select
-    onChange={(e) => changeLanguage(e.target.value)}
-    className="mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="en">AR</option>
-    <option value="ar">EN</option>
-  </select>
-</div>
-
-
-      {/* Right: Icons */}
-      <div className="flex items-center gap-6">
         {/* Notification Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -145,7 +131,7 @@ export default function Navbar() {
               <Bell className="w-5 h-5 text-teal-600" />
               {totalNotifications > 0 && !notificationLoading && (
                 <Badge
-                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full !px-2 !py-0.5 text-xs font-medium transition-transform duration-200 ease-in-out transform hover:scale-110"
+                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full !px--2 !py--0.5 text-xs font-medium transition-transform duration-200 ease-in-out transform hover:scale-110"
                 >
                   {totalNotifications}
                 </Badge>
@@ -156,41 +142,38 @@ export default function Navbar() {
             align="end"
             className="w-72 bg-white shadow-lg rounded-lg border border-gray-100 !p-2 transition-all duration-200"
           >
-            <DropdownMenuLabel className="text-lg font-semibold text-teal-700 !px-4 !py-2">
+            <DropdownMenuLabel className="text-lg font-semibold text-teal-700 !px--4 !py--2">
               {t("notifications")}
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-200" />
             {totalNotifications === 0 && !notificationLoading ? (
-              <DropdownMenuItem
-                className="!px-4 !py-3 text-gray-500 italic cursor-default"
-                disabled
-              >
+              <DropdownMenuItem className="!px--4 !py--3 text-gray-500 italic cursor-default" disabled>
                 {t("no_new_notifications")}
               </DropdownMenuItem>
             ) : (
               <>
                 <DropdownMenuItem
                   onClick={() => navigate("/maintenance_request")}
-                  className="flex items-center gap-3 !px-4 !py-3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
+                  className="flex items-center gap-3 !px--4 !py--3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
                 >
                   <Wrench className="w-5 h-5 text-teal-600" />
                   <span className="flex-1 text-gray-800">{t("new_maintenance_requests")}</span>
                   <Badge
                     variant="secondary"
-                    className="bg-teal-100 text-teal-700 !px-2 !py-0.5 rounded-full"
+                    className="bg-teal-100 text-teal-700 !px--2 !py--0.5 rounded-full"
                   >
                     {newMaintenanceCount}
                   </Badge>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => navigate("/problems")}
-                  className="flex items-center gap-3 !px-4 !py-3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
+                  className="flex items-center gap-3 !px--4 !py--3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
                 >
                   <AlertTriangle className="w-5 h-5 text-orange-600" />
                   <span className="flex-1 text-gray-800">{t("new_problem_reports")}</span>
                   <Badge
                     variant="secondary"
-                    className="bg-orange-100 text-orange-700 !px-2 !py-0.5 rounded-full"
+                    className="bg-orange-100 text-orange-700 !px--2 !!py---0.5 rounded-full"
                   >
                     {newProblemCount}
                   </Badge>
@@ -199,6 +182,8 @@ export default function Navbar() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Logout Button */}
         <Button
           variant="ghost"
           onClick={handleLogout}

@@ -56,6 +56,7 @@ const Pools = () => {
         to: u.to || "—",
         fromTo: `${u.from || "—"} - ${u.to || "—"}`,
         status: u.status === 1 ? "Active" : "Inactive",
+        image: u.gallery[0].image_link || "/placeholder-beach.jpg", // Placeholder image
       }));
       setPools(formatted);
     }
@@ -132,8 +133,8 @@ const Pools = () => {
             className="bg-bg-primary hover:text-bg-primary hover:bg-white text-white font-semibold rounded-full !px-6 !py-2"
           >
             <Link to="/pools/add">
-            <Plus className="w-4 h-4 mr-2" />
-            Add New Pool</Link>
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Pool</Link>
           </Button>
         </div>
       </div>
@@ -151,11 +152,11 @@ const Pools = () => {
               className="relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300"
             >
               {/* Pool Image Placeholder */}
-              <div className="h-40 bg-gradient-to-r from-blue-400 to-teal-400 flex items-center justify-center">
+              <div className="h-60 flex items-center justify-center">
                 <img
-                  src={Pool.image_link || "/placeholder-Pool.jpg"} // Replace with actual image URL
+                  src={Pool.image || "/placeholder-Pool.jpg"} // Replace with actual image URL
                   alt={Pool.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
 
@@ -164,11 +165,10 @@ const Pools = () => {
                 <div className="flex justify-between items-start">
                   <h3 className="text-xl font-semibold text-gray-800 truncate">{Pool.name}</h3>
                   <span
-                    className={`!px-3 !py-1 rounded-full text-sm font-medium ${
-                      Pool.status === "Active"
+                    className={`!px-3 !py-1 rounded-full text-sm font-medium ${Pool.status === "Active"
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-700"
-                    }`}
+                      }`}
                   >
                     {Pool.status}
                   </span>
