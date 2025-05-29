@@ -52,7 +52,6 @@ const Rent = () => {
                     from: u.from,
                     to: u.to,
                     people: u.people,
-                    name: u.owner?.name || "—",
                     unit: u.appartment?.unit || "—",
                     floor: u.appartment?.number_floors || "—",
                 };

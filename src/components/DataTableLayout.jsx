@@ -290,12 +290,12 @@ export default function DataTable({
   };
 
   return (
-    <div className="w-full !p-3 space-y-6">
+    <div className="w-full !p-3 !space-y-6">
       <div className="flex justify-between !mb-6 items-center flex-wrap gap-4">
 
         <Input
           placeholder="Search..."
-          className="w-full md:!ms-3 sm:!ms-0 !ps-3 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
+          className="w-full md:!ms-3 sm:!ms-0 !p-2 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
