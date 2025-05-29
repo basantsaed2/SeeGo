@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
@@ -32,6 +33,7 @@ const Home = () => {
   const { refetch: refetchHomeList, loading: loadingHomeList, data: HomeListData } = useGet({
     url: `${apiUrl}/home`,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     refetchHomeList();
@@ -59,7 +61,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.units_count}</div>
-            <div className="">Number Of Units</div>
+            <div className="">{t("NumberOfUnits")}</div>
           </div>
         </Link>
 
@@ -70,7 +72,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.visits_village}</div>
-            <div className="">Today’s Visits</div>
+            <div className="">{t("Today’sVisits")}</div>
           </div>
         </Link>
 
@@ -81,7 +83,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.problem_report_count}</div>
-            <div className="">Problem Request</div>
+            <div className="">{t("ProblemRequest")}</div>
           </div>
         </Link>
 
@@ -92,7 +94,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.rents_count}</div>
-            <div className="">Number Of Rental Units</div>
+            <div className="">{t("NumberOfRentalUnits")}</div>
           </div>
         </Link>
 
@@ -103,7 +105,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.users_beach}</div>
-            <div className="">Beach Occupancy</div>
+            <div className="">{t("BeachOccupancy")}</div>
           </div>
         </Link>
 
@@ -114,7 +116,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.users_pool}</div>
-            <div className="">Pool Occupancy</div>
+            <div className="">{t("PoolOccupancy")}</div>
           </div>
         </Link>
 
@@ -127,7 +129,7 @@ const Home = () => {
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.maintenance_request_count}</div>
-            <div className="">Maintenance Request</div>
+            <div className="">{t("MaintenanceRequest")}</div>
           </div>
         </Link>
       </div>

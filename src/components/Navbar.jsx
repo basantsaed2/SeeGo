@@ -28,14 +28,20 @@ export default function Navbar() {
         <Avatar className="w-9 h-9 bg-gray-300 text-white font-bold text-sm">
           <AvatarFallback>{userInitials}</AvatarFallback>
         </Avatar>
-        Hello {userName || "Admin"}
+        {t("Hello")} {userName || "Admin"}
       </div>
 
-      {/* <div>
-      <h1 className="text-2xl font-bold">{t('welcome')}</h1>
-      <button onClick={() => changeLanguage('en')}>English</button>
-      <button onClick={() => changeLanguage('ar')}>العربية</button>
-    </div> */}
+    <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4 text-center">
+
+  <select
+    onChange={(e) => changeLanguage(e.target.value)}
+    className="mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="en">AR</option>
+    <option value="ar">EN</option>
+  </select>
+</div>
+
 
       {/* Right: Icons */}
       <div className="flex items-center gap-6 text-teal-600 font-semibold">
@@ -45,7 +51,7 @@ export default function Navbar() {
           className="text-bg-primary cursor-pointer flex items-center gap-2 hover:text-teal-700"
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          {t("Logout")}
         </Button>
       </div>
     </header>

@@ -87,19 +87,24 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
+import { useTranslation } from "react-i18next";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger, DialogFooter, DialogClose
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog"; // Use your custom dialog components
-import { ChevronRight, Building } from 'lucide-react';
+import { ChevronRight, Building } from "lucide-react";
 import { HomeIcon } from "lucide-react";
 
 // Custom component for rendering the unit cell
 const UnitCell = ({ appartments }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
 
   if (!appartments || appartments.length === 0) {
     return <span className="text-muted-foreground">—</span>;
@@ -124,7 +129,7 @@ const UnitCell = ({ appartments }) => {
         <DialogHeader className="relative pb-4">
           <DialogTitle className="text-2xl !text-bg-primary font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 flex items-center gap-2">
             <HomeIcon className="w-6 h-6 text-bg-primary" />
-            All Units
+            {t("AllUnits")}
           </DialogTitle>
         </DialogHeader>
         <div className="bg-white/80 rounded-lg backdrop-blur-sm">
@@ -155,7 +160,11 @@ const Owners = () => {
   const isLoading = useSelector((state) => state.loader.isLoading);
   const [owners, setOwners] = useState([]);
 
-  const { refetch: refetchOwner, loading: loadingOwner, data: OwnerData } = useGet({
+  const {
+    refetch: refetchOwner,
+    loading: loadingOwner,
+    data: OwnerData,
+  } = useGet({
     url: `${apiUrl}/owner`,
   });
 
@@ -175,7 +184,7 @@ const Owners = () => {
           phone: u.phone || "—",
           gender: u.gender || "—",
           appartment: <UnitCell appartments={u.appartments} />, // Use custom component
-          status: u.status === 1 ? "Active" : "Inactive",
+          status: u.status === 1 ? t("Active") : t("Inactive"),
           img: u.image_link ? (
             <img
               src={u.image_link}
@@ -194,15 +203,16 @@ const Owners = () => {
       setOwners(formatted);
     }
   }, [OwnerData]);
+  const { t } = useTranslation();
 
   const columns = [
-    { key: "img", label: "Image" },
-    { key: "name", label: "Owner Name" },
-    { key: "parent", label: "Owner Type" },
-    { key: "appartment", label: "Unit" },
-    { key: "email", label: "Email" },
-    { key: "phone", label: "Phone" },
-    { key: "gender", label: "Gender" },
+    { key: "img", label: t("Image") },
+    { key: "name", label: t("OwnerName") },
+    { key: "parent", label: t("OwnerType") },
+    { key: "appartment", label: t("Unit") },
+    { key: "email", label: t("Email") },
+    { key: "phone", label: t("Phone") },
+    { key: "gender", label: t("Gender") },
   ];
 
   if (isLoading || loadingOwner) {
