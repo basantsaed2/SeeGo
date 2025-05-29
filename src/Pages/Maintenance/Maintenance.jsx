@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import DataTable from "@/components/DataTableLayout";
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CalendarDays, Home, Phone, User, Wrench } from "lucide-react";
-
+import { setNotificationTotals } from "@/Store/notificationSlice"; // Import action
 const Maintenance = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
+    const dispatch = useDispatch();
     const [MaintenancePending, setMaintenancePending] = useState([]);
     const [MaintenanceCompleted, setMaintenanceCompleted] = useState([]);
     const { changeState, loadingChange } = useChangeState();
@@ -78,8 +79,15 @@ const Maintenance = () => {
             }));
             setMaintenancePending(formattedPending);
             setMaintenanceCompleted(formattedCompleted);
+
+            // Dispatch total maintenance requests to Redux store
+            dispatch(
+                setNotificationTotals({
+                    totalMaintenance: formattedPending.length + formattedCompleted.length,
+                })
+            );
         }
-    }, [MaintenanceData]);
+    }, [MaintenanceData, dispatch]);
 
     const handleToggleStatus = async (row, newStatus) => {
         const response = await changeState(
@@ -191,8 +199,8 @@ const Maintenance = () => {
                             <div className="flex justify-between items-center">
                                 <span
                                     className={`!px-4 !py-2 rounded-full text-sm font-medium ${selectedProblem.status === 1
-                                            ? "bg-green-100 text-green-800"
-                                            : "bg-yellow-100 text-yellow-800"
+                                        ? "bg-green-100 text-green-800"
+                                        : "bg-yellow-100 text-yellow-800"
                                         }`}
                                 >
                                     {selectedProblem.status === 1 ? "Completed" : "Pending"}
