@@ -45,6 +45,7 @@ import InvoiceCard from "./Pages/Invoice/Invoice";
 import MaintenancesAdd from "./Pages/MaintenanceFees/MaintenanceAdd";
 import FeesDetails from "./Pages/MaintenanceFees/FeesDetails";
 import Packages from "./Pages/Packages/Packages";
+import VillageAdmin from "./Pages/Villiage/VilliageAdmins/VilliageAdmin";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -171,6 +172,13 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: "admins",
+        children: [
+          { index: true, element: <VillageAdmin /> },
+          { path: "add_admin", element: <VillageAdminAdd /> },
+        ],
+      },
+      {
         path: "rent_sale",
         children: [
           { index: true, element: <RentSale /> },
@@ -213,6 +221,12 @@ const router = createBrowserRouter([
         path: "visitor_limit",
         children: [
           { index: true, element: <VisitorLimit /> },
+        ],
+      },
+      {
+        path: "packages_list",
+        children: [
+          { index: true, element: <Packages /> },
         ],
       },
       {
