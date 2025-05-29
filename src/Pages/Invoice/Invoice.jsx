@@ -310,9 +310,9 @@ export default function InvoiceCard() {
     const progress = totalDays > 0 ? Math.min((daysPassed / totalDays) * 100, 100) : 0;
 
     return (
-        <div className="!p-2 md:!p-6 lg:!p-8 w-full">
+        <div className="w-full flex justify-center items-center !p-2 md:!p-6 lg:!p-8">
             <ToastContainer position="top-center" />
-            <Card className="w-full bg-gradient-to-br from-blue-50 to-purple-50 border-none shadow-2xl rounded-3xl overflow-hidden transition-transform duration-500 hover:scale-[1.01]">
+            <Card className="min-w-4xl bg-gradient-to-br from-blue-50 to-purple-50 border-none shadow-2xl rounded-3xl overflow-hidden transition-transform duration-500 hover:scale-[1.01]">
                 <CardHeader
                     className="relative !p-2 md:!p-6 lg:!p-8"
                     style={{
@@ -386,12 +386,12 @@ export default function InvoiceCard() {
                     </div>
 
                     <div className="overflow-x-auto rounded-xl border border-blue-100 shadow-sm !mt-4">
-                        <table className="min-w-[800px] w-full table-auto text-left">
+                        <table className="min-w-[600px] w-full table-auto text-left">
                             <thead className="bg-blue-100 text-gray-700 text-sm font-semibold">
                                 <tr>
                                     <th className="!px-4 !py-3 whitespace-nowrap">Village</th>
                                     <th className="!px-4 !py-3 whitespace-nowrap">Zone</th>
-                                    <th className="!px-4 !py-3 whitespace-nowrap">Description</th>
+                                    {/* <th className="!px-4 !py-3 whitespace-nowrap">Description</th> */}
                                     <th className="!px-4 !py-3 whitespace-nowrap">Package</th>
                                     {/* <th className="!px-4 !py-3 whitespace-nowrap">Subscriber Duration</th> */}
                                     <th className="!px-4 !py-3 whitespace-nowrap">Fees</th>
@@ -406,9 +406,9 @@ export default function InvoiceCard() {
                                     <td className="!px-4 !py-3 whitespace-nowrap">
                                         {village.zone?.translations?.[0]?.value || village.zone?.name || "N/A"}
                                     </td>
-                                    <td className="!px-4 !py-3 whitespace-nowrap">
+                                    {/* <td className="!px-4 !py-3 whitespace-nowrap">
                                         {village.description || "N/A"}
-                                    </td>
+                                    </td> */}
                                     <td className="!px-4 !py-3 whitespace-nowrap">
                                         {packageData.translations?.[0]?.value || packageData.name || "N/A"}
                                     </td>

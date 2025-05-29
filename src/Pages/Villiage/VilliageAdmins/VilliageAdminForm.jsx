@@ -11,6 +11,7 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
             password: "",
             admin_position_id: "",
             status: isEdit ? 0 : "",
+            image: null,
         },
     });
     const [positions, setPositions] = useState([]);
@@ -26,7 +27,8 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
                     email: initialData.email || "",
                     phone: initialData.phone || "",
                     password: "",
-                    admin_position_id: initialData.admin_position_id ,
+                    admin_position_id: initialData.admin_position_id,
+                    image: initialData.image || null,
                     status: initialData.status === "Active" ? 1 : 0,
                 }
             });
@@ -77,6 +79,12 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
         body.append("phone", formData.en.phone);
         body.append("password", formData.en.password);
         body.append("admin_position_id", formData.en.admin_position_id || "");
+
+        // Only append image if it's a new file (not the initial data)
+        if (formData.en.image && formData.en.image !== initialData?.image) {
+            body.append("image", formData.en.image);
+        }
+
         return body;
     };
 
@@ -99,6 +107,7 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
             options: positions,
             value: formData.en.admin_position_id // Make sure this is included
         },
+        { type: "file", placeholder: "Image", name: "image", accept: "image/*" },
         {
             type: "switch",
             name: "status",

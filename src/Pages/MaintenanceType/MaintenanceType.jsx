@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
-
+import { useChangeState } from "@/Hooks/useChangeState";
 const MaintenanceType = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
@@ -17,6 +17,7 @@ const MaintenanceType = () => {
   const [selectedRow, setselectedRow] = useState(null);
   const { deleteData, loadingDelete, responseDelete } = useDelete();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const { changeState, loadingChange } = useChangeState();
 
   const { refetch: refetchMaintenanceType, loading: loadingMaintenanceType, data: MaintenanceTypeData } = useGet({ url: `${apiUrl}/maintenance_type` });
 
@@ -67,10 +68,26 @@ const MaintenanceType = () => {
     }
   };
 
+  const handleToggleStatus = async (row, newStatus) => {
+    const response = await changeState(
+      `${apiUrl}/maintenance_type/status/${row.id}?status=${newStatus}`,
+      `${row.name} status changed successfully.`
+    );
+    if (response) {
+      setMaintenanceType((prev) =>
+        prev.map((Type) =>
+          Type.id === row.id
+            ? { ...Type, status: newStatus === 1 ? "Active" : "Inactive" }
+            : Type
+        )
+      );
+    }
+  };
+
   const columns = [
     { key: "img", label: "Image" },
     { key: "name", label: "Maintenance Type" },
-    { key: "statusText", label: "Status" },
+    { key: "status", label: "Status" },
   ];
   if (isLoading || loadingMaintenanceType) {
     return <FullPageLoader />;
@@ -83,6 +100,7 @@ const MaintenanceType = () => {
         columns={columns}
         addRoute="/maintenance_type/add"
         onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
       />
       {selectedRow && (
         <>

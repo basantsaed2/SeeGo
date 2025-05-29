@@ -44,6 +44,7 @@ import UnitDetails from "./Pages/Appartment/UnitDetails";
 import InvoiceCard from "./Pages/Invoice/Invoice";
 import MaintenancesAdd from "./Pages/MaintenanceFees/MaintenanceAdd";
 import FeesDetails from "./Pages/MaintenanceFees/FeesDetails";
+import Packages from "./Pages/Packages/Packages";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -57,6 +58,12 @@ const router = createBrowserRouter([
             <Login />
           </ProtAuth>
         ),
+      },
+       {
+        path: "packages",
+        children: [
+          { index: true, element: <Packages /> },
+        ],
       },
     ],
   },
