@@ -44,6 +44,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTranslation } from 'react-i18next';
 export default function DataTable({
   data,
   columns,
@@ -55,7 +56,7 @@ export default function DataTable({
   showActionColumns = true,
   detailsData,
   pageDetailsRoute,
-  pageDetailsLabel = "View Details",
+  pageDetailsLabel,
   statusLabels = { active: "Active", inactive: "Inactive" },
   statusLabelsText = { active: "Active", inactive: "Inactive" },
   additionalLink, additionalLinkLabel,
@@ -68,6 +69,12 @@ export default function DataTable({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  // Set default for pageDetailsLabel if not provided
+  if (pageDetailsLabel === undefined) {
+    pageDetailsLabel = t("ViewDetails");
+  }
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 

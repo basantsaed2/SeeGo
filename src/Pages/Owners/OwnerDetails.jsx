@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Info, MapPin, Clock, Calendar, User, Waves, Droplets, AlertCircle, Wrench, Users ,DoorOpen} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const OwnerDetails = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -22,6 +23,7 @@ const OwnerDetails = () => {
   const { refetch, loading, data } = useGet({
     url: `${apiUrl}/owner/item/${id}`,
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     refetch();
@@ -71,12 +73,12 @@ const OwnerDetails = () => {
                 variant={owner.status === 1 ? "default" : "destructive"}
                 className="!px-4 !py-1.5 text-white rounded-full text-sm font-medium bg-teal-600 hover:bg-teal-700"
               >
-                {owner.status === 1 ? "Active" : "Inactive"}
+                {owner.status === 1 ? t("Active") : t("Inactive")}
               </Badge>
             </div>
             <div className="flex items-center justify-center sm:justify-start !space-x-2 text-sm text-gray-500">
               <User className="h-4 w-4" />
-              <span className="capitalize">{owner.gender || "Not specified"}</span>
+              <span className="capitalize">{owner.gender || t("Notspecified")}</span>
             </div>
           </div>
         </CardHeader>
@@ -86,22 +88,22 @@ const OwnerDetails = () => {
             <div className="HolmesMedium !space-y-6">
               <h3 className="font-semibold text-xl flex items-center text-teal-800">
                 <Info className="h-5 w-5 !mr-2" />
-                Basic Information
+                {t("BasicInformation")}
               </h3>
               <div className="!space-y-6">
                 <ProfileInfoItem
                   icon={<Calendar className="h-5 w-5" />}
-                  label="Birth Date"
+                  label={t("BirthDate")}
                   value={owner.birthDate}
                 />
                 <ProfileInfoItem
                   icon={<MapPin className="h-5 w-5" />}
-                  label="Email"
+                  label={t("Email")}
                   value={owner.email}
                 />
                 <ProfileInfoItem
                   icon={<Clock className="h-5 w-5" />}
-                  label="Phone"
+                  label={t("Phone")}
                   value={owner.phone}
                 />
               </div>
@@ -109,7 +111,7 @@ const OwnerDetails = () => {
             <div className="!space-y-6">
               <h3 className="font-semibold text-xl flex items-center text-teal-800">
                 <User className="h-5 w-5 !mr-2" />
-                Parent Information
+                {t("ParentInformation")}
               </h3>
               {owner.parent ? (
                 <div className="flex items-center !space-x-4 !p-4 bg-teal-50 rounded-xl shadow-sm">
@@ -126,7 +128,7 @@ const OwnerDetails = () => {
                 </div>
               ) : (
                 <div className="!p-6 bg-teal-50 rounded-xl text-center text-gray-500 shadow-sm">
-                  No parent assigned
+                  {t("Noparentassigned")}
                 </div>
               )}
             </div>
@@ -134,7 +136,7 @@ const OwnerDetails = () => {
         </CardContent>
         <CardFooter className="bg-teal-50/30 !px-2 !py-4">
           <p className="text-xs text-gray-500">
-            Last updated: {new Date(owner.updated_at).toLocaleDateString()}
+            {t("Lastupdated")}: {new Date(owner.updated_at).toLocaleDateString()}
           </p>
         </CardFooter>
       </Card>
@@ -153,7 +155,7 @@ const OwnerDetails = () => {
         <CardHeader className="bg-indigo-600 !p-6">
           <CardTitle className="text-white text-xl flex items-center">
             <DoorOpen className="h-5 w-5 !mr-2" /> {/* You'll need this Lucide icon */}
-            Gate Entrances
+            {t("GateEntrances")}
           </CardTitle>
         </CardHeader>
         <CardContent className="!p-6">
@@ -177,12 +179,12 @@ const OwnerDetails = () => {
                         <h4 className="font-medium text-lg text-indigo-800">{gate.gate.name}</h4>
                         <p className="text-sm text-gray-500 flex items-center !mt-1">
                           <Clock className="h-4 w-4 !mr-1" />
-                          Entered at: {gate.time}
+                          {t("Enteredat")}: {gate.time}
                         </p>
                       </div>
                     </div>
-                    <Badge variant={gate.gate.status === 1 ? "default" : "destructive"} className="!px-3 !py-1 rounded-full">
-                      {gate.gate.status === 1 ? "Active" : "Inactive"}
+                    <Badge variant={gate.gate.status === 1 ? t("default") : t("destructive")} className="!px-3 !py-1 rounded-full">
+                      {gate.gate.status === 1 ? t("Active") : t("Inactive")}
                     </Badge>
                   </div>
                   <Separator className="!my-4 bg-indigo-50" />
@@ -190,7 +192,7 @@ const OwnerDetails = () => {
                     <div>
                       <p className="text-gray-500 flex items-center">
                         <MapPin className="h-4 w-4 !mr-1" />
-                        Location
+                        {t("Location")}
                       </p>
                       <a
                         href={`https://www.google.com/maps?q=${encodeURIComponent(gate.gate.location)}`}
@@ -210,7 +212,7 @@ const OwnerDetails = () => {
           ) : (
             <div className="text-center !py-10">
               <DoorOpen className="h-12 w-12 !mx-auto text-gray-400" />
-              <p className="text-gray-500 !mt-3">No gate entrances recorded</p>
+              <p className="text-gray-500 !mt-3">{t("Nogateentrancesrecorded")}</p>
             </div>
           )}
         </CardContent>
@@ -220,7 +222,7 @@ const OwnerDetails = () => {
         <CardHeader className="bg-teal-600 !p-6">
           <CardTitle className="text-white text-xl flex items-center">
             <Waves className="h-5 w-5 !mr-2" />
-            Beach Entrances
+            {t("BeachEntrances")}
           </CardTitle>
         </CardHeader>
         <CardContent className="!p-6">
@@ -237,11 +239,11 @@ const OwnerDetails = () => {
                       <h4 className="font-medium text-lg text-teal-800">{beach.beach.name}</h4>
                       <p className="text-sm text-gray-500 flex items-center !mt-1">
                         <Clock className="h-4 w-4 !mr-1" />
-                        Entered at: {beach.time}
+                        {t("Enteredat")}: {beach.time}
                       </p>
                     </div>
-                    <Badge variant={beach.beach.status === 1 ? "default" : "destructive"} className="!px-3 !py-1 rounded-full">
-                      {beach.beach.status === 1 ? "Active" : "Inactive"}
+                    <Badge variant={beach.beach.status === 1 ? t("default") : t("destructive")} className="!px-3 !py-1 rounded-full">
+                      {beach.beach.status === 1 ? t("Active") : t("Inactive")}
                     </Badge>
                   </div>
                   <Separator className="!my-4 bg-teal-50" />
@@ -249,7 +251,7 @@ const OwnerDetails = () => {
                     <div>
                       <p className="text-gray-500 flex items-center">
                         <Clock className="h-4 w-4 !mr-1" />
-                        Operating Hours
+                        {t("OperatingHours")}
                       </p>
                       <p className="font-medium text-gray-800">{beach.beach.from} - {beach.beach.to}</p>
                     </div>
@@ -260,7 +262,7 @@ const OwnerDetails = () => {
           ) : (
             <div className="text-center !py-10">
               <Waves className="h-12 w-12 !mx-auto text-gray-400" />
-              <p className="text-gray-500 !mt-3">No beach entrances recorded</p>
+              <p className="text-gray-500 !mt-3">{t("Nobeachentrancesrecorded")}</p>
               {/* <Button variant="outline" className="mt-4 border-teal-600 text-teal-600 hover:bg-teal-50">
                 Request Beach Access
               </Button> */}
@@ -273,7 +275,7 @@ const OwnerDetails = () => {
         <CardHeader className="bg-blue-600 !p-6">
           <CardTitle className="text-white text-xl flex items-center">
             <Droplets className="h-5 w-5 !mr-2" />
-            Pool Entrances
+            {t("PoolEntrances")}
           </CardTitle>
         </CardHeader>
         <CardContent className="!p-6">
@@ -290,7 +292,7 @@ const OwnerDetails = () => {
                       <h4 className="font-medium text-lg text-blue-800">{pool.pool.name}</h4>
                       <p className="text-sm text-gray-500 flex items-center !mt-1">
                         <Clock className="h-4 w-4 !mr-1" />
-                        Entered at: {pool.time}
+                        {t("Enteredat")}: {pool.time}
                       </p>
                     </div>
                     <Badge variant={pool.pool.status === 1 ? "default" : "destructive"} className="!px-3 !py-1 rounded-full">
@@ -302,7 +304,7 @@ const OwnerDetails = () => {
                     <div>
                       <p className="text-gray-500 flex items-center">
                         <Clock className="h-4 w-4 !mr-1" />
-                        Operating Hours
+                        {t("OperatingHours")}
                       </p>
                       <p className="font-medium text-gray-800">{pool.pool.from} - {pool.pool.to}</p>
                     </div>
@@ -313,7 +315,7 @@ const OwnerDetails = () => {
           ) : (
             <div className="text-center !py-10">
               <Droplets className="h-12 w-12 !mx-auto text-gray-400" />
-              <p className="text-gray-500 !mt-3">No pool entrances recorded</p>
+              <p className="text-gray-500 !mt-3">{t("Nopoolentrancesrecorded")}</p>
               {/* <Button variant="outline" className="mt-4 border-blue-600 text-blue-600 hover:bg-blue-50">
                 Request Pool Access
               </Button> */}
@@ -335,7 +337,7 @@ const OwnerDetails = () => {
         <CardHeader className="bg-amber-600 !p-6">
           <CardTitle className="text-white text-xl flex items-center">
             <AlertCircle className="h-5 w-5 !mr-2" />
-            Problem Reports
+            {t("ProblemReports")}
           </CardTitle>
         </CardHeader>
         <CardContent className="!p-6">
@@ -350,14 +352,14 @@ const OwnerDetails = () => {
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                     <div>
                       <h4 className="font-medium text-lg text-amber-800">
-                        {request.description || "No description provided"}
+                        {request.description || t("Nodescriptionprovided")}
                       </h4>
                       <p className="text-sm text-gray-500 flex items-center !mt-1">
                         <Calendar className="h-4 w-4 mr-1" />
                         {new Date(request.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <Badge variant={request.status === "resolved" ? "default" : "destructive"} className="!px-3 !py-1 rounded-full">
+                    <Badge variant={request.status === "resolved" ? t("default") : t("destructive")} className="!px-3 !py-1 rounded-full">
                       {request.status}
                     </Badge>
                   </div>
@@ -366,7 +368,7 @@ const OwnerDetails = () => {
                     <div>
                       <p className="text-gray-500 flex items-center">
                         <MapPin className="h-4 w-4 !mr-1" />
-                        Location
+                        {t("Location")}
                       </p>
                       <a
                         href={request.google_map}
@@ -374,12 +376,12 @@ const OwnerDetails = () => {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline flex items-center"
                       >
-                        View on Map
+                        {t("ViewonMap")}
                       </a>
                     </div>
                     {request.image_link && (
                       <div>
-                        <p className="text-gray-500">Image</p>
+                        <p className="text-gray-500">{t("Image")}</p>
                         <img
                           src={request.image_link}
                           alt="Problem report"
@@ -394,7 +396,7 @@ const OwnerDetails = () => {
           ) : (
             <div className="text-center !py-10">
               <AlertCircle className="h-12 w-12 !mx-auto text-gray-400" />
-              <p className="text-gray-500 !mt-3">No problem reports submitted</p>
+              <p className="text-gray-500 !mt-3">{t("Noproblemreportssubmitted")}</p>
               {/* <Button variant="outline" className="mt-4 border-amber-600 text-amber-600 hover:bg-amber-50">
                 Report a Problem
               </Button> */}
@@ -416,7 +418,7 @@ const OwnerDetails = () => {
         <CardHeader className="bg-purple-600 !p-6">
           <CardTitle className="text-white text-xl flex items-center">
             <Wrench className="h-5 w-5 !mr-2" />
-            Maintenance Requests
+            {t("MaintenanceRequests")}
           </CardTitle>
         </CardHeader>
         <CardContent className="!p-6">
@@ -438,18 +440,18 @@ const OwnerDetails = () => {
                         {new Date(request.created_at).toLocaleDateString()}
                       </p>
                     </div>
-                    <Badge variant={request.status_request === "completed" ? "default" : "destructive"} className="!px-3 !py-1 rounded-full">
+                    <Badge variant={request.status_request === "completed" ? t("default") : t("destructive")} className="!px-3 !py-1 rounded-full">
                       {request.status_request}
                     </Badge>
                   </div>
                   <Separator className="!my-4 bg-purple-50" />
                   <div>
                     <p className="text-gray-500">Description</p>
-                    <p className="!mt-1 text-gray-800">{request.description || "No description provided"}</p>
+                    <p className="!mt-1 text-gray-800">{request.description || t("Nodescriptionprovided")}</p>
                   </div>
                   {request.image_link && (
                     <div className="!mt-4">
-                      <p className="text-gray-500">Image</p>
+                      <p className="text-gray-500">{t("Image")}</p>
                       <img
                         src={request.image_link}
                         alt="Maintenance request"
@@ -460,7 +462,7 @@ const OwnerDetails = () => {
                   <Separator className="!my-4 bg-indigo-50" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-gray-500">Apartment Details</p>
+                      <p className="text-gray-500">{t("ApartmentDetails")}</p>
                       <div className="flex items-center space-x-2 !mt-1">
                         <span className="font-medium text-gray-800">{request.appartment.unit}</span>
                         <span className="text-gray-500 text-xs">
@@ -475,7 +477,7 @@ const OwnerDetails = () => {
           ) : (
             <div className="text-center !py-10">
               <Wrench className="h-12 w-12 !mx-auto text-gray-400" />
-              <p className="text-gray-500 !mt-3">No maintenance requests submitted</p>
+              <p className="text-gray-500 !mt-3">{t("Nomaintenancerequestssubmitted")}</p>
               {/* <Button variant="outline" className="mt-4 border-purple-600 text-purple-600 hover:bg-purple-50">
                 Request Maintenance
               </Button> */}
@@ -497,7 +499,7 @@ const OwnerDetails = () => {
         <CardHeader className="bg-indigo-600 !p-6">
           <CardTitle className="text-white text-xl flex items-center">
             <Users className="h-5 w-5 !mr-2" />
-            Visit Requests
+            {t("VisitRequests")}
           </CardTitle>
         </CardHeader>
         <CardContent className="!p-6">
@@ -516,18 +518,18 @@ const OwnerDetails = () => {
                       </h4>
                       <p className="text-sm text-gray-500 flex items-center !mt-1">
                         <MapPin className="h-4 w-4 !mr-1" />
-                        Apartment: {visit.appartment.unit}
+                        {"Apartment"} {visit.appartment.unit}
                       </p>
                     </div>
                   </div>
                   <Separator className="!my-4 bg-indigo-50" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-gray-500">Apartment Details</p>
+                      <p className="text-gray-500">{t("ApartmentDetails")}</p>
                       <div className="flex items-center !space-x-2 !mt-1">
                         <span className="font-medium text-gray-800">{visit.appartment.unit}</span>
                         <span className="text-gray-500 text-xs">
-                          ({visit.appartment.number_floors} floors)
+                          ({visit.appartment.number_floors} {t("floors")})
                         </span>
                       </div>
                     </div>
@@ -538,7 +540,7 @@ const OwnerDetails = () => {
           ) : (
             <div className="text-center !py-10">
               <Users className="h-12 w-12 !mx-auto text-gray-400" />
-              <p className="text-gray-500 !mt-3">No visit requests recorded</p>
+              <p className="text-gray-500 !mt-3">{t("Novisitrequestsrecorded")}</p>
               {/* <Button variant="outline" className="mt-4 border-indigo-600 text-indigo-600 hover:bg-indigo-50">
                 Request Visitor Access
               </Button> */}
@@ -564,7 +566,7 @@ const OwnerDetails = () => {
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
             <User className="h-4 w-4 !mr-2" />
-            Profile
+            {t("Profile")}
           </TabsTrigger>
           <TabsTrigger
             value="entrance"
@@ -573,7 +575,7 @@ const OwnerDetails = () => {
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
             <MapPin className="h-4 w-4 !mr-2" />
-            Entrances
+            {t("Entrances")}
           </TabsTrigger>
           <TabsTrigger
             value="problems"
@@ -582,7 +584,7 @@ const OwnerDetails = () => {
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
             <AlertCircle className="h-4 w-4 !mr-2" />
-            Problems
+            {t("Problems")}
           </TabsTrigger>
           <TabsTrigger
             value="maintenance"
@@ -591,7 +593,7 @@ const OwnerDetails = () => {
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
             <Wrench className="h-4 w-4 !mr-2" />
-            Maintenance
+            {t("Maintenance")}
           </TabsTrigger>
           <TabsTrigger
             value="visits"
@@ -600,7 +602,7 @@ const OwnerDetails = () => {
               hover:bg-teal-100 hover:text-teal-700 shadow-md flex items-center"
           >
             <Users className="h-4 w-4 !mr-2" />
-            Visits
+            {t("Visits")}
           </TabsTrigger>
         </TabsList>
 

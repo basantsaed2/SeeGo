@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useGet } from "@/Hooks/UseGet";
 import Add from "@/components/AddFieldSection";
+import { useTranslation } from "react-i18next";
 
 export const useOwnerForm = (apiUrl, isEdit = false, initialData = null) => {
     const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ export const useOwnerForm = (apiUrl, isEdit = false, initialData = null) => {
     });
     const [ownerParents, setOwnerParents] = useState([]);
     const { refetch: refetchOwnerParent, loading: loadingOwnerParent, data: ownerParentData } = useGet({ url: `${apiUrl}/owner` });
+  const { t } = useTranslation();
 
     // Initialize form data for edit mode
     useEffect(() => {
@@ -103,46 +105,46 @@ export const useOwnerForm = (apiUrl, isEdit = false, initialData = null) => {
         return body;
     };
 
-    const fields = [
-        { type: "input", placeholder: "Owner Name", name: "name", required: true },
-        {
-            type: "select",
-            placeholder: "Gender",
-            name: "gender",
-            required: true,
-            options: [
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-            ],
-        },
-        { type: "input", inputType: "date", placeholder: "Birth Date", name: "birthDate", required: true },
-        { type: "input", placeholder: "Phone", name: "phone", required: true },
-        { type: "input", inputType: "email", placeholder: "Email", name: "email", required: true },
-        {
-            type: "input",
-            inputType: "password",
-            placeholder: "Password",
-            name: "password",
-            note: isEdit ? "Leave empty to keep current password" : "",
-            required: !isEdit
-        },
-        { type: "file", placeholder: "Owner Image", name: "image", accept: "image/*" },
-        {
-            type: "select",
-            placeholder: "Owner Parent",
-            name: "parent_user_id",
-            options: ownerParents,
-            value: formData.en.parent_user_id // Make sure this is included
-        },
-        {
-            type: "switch",
-            name: "status",
-            placeholder: "Status",
-            returnType: "binary",
-            activeLabel: "Active",
-            inactiveLabel: "Inactive"
-        },
-    ];
+  const fields = [
+    { type: "input", placeholder: t("OwnerName"), name: t("name"), required: true },
+    {
+        type: "select",
+        placeholder: t("Gender"),
+        name: "gender",
+        required: true,
+        options: [
+            { value: "male", label: t("Male") },
+            { value: "female", label: t("Female") },
+        ],
+    },
+    { type: "input", inputType: "date", placeholder: t("BirthDate"), name: t("birthDate"), required: true },
+    { type: "input", placeholder: t("Phone"), name: t("phone"), required: true },
+    { type: "input", inputType: "email", placeholder: t("Email"), name: t("email"), required: true },
+    {
+        type: "input",
+        inputType: "password",
+        placeholder: t("Password"),
+        name: t("password"),
+        note: isEdit ? t("Leave empty to keep current password") : "",
+        required: !isEdit
+    },
+    { type: "file", placeholder: t("OwnerImage"), name: t("image"), accept: "image/*" },
+    {
+        type: "select",
+        placeholder: t("OwnerParent"),
+        name: "parent_user_id",
+        options: ownerParents,
+        value: formData.en.parent_user_id
+    },
+    {
+        type: "switch",
+        name: t("status"),
+        placeholder: t("Status"),
+        returnType: "binary",
+        activeLabel: t("Active"),
+        inactiveLabel: t("Inactive")
+    },
+];
 
     return {
         formData,

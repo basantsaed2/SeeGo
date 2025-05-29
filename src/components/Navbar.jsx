@@ -117,8 +117,20 @@ export default function Navbar() {
         <Avatar className="w-10 h-10 bg-teal-100 text-teal-700 font-bold">
           <AvatarFallback>{userInitials}</AvatarFallback>
         </Avatar>
-        {t("hello")} {userName || "Admin"}
+        {t("Hello")} {userName || "Admin"}
       </div>
+
+    <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-4 text-center">
+
+  <select
+    onChange={(e) => changeLanguage(e.target.value)}
+    className="mt-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="en">AR</option>
+    <option value="ar">EN</option>
+  </select>
+</div>
+
 
       {/* Right: Icons */}
       <div className="flex items-center gap-6">
@@ -193,7 +205,7 @@ export default function Navbar() {
           className="text-teal-700 hover:text-teal-900 hover:bg-teal-50 flex items-center gap-2"
         >
           <LogOut className="w-4 h-4" />
-          {t("logout")}
+          {t("Logout")}
         </Button>
       </div>
     </header>

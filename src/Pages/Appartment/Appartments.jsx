@@ -15,6 +15,7 @@ import { useChangeState } from "@/Hooks/useChangeState";
 import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Appartments = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -26,6 +27,7 @@ const Appartments = () => {
     const { deleteData, loadingDelete, responseDelete } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const { t } = useTranslation();
 
     const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
     const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/appartment/update/${selectedRow?.id}` });
@@ -86,7 +88,7 @@ const Appartments = () => {
 
     const handleSave = async () => {
         const body = prepareFormData();
-        postData(body, "Appartment updated successfully!")
+        postData(body, t("Appartmentupdatedsuccessfully!"))
     };
 
     const handleDeleteConfirm = async () => {
@@ -105,7 +107,7 @@ const Appartments = () => {
     const columns = [
         {
             key: "name",
-            label: "Unit",
+            label: t("Unit"),
             render: (row) => (
                 <Link
                     to={`details/${row.id}`}
@@ -115,8 +117,8 @@ const Appartments = () => {
                 </Link>
             ),
         },
-        { key: "type", label: "Type" },
-        { key: "map", label: "Location" },
+        { key: "type", label: t("Type") },
+        { key: "map", label: t("Location") },
     ];
     if (isLoading || loadingPost || loadingAppartment) {
         return <FullPageLoader />;
@@ -131,13 +133,13 @@ const Appartments = () => {
                 onDelete={handleDelete}
                 pageDetailsRoute={false}
                 additionalLink="/units/create_code"
-                additionalLinkLabel={"Create Code"}
+                additionalLinkLabel={t("CreateCode")}
 
             />
             {selectedRow && (
                 <>
                     <EditDialog
-                        title="Edit Unit"
+                        title={t("EditUnit")}
                         open={isEditOpen}
                         onOpenChange={setIsEditOpen}
                         onSave={handleSave}

@@ -9,13 +9,15 @@ import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
 import { useOwnerForm, OwnerFormFields } from "./OwnerForm";
 import TitleSection from "@/components/TitleSection";
+import { useTranslation } from "react-i18next";
 
 export default function OwnersAdd() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/owner/add` });
   const isLoading = useSelector((state) => state.loader.isLoading);
   const navigate = useNavigate();
-  
+    const { t } = useTranslation();
+
   const {
     formData,
     fields,
@@ -27,7 +29,7 @@ export default function OwnersAdd() {
   const handleSubmit = async (e) => {  
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, "Owner added successfully!");
+    postData(body, t("Owneraddedsuccessfully!"));
   }; 
   
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function OwnersAdd() {
       {isLoading && <FullPageLoader />}
       <ToastContainer />
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
-        <TitleSection text={"Add Owner"}/>
+        <TitleSection text={t("AddOwner")}/>
       </h2>
       <Tabs defaultValue="english" className="w-full">
         <TabsContent value="english">
@@ -65,7 +67,7 @@ export default function OwnersAdd() {
           className="bg-bg-primary !mb-10 !ms-3 cursor-pointer hover:bg-teal-600 !px-5 !py-6 text-white w-[30%] rounded-[15px] transition-all duration-200"
           disabled={loadingPost}
         >
-          {loadingPost ? "Processing..." : "Done"}
+          {loadingPost ? t("Processing") : t("Done")}
         </Button>
       </div>
     </div>
