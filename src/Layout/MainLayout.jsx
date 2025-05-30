@@ -15,7 +15,7 @@ export default function Layout() {
       {!isLoginPage && <AppSidebar />}
 
       <main className="w-full">
-        {!isLoginPage && <SidebarTrigger />}
+        {/* {!isLoginPage && <SidebarTrigger />} */}
         
         <div className="flex flex-col min-h-screen md:!ps-2 sm:!p-0 md:max-w-auto sm:w-full">
           {!isLoginPage && <Navbar className="!p-2" />}

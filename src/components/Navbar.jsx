@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarTrigger } from "./ui/sidebar";
 
 export default function Navbar() {
   const userData = JSON.parse(localStorage.getItem("user"));
@@ -63,7 +64,9 @@ export default function Navbar() {
   return (
     <header className="w-full h-16 flex items-center justify-between !px-6">
       {/* Left: Welcome text with Avatar */}
-      <div className="flex items-center gap-3 text-teal-700 font-semibold text-lg">
+      <div className="flex items-center gap-2 text-teal-700 font-semibold text-lg">
+        <SidebarTrigger className="text-teal-600 hover:bg-teal-50 rounded-full" />
+
         <Avatar className="w-10 h-10 bg-teal-100 text-teal-700 font-bold">
           <AvatarFallback>{userInitials}</AvatarFallback>
         </Avatar>
@@ -95,11 +98,10 @@ export default function Navbar() {
               <DropdownMenuItem
                 key={lang.code}
                 onClick={() => changeLanguage(lang.code)}
-                className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${
-                  i18n.language === lang.code
+                className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${i18n.language === lang.code
                     ? "bg-teal-100 text-teal-800 font-semibold"
                     : "hover:bg-teal-50 focus:bg-teal-50"
-                }`}
+                  }`}
                 aria-selected={i18n.language === lang.code}
               >
                 <span className="text-lg">{lang.flag}</span>
