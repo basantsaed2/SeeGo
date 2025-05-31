@@ -20,6 +20,8 @@ import { Edit, Trash, Plus, Eye, Calendar } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
+
 import {
   Pagination,
   PaginationContent,
@@ -327,7 +329,7 @@ export default function DataTable({
                 />
                 <div className="flex justify-end p-2 border-t">
                   <Button size="sm" onClick={() => setShowDatePicker(false)}>
-                    Apply
+                    {t("Apply")}
                   </Button>
                 </div>
               </PopoverContent>
@@ -340,8 +342,8 @@ export default function DataTable({
                 <SelectValue placeholder="Filter by" />
               </SelectTrigger>
               <SelectContent className="bg-white border-bg-primary rounded-md shadow-lg !p-3">
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="active">{t('Active')}</SelectItem>
+                <SelectItem value="inactive">{t("Inactive")}</SelectItem>
               </SelectContent>
             </Select>
             {showAddButton && (
@@ -350,7 +352,7 @@ export default function DataTable({
                 className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3"
               >
                 <Plus className="w-5 h-5 !mr-2" />
-                Add
+                {t("Add")}
               </Button>
             )}
             {additionalLink && (
@@ -385,7 +387,7 @@ export default function DataTable({
               )}
               {showActionColumns && (
                 <TableHead className="text-bg-primary font-semibold w-[100px]">
-                  Actions
+                  {t("Actions")}
                 </TableHead>
               )}
             </TableRow>
@@ -410,7 +412,7 @@ export default function DataTable({
                         onClick={() => handleViewDetails(row)}
                         className="text-blue-600 hover:text-blue-800 hover:underline"
                       >
-                        View Details
+                        {t("ViewDetails")}
                       </Button>
                     </TableCell>
                   )}
@@ -462,7 +464,7 @@ export default function DataTable({
                   colSpan={columns.length + (detailsData || pageDetailsRoute ? 2 : 1)}
                   className="text-center text-gray-500 py-4"
                 >
-                  No data found
+                  {t("Nodatafound")}
                 </TableCell>
               </TableRow>
             )}

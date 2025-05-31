@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Pencil, Trash2, Image as ImageIcon, Plus } from "lucide-react";
 import { Link } from "react-router-dom"; // Replace with next/link if using Next.js
+import { useTranslation } from "react-i18next";
 
 const Gates = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -29,7 +30,7 @@ const Gates = () => {
   const { deleteData, loadingDelete } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
+    const { t } = useTranslation();
   const { refetch: refetchGates, loading: loadingGates, data: gatesData } = useGet({
     url: `${apiUrl}/gate`,
   });
@@ -88,7 +89,7 @@ const Gates = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, "Gate updated successfully!");
+    postData(body, t("Gateupdatedsuccessfully"));
   };
 
   const handleDeleteConfirm = async () => {
@@ -112,7 +113,7 @@ const Gates = () => {
       setGates((prev) =>
         prev.map((gate) =>
           gate.id === row.id
-            ? { ...gate, status: newStatus === 1 ? "Active" : "Inactive" }
+            ? { ...gate, status: newStatus === 1 ? t("Active") : t("Inactive") }
             : gate
         )
       );
@@ -129,14 +130,14 @@ const Gates = () => {
       {/* Header Section */}
       <div className="w-full !mb-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-bg-primary">Gates</h1>
+          <h1 className="text-3xl font-bold text-bg-primary">{t("Gates")}</h1>
           <Button
             asChild
             className="bg-bg-primary hover:text-bg-primary hover:bg-white text-white font-semibold rounded-full !px-6 !py-2"
           >
             <Link to="/gates/add">
               <Plus className="w-4 h-4 !mr-2" />
-              Add New Gate
+              {t("AddNewGate")}
             </Link>
           </Button>
         </div>
@@ -182,7 +183,7 @@ const Gates = () => {
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 !mt-2">
-                  <span className="font-medium">Location:</span> {gate.map}
+                  <span className="font-medium">{t("Location")}:</span> {gate.map}
                 </p>
 
                 {/* Action Buttons */}
@@ -195,7 +196,7 @@ const Gates = () => {
                     className="text-blue-600 hover:text-blue-800"
                   >
                     <Pencil className="w-4 h-4 !mr-2" />
-                    Edit
+                    {t("Edit")}
                   </Button>
                   <Button
                     variant="ghost"
@@ -205,7 +206,7 @@ const Gates = () => {
                     className="text-red-600 hover:text-red-800"
                   >
                     <Trash2 className="w-4 h-4 !mr-2" />
-                    Delete
+                    {t("Delete")}
                   </Button>
 
                 </div>
@@ -229,7 +230,7 @@ const Gates = () => {
       {selectedRow && (
         <>
           <EditDialog
-            title="Edit Gate"
+            title={t("EditGate")}
             open={isEditOpen}
             onOpenChange={setIsEditOpen}
             onSave={handleSave}

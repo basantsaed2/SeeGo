@@ -151,6 +151,7 @@
 import { useState, useEffect } from "react";
 import Add from "@/components/AddFieldSection";
 import { useGet } from "@/Hooks/UseGet";
+import { useTranslation } from "react-i18next";
 
 export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) => {
     const [formData, setFormData] = useState({
@@ -167,6 +168,7 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
             gate_ids: [],
         },
     });
+  const { t } = useTranslation();
 
     const { refetch: refetchList, loading: loadingList, data: listData } = useGet({ url: `${apiUrl}/security` });
 
@@ -225,19 +227,19 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
     // Update dynamic fields based on selected types
     useEffect(() => {
         const baseFields = [
-            { type: "input", placeholder: "Security Man Name", name: "name", required: true },
-            { type: "input", placeholder: "Security Man Phone", name: "phone", required: true },
-            { type: "input", inputType: "email", placeholder: "Security Man Email", name: "email", required: true },
-            { type: "input", inputType: "password", placeholder: "Security Man Password", name: "password", required: true },
+            { type: "input", placeholder: t("SecurityManName"), name: t("name"), required: true },
+            { type: "input", placeholder: t("SecurityManPhone"), name: t("phone"), required: true },
+            { type: "input", inputType: "email", placeholder: t("SecurityManEmail"), name: t("email"), required: true },
+            { type: "input", inputType: "password", placeholder: t('SecurityManPassword'), name: t("password"), required: true },
             {
                 type: "multi-select",
-                placeholder: "Security Gate Types",
-                name: "types",
+                placeholder: t("SecurityGateTypes"),
+                name: t("types"),
                 required: true,
                 options: [
-                    { value: "pool", label: "Pool" },
-                    { value: "beach", label: "Beach" },
-                    { value: "gate", label: "Gate" },
+                    { value: "pool", label: t("Pool") },
+                    { value: "beach", label: t("Beach") },
+                    { value: "gate", label: t("Gate") },
                 ],
             },
         ];
@@ -248,8 +250,8 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         if (formData.en.types.includes("pool")) {
             locationFields.push({
                 type: "multi-select",
-                placeholder: "Select Pools",
-                name: "pool_ids",
+                placeholder: t("SelectPools"),
+                name: t("pool_ids"),
                 required: true,
                 options: pools,
             });
@@ -258,8 +260,8 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         if (formData.en.types.includes("beach")) {
             locationFields.push({
                 type: "multi-select",
-                placeholder: "Select Beaches",
-                name: "beach_ids",
+                placeholder: t("SelectBeaches"),
+                name: t("beach_ids"),
                 required: true,
                 options: beaches,
             });
@@ -268,19 +270,19 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         if (formData.en.types.includes("gate")) {
             locationFields.push({
                 type: "multi-select",
-                placeholder: "Select Gates",
-                name: "gate_ids",
+                placeholder: t('SelectGates'),
+                name: t("gate_ids"),
                 required: true,
                 options: gates,
             });
         }
 
         const otherFields = [
-            { type: "file", placeholder: "Gate Image", name: "image", accept: "image/*" },
+            { type: "file", placeholder: t("GateImage"), name: t("image"), accept: "image/*" },
             {
                 type: "switch",
-                name: "status",
-                placeholder: "Status",
+                name: t("status"),
+                placeholder: t("Status"),
                 returnType: "binary",
                 activeLabel: "Active",
                 inactiveLabel: "Inactive"
@@ -342,6 +344,8 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
 };
 
 export const SecurityManFormFields = ({ fields, formData, handleFieldChange, loading }) => {
-    if (loading) return <div>Loading...</div>;
+      const { t } = useTranslation();
+
+    if (loading) return <div>{t("Loading")}</div>;
     return <Add fields={fields} lang="en" values={formData.en} onChange={handleFieldChange} />;
 };

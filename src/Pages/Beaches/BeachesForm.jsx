@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Add from "@/components/AddFieldSection";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useTranslation } from "react-i18next";
 
 export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
     const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
             nameAr: "",
         },
     });
+      const { t } = useTranslation();
 
     useEffect(() => {
         if (isEdit && initialData) {
@@ -57,31 +59,31 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
     };
     const fields = {
         en: [
-            { type: "input", placeholder: "Beach Name", name: "name", required: true },
+            { type: "input", placeholder: t("BeachName"), name: t("name"), required: true },
             {
                 type: "time",
-                name: "from",
-                placeholder: "Opening Time",
+                name: t("from"),
+                placeholder: t("OpeningTime"),
                 required: true
             },
             {
                 type: "time",
-                name: "to",
-                placeholder: "Closing Time",
+                name: t("to"),
+                placeholder: t("ClosingTime"),
                 required: true
             },
-            { type: "file", placeholder: "Beach Image", name: "image", accept: "image/*" },
+            { type: "file", placeholder: t("BeachImage"), name: t("image"), accept: "image/*" },
             {
                 type: "switch",
-                name: "status",
-                placeholder: "Status",
+                name: t("status"),
+                placeholder: t("Status"),
                 returnType: "binary",
                 activeLabel: "Active",
                 inactiveLabel: "Inactive",
             },
         ],
         ar: [
-            { type: "input", placeholder: "Beach Name (Ar)", name: "nameAr", required: true },
+            { type: "input", placeholder: t("BeachName(Ar)"), name: t("nameAr"), required: true },
         ],
     };
 
@@ -93,7 +95,7 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700"
             >
-                English
+                {t("English")}
             </TabsTrigger>
             <TabsTrigger
                 value="arabic"
@@ -101,7 +103,7 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700"
             >
-                Arabic
+                {t('Arabic')}
             </TabsTrigger>
         </TabsList>
     );
@@ -116,8 +118,10 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
 };
 
 export const BeachesFields = ({ fields, formData, handleFieldChange, loading, }) => {
+          const { t } = useTranslation();
+
     if (loading) {
-        return <div>Loading form data...</div>;
+        return <div>{t("Loadingformdata")}</div>;
     }
 
     const fieldsArray = Array.isArray(fields) ? fields : Object.values(fields).flat();

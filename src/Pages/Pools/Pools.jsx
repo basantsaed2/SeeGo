@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Pencil, Trash2, Image as ImageIcon, Plus } from "lucide-react";
 import { Link } from "react-router-dom"; // Replace with next/link if using Next.js
 import { FaPlus } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const Pools = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -28,8 +29,13 @@ const Pools = () => {
   const { deleteData, loadingDelete } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const { t } = useTranslation();
 
-  const { refetch: refetchPool, loading: loadingPool, data: PoolData } = useGet({
+  const {
+    refetch: refetchPool,
+    loading: loadingPool,
+    data: PoolData,
+  } = useGet({
     url: `${apiUrl}/pool`,
   });
 
@@ -37,11 +43,8 @@ const Pools = () => {
     url: `${apiUrl}/pool/update/${selectedRow?.id}`,
   });
 
-  const { formData, fields, handleFieldChange, prepareFormData, LanguageTabs } = usePoolsForm(
-    apiUrl,
-    true,
-    rowEdit
-  );
+  const { formData, fields, handleFieldChange, prepareFormData, LanguageTabs } =
+    usePoolsForm(apiUrl, true, rowEdit);
 
   useEffect(() => {
     refetchPool();
@@ -88,7 +91,7 @@ const Pools = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, "Pool updated successfully!");
+    postData(body, t("Poolupdatedsuccessfull!"));
   };
 
   const handleDeleteConfirm = async () => {
@@ -127,14 +130,15 @@ const Pools = () => {
       {/* Header Section */}
       <div className="w-full !mb-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-bg-primary">Pools</h1>
+          <h1 className="text-3xl font-bold text-bg-primary">{t("Pools")}</h1>
           <Button
             asChild
             className="bg-bg-primary hover:text-bg-primary hover:bg-white text-white font-semibold rounded-full !px-6 !py-2"
           >
             <Link to="/pools/add">
               <Plus className="w-4 h-4 mr-2" />
-              Add New Pool</Link>
+              {t("AddNewPool")}
+            </Link>
           </Button>
         </div>
       </div>
@@ -163,7 +167,9 @@ const Pools = () => {
               {/* Card Content */}
               <div className="!p-6">
                 <div className="flex justify-between items-start">
-                  <h3 className="text-xl font-semibold text-gray-800 truncate">{Pool.name}</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 truncate">
+                    {Pool.name}
+                  </h3>
                   <span
                     className={`!px-3 !py-1 rounded-full text-sm font-medium ${Pool.status === "Active"
                         ? "bg-green-100 text-green-700"
@@ -174,7 +180,8 @@ const Pools = () => {
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 !mt-2">
-                  <span className="font-medium">Operating Hours:</span> {Pool.fromTo}
+                  <span className="font-medium">{t("OperatingHours")}:</span>{" "}
+                  {Pool.fromTo}
                 </p>
 
                 {/* Action Buttons */}
@@ -187,7 +194,7 @@ const Pools = () => {
                     className="text-blue-600 hover:text-blue-800"
                   >
                     <Pencil className="w-4 h-4 !mr-2" />
-                    Edit
+                    {t('Edit')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -197,7 +204,7 @@ const Pools = () => {
                     className="text-red-600 hover:text-red-800"
                   >
                     <Trash2 className="w-4 h-4 !mr-2" />
-                    Delete
+                    {t("Delete")}
                   </Button>
                   <Button asChild variant="ghost" size="sm">
                     <Link
@@ -205,7 +212,7 @@ const Pools = () => {
                       className="text-teal-600 hover:text-teal-800"
                     >
                       <ImageIcon className="w-4 h-4 !mr-2" />
-                      Gallery
+                      {t("Gallery")}
                     </Link>
                   </Button>
                 </div>

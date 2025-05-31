@@ -981,7 +981,7 @@ const UnitDetails = () => {
                                   </p>
                                 )}
                                 <p className="text-xs text-muted-foreground">
-                                  Type:{" "}
+                                  {t("Type")}:{" "}
                                   <span className="font-medium">
                                     {code.type}
                                   </span>{" "}

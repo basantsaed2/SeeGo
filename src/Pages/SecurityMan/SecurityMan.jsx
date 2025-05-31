@@ -14,6 +14,7 @@ import { useDelete } from "@/Hooks/useDelete";
 import { useChangeState } from "@/Hooks/useChangeState";
 import { SecurityManFormFields, useSecurityManForm } from "./SecurityManForm";
 import { usePost } from "@/Hooks/UsePost";
+import { useTranslation } from "react-i18next";
 
 const SecurityMan = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -25,6 +26,7 @@ const SecurityMan = () => {
   const { deleteData, loadingDelete } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+          const { t } = useTranslation();
 
   const { refetch: refetchSecuritys, loading: loadingSecuritys, data: SecuritysData } = useGet({ url: `${apiUrl}/security` });
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/security/update/${selectedRow?.id}` });
@@ -102,11 +104,11 @@ const SecurityMan = () => {
 
   const handleSave = async () => {
     const body = prepareFormData();
-    postData(body, "Security Man updated successfully!")
+    postData(body, t("SecurityManupdatedsuccessfully"))
   };
 
   const handleDeleteConfirm = async () => {
-    const success = await deleteData(`${apiUrl}/security/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
+    const success = await deleteData(`${apiUrl}/security/delete/${selectedRow.id}`, `${selectedRow.name} ${t("DeletedSuccess")}`);
 
     if (success) {
       setIsDeleteOpen(false);
@@ -126,19 +128,19 @@ const SecurityMan = () => {
     if (response) {
       setSecuritys((prev) =>
         prev.map((Securitys) =>
-          Securitys.id === row.id ? { ...Securitys, status: newStatus === 1 ? "Active" : "Inactive" } : Securitys
+          Securitys.id === row.id ? { ...Securitys, status: newStatus === 1 ? t("Active") : t("Inactive") } : Securitys
         )
       );
     }
   };
 
   const columns = [
-    { key: "img", label: "Image" },
-    { key: "name", label: "Security Man" },
-    { key: "phone", label: "Phone" },
-    { key: "email", label: "Email" },
-    { key: "type", label: "Type" },
-    { key: "status", label: "Status" },
+    { key: "img", label: t("Image") },
+    { key: "name", label: t("SecurityMan") },
+    { key: "phone", label: t("Phone") },
+    { key: "email", label: t("Email") },
+    { key: "type", label: t("Type") },
+    { key: "status", label: t("Status") },
   ];
   if (isLoading || loadingPost || loadingSecuritys) {
     return <FullPageLoader />;
@@ -157,7 +159,7 @@ const SecurityMan = () => {
       {selectedRow && (
         <>
           <EditDialog
-            title="Edit Security Man"
+            title={t("EditSecurityMan")}
             open={isEditOpen}
             onOpenChange={setIsEditOpen}
             onSave={handleSave}

@@ -23,6 +23,10 @@ html[dir="rtl"] textarea {
 html[dir="ltr"] span,
 html[dir="ltr"] h1,
 html[dir="ltr"] input,
+html[dir="ltr"] th,
+html[dir="ltr"] tr ,
+html[dir="ltr"] td ,
+html[dir="ltr"] table ,
 html[dir="ltr"] textarea {
   text-align: left;
 }

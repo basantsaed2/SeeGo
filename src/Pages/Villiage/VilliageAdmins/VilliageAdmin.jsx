@@ -13,6 +13,7 @@ import { useDelete } from "@/Hooks/useDelete";
 import { useChangeState } from "@/Hooks/useChangeState";
 import { useVillageAdminForm, VillageAdminFields } from "./VilliageAdminForm";
 import { usePost } from "@/Hooks/UsePost";
+import { useTranslation } from "react-i18next";
 
 const VillageAdmin = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -24,6 +25,7 @@ const VillageAdmin = () => {
     const { deleteData, loadingDelete } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+      const { t } = useTranslation();
 
     const { refetch: refetchVillageAdmin, loading: loadingVillageAdmin, data: VillageAdminData } = useGet({
         url: `${apiUrl}/admin_village`,
@@ -83,13 +85,13 @@ const VillageAdmin = () => {
 
     const handleSave = async () => {
         const body = prepareFormData();
-        postData(body, "Village Admin updated successfully!");
+        postData(body, t("VillageAdminupdatedsuccessfully"));
     };
 
     const handleDeleteConfirm = async () => {
         const success = await deleteData(
             `${apiUrl}/admin_village/delete/${selectedRow.id}`,
-            `${selectedRow.name} Deleted Successfully!`
+            `${selectedRow.name} ${t("DeletedSuccessfully")}`
         );
 
         if (success) {
@@ -101,13 +103,13 @@ const VillageAdmin = () => {
     const handleToggleStatus = async (row, newStatus) => {
         const response = await changeState(
             `${apiUrl}/admin_village/status/${row.id}?status=${newStatus}`,
-            `${row.name} status changed successfully.`
+            `${row.name} ${"statuschangedsuccessfully"}`
         );
         if (response) {
             setVillageAdmin((prev) =>
                 prev.map((VillageAdmin) =>
                     VillageAdmin.id === row.id
-                        ? { ...VillageAdmin, status: newStatus === 1 ? "Active" : "Banned" }
+                        ? { ...VillageAdmin, status: newStatus === 1 ? t("Active") : t("Banned") }
                         : VillageAdmin
                 )
             );
@@ -115,11 +117,11 @@ const VillageAdmin = () => {
     };
 
     const columns = [
-        { key: "name", label: "Admin Name" },
-        { key: "phone", label: "Phone" },
-        { key: "email", label: "Email" },
-        { key: "admin_position", label: "Role" },
-        { key: "status", label: "Status" },
+        { key: "name", label: t("AdminName") },
+        { key: "phone", label: t("Phone") },
+        { key: "email", label: t("Email") },
+        { key: "admin_position", label: t("Role") },
+        { key: "status", label: t("Status") },
     ];
 
     if (isLoading || loadingPost || loadingVillageAdmin) {
@@ -145,7 +147,7 @@ const VillageAdmin = () => {
             {selectedRow && (
                 <>
                     <EditDialog
-                        title="Edit Admin"
+                        title={t('EditAdmin')}
                         open={isEditOpen}
                         onOpenChange={setIsEditOpen}
                         onSave={handleSave}

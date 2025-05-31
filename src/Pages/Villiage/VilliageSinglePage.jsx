@@ -4,6 +4,7 @@ import Loading from "@/components/Loading";
 import { Outlet } from "react-router-dom";
 import { useGet } from "@/Hooks/UseGet";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 export default function VilliageSinglePage() {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -39,7 +40,7 @@ export default function VilliageSinglePage() {
     }, [SinglePageData]);
 
     if (loading || loadingSinglePage) return <Loading />;
-    if (!villageData) return <p className="text-center text-red-500">Failed to load village data.</p>;
+    if (!villageData) return <p className="text-center text-red-500">{t("Failedtoloadvillagedata")}</p>;
 
     return (
         <>

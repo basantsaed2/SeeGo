@@ -11,6 +11,7 @@ import { useDelete } from "@/Hooks/useDelete";
 import { usePost } from "@/Hooks/UsePost";
 import { useParams } from "react-router-dom";
 import { XCircleIcon, UploadIcon, ImageIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const PoolsGallery = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -23,6 +24,7 @@ const PoolsGallery = () => {
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
+    const { t } = useTranslation();
 
     const { id } = useParams();
 
@@ -56,7 +58,7 @@ const PoolsGallery = () => {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 10) {
-            toast.error("Maximum 10 images can be uploaded at once");
+            toast.error("Maximum10imagescanbeuploadedatonce");
             return;
         }
         setSelectedFiles(files);
@@ -68,7 +70,7 @@ const PoolsGallery = () => {
         e.preventDefault();
 
         if (selectedFiles.length === 0) {
-            toast.error("Please select images to upload");
+            toast.error(t("Pleaseselectimagestoupload"));
             return;
         }
 
@@ -77,7 +79,7 @@ const PoolsGallery = () => {
             formData.append(`images[${index}]`, file);
         });
 
-        postData(formData, "Images uploaded successfully!");
+        postData(formData, t("Imagesuploadedsuccessfully"));
     };
 
     const handleDelete = (gallery) => {
@@ -113,10 +115,10 @@ const PoolsGallery = () => {
     const GalleryModal = () => (
         <div className="fixed inset-0 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white bg-opacity-95 rounded-xl !p-8 w-full max-w-3xl max-h-[80vh] overflow-y-auto shadow-2xl">
-                <h2 className="text-3xl font-bold !mb-6 text-gray-800">Upload Images</h2>
+                <h2 className="text-3xl font-bold !mb-6 text-gray-800">{t("UploadImages")}</h2>
                 <div className="!mb-6">
                     <label className="block text-sm font-medium text-gray-700 !mb-2">
-                        Select Images
+                        {t("SelectImages")}
                     </label>
                     <input
                         type="file"
@@ -172,7 +174,7 @@ const PoolsGallery = () => {
                         disabled={loadingPost}
                         className="!px-6 !py-2 bg-bg-primary cursor-pointer text-white rounded-lg hover:bg-white hover:text-bg-primary disabled:opacity-50 transition"
                     >
-                        {loadingPost ? "Uploading..." : "Upload"}
+                        {loadingPost ? t('Uploading') : t("Upload")}
                     </button>
                 </div>
             </div>
@@ -188,13 +190,13 @@ const PoolsGallery = () => {
             <ToastContainer />
 
             <div className="flex justify-between items-center !mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">Pool Gallery</h1>
+                <h1 className="text-3xl font-bold text-gray-800">{t("PoolGallery")}</h1>
                 <button
                     onClick={() => setIsModelOpen(true)}
                     className="flex items-center gap-2 !px-4 !py-2 bg-bg-primary text-white rounded-lg hover:bg-bg-primary hover:text-white transition"
                 >
                     <UploadIcon size={20} />
-                    Add Images
+                    {t("AddImages")}
                 </button>
             </div>
 
@@ -209,7 +211,7 @@ const PoolsGallery = () => {
                         <ChevronLeftIcon size={24} />
                     </button>
                     <span className="text-gray-700">
-                        Page {currentPage} of {totalPages}
+                        {t("Page")} {currentPage} of {totalPages}
                     </span>
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
@@ -224,7 +226,7 @@ const PoolsGallery = () => {
             {galleries.length === 0 ? (
                 <div className="text-center py-12">
                     <ImageIcon size={48} className="mx-auto text-gray-400" />
-                    <p className="text-gray-500 text-lg !mt-4">No images in the gallery yet.</p>
+                    <p className="text-gray-500 text-lg !mt-4">{t("Noimagesinthegalleryyet")}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -261,7 +263,7 @@ const PoolsGallery = () => {
                 />
             )}
         </div>
-    );
+    );  
 };
 
 export default PoolsGallery;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useGet } from "@/Hooks/UseGet";
 import Add from "@/components/AddFieldSection";
+import { useTranslation } from "react-i18next";
 
 export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) => {
     const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
     });
     const [positions, setPositions] = useState([]);
     const { refetch: refetchPositions, loading: loadingPositions, data: PositionsData } = useGet({ url: `${apiUrl}/admin_village` });
+      const { t } = useTranslation();
 
     // Initialize form data for edit mode
     useEffect(() => {
@@ -89,29 +91,29 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
     };
 
     const fields = [
-        { type: "input", placeholder: "Admin Name", name: "name", required: true },
-        { type: "input", placeholder: "Phone", name: "phone", required: true },
-        { type: "input", inputType: "email", placeholder: "Email", name: "email", required: true },
+        { type: "input", placeholder: t("AdminName"), name: t("name"), required: true },
+        { type: "input", placeholder: t("Phone"), name: t("phone"), required: true },
+        { type: "input", inputType: "email", placeholder: t("Email"), name: t("email"), required: true },
         {
             type: "input",
             inputType: "password",
-            placeholder: "Password",
-            name: "password",
-            note: isEdit ? "Leave empty to keep current password" : "",
+            placeholder: t("Password"),
+            name: t("Password"),
+            note: isEdit ? t(t("Leaveemptytokeepcurrentpassword")) : "",
             required: !isEdit
         },
         {
             type: "select",
-            placeholder: "Admin Role",
-            name: "admin_position_id",
+            placeholder: t("AdminRole"),
+            name: t("admin_position_id"),
             options: positions,
             value: formData.en.admin_position_id // Make sure this is included
         },
-        { type: "file", placeholder: "Image", name: "image", accept: "image/*" },
+        { type: "file", placeholder: t("Image"), name: t("image"), accept: "image/*" },
         {
             type: "switch",
-            name: "status",
-            placeholder: "Status",
+            name: t("status"),
+            placeholder: t("Status"),
             returnType: "binary",
             activeLabel: "Active",
             inactiveLabel: "Inactive"
@@ -129,8 +131,10 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
 };
 
 export const VillageAdminFields = ({ fields, formData, handleFieldChange, loading }) => {
+          const { t } = useTranslation();
+
     if (loading) {
-        return <div>Loading form data...</div>;
+        return <div>{t("Loadingformdata")}</div>;
     }
 
     return (

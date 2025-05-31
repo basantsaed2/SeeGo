@@ -11,6 +11,7 @@ import { useDelete } from "@/Hooks/useDelete";
 import { usePost } from "@/Hooks/UsePost";
 import { useParams } from "react-router-dom";
 import { XCircleIcon, UploadIcon, ImageIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const BeachesGallery = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -23,6 +24,7 @@ const BeachesGallery = () => {
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
+          const { t } = useTranslation();
 
     const { id } = useParams();
 
@@ -43,7 +45,7 @@ const BeachesGallery = () => {
             setGalleries(beachData.gallary || []);
         }
         if (fetchError) {
-            toast.error("Failed to fetch gallery: " + fetchError.message);
+            toast.error(t("Failedtofetchgallery") + fetchError.message);
         }
     }, [beachData, fetchError]);
 
@@ -53,17 +55,17 @@ const BeachesGallery = () => {
             setSelectedFiles([]);
             setPreviewImages([]);
             refetchBeach();
-            toast.success("Images uploaded successfully!");
+            toast.success(t("Imagesuploadedsuccessfully"));
         }
         if (postError) {
-            toast.error("Upload failed: " + postError.message);
+            toast.error(t("Uploadfailed") + postError.message);
         }
     }, [response, loadingPost, postError, refetchBeach]);
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 10) {
-            toast.error("Maximum 10 images can be uploaded at once");
+            toast.error(t("Maximum10imagescanbeuploadedatonce"));
             return;
         }
         setSelectedFiles(files);
@@ -73,7 +75,7 @@ const BeachesGallery = () => {
 
     const handleUpload = async () => {
         if (selectedFiles.length === 0) {
-            toast.error("Please select images to upload");
+            toast.error(t("Pleaseselectimagestoupload"));
             return;
         }
 
@@ -82,7 +84,7 @@ const BeachesGallery = () => {
             formData.append(`images[${index}]`, file);
         });
 
-        await postData(formData, "Images uploaded successfully!");
+        await postData(formData, t("Images uploaded successfully !"));
     };
 
     const handleDelete = (gallery) => {
@@ -121,7 +123,7 @@ const BeachesGallery = () => {
                 <h2 className="text-3xl font-bold !mb-6 text-gray-800">Upload Images</h2>
                 <div className="!mb-6">
                     <label className="block text-sm font-medium text-gray-700 !mb-2">
-                        Select Images
+                        {t("SelectImages")}
                     </label>
                     <input
                         type="file"
@@ -170,14 +172,14 @@ const BeachesGallery = () => {
                         }}
                         className="!px-6 !py-2 bg-gray-200 cursor-pointer text-gray-700 rounded-lg hover:bg-gray-300 transition"
                     >
-                        Cancel
+                        {t('Cancel')}
                     </button>
                     <button
                         onClick={handleUpload}
                         disabled={loadingPost}
                         className="!px-6 !py-2 bg-bg-primary cursor-pointer text-white rounded-lg hover:bg-white hover:text-bg-primary disabled:opacity-50 transition"
                     >
-                        {loadingPost ? "Uploading..." : "Upload"}
+                        {loadingPost ? t("Uploading") : t("Upload")}
                     </button>
                 </div>
             </div>
@@ -193,13 +195,13 @@ const BeachesGallery = () => {
             <ToastContainer />
 
             <div className="flex justify-between items-center !mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">Beach Gallery</h1>
+                <h1 className="text-3xl font-bold text-gray-800">{t("BeachGallery")}</h1>
                 <button
                     onClick={() => setIsModelOpen(true)}
                     className="flex items-center gap-2 !px-4 !py-2 bg-bg-primary text-white rounded-lg hover:bg-bg-primary hover:text-white transition"
                 >
                     <UploadIcon size={20} />
-                    Add Images
+                    {t('AddImages')}
                 </button>
             </div>
 
@@ -214,7 +216,7 @@ const BeachesGallery = () => {
                         <ChevronLeftIcon size={24} />
                     </button>
                     <span className="text-gray-700">
-                        Page {currentPage} of {totalPages}
+                        {t("Page")} {currentPage} {t("of")} {totalPages}
                     </span>
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
@@ -229,7 +231,7 @@ const BeachesGallery = () => {
             {galleries.length === 0 ? (
                 <div className="text-center py-12">
                     <ImageIcon size={48} className="mx-auto text-gray-400" />
-                    <p className="text-gray-500 text-lg !mt-4">No images in the gallery yet.</p>
+                    <p className="text-gray-500 text-lg !mt-4">{t("No images in the gallery yet")}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

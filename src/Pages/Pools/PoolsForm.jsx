@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import Add from "@/components/AddFieldSection";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useTranslation } from "react-i18next";
 
 export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
+      const { t } = useTranslation();
+
     const [formData, setFormData] = useState({
         en: {
             name: "",
@@ -56,23 +59,23 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
 
     const fields = {
         en: [
-            { type: "input", placeholder: "Pool Name", name: "name", required: true },
+            { type: "input", placeholder: t("PoolName"), name: t("name"), required: true },
             {
                 type: "time",
-                name: "from",
-                placeholder: "Opening Time",
+                name: t("from"),
+                placeholder: t("OpeningTime"),
                 required: true
             },
             {
                 type: "time",
-                name: "to",
-                placeholder: "Closing Time",
+                name: t("to"),
+                placeholder: t("ClosingTime"),
             },
-            { type: "file", placeholder: "Pool Image", name: "image", accept: "image/*" },
+            { type: "file", placeholder: t("PoolImage"), name: t("image"), accept: "image/*" },
             {
                 type: "switch",
-                name: "status",
-                placeholder: "Status",
+                name: t("status"),
+                placeholder: t("Status"),
                 returnType: "binary",
                 activeLabel: "Active",
                 inactiveLabel: "Inactive",
@@ -88,7 +91,7 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700"
             >
-                English
+                {t("English")}
             </TabsTrigger>
             <TabsTrigger
                 value="arabic"
@@ -96,7 +99,7 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700"
             >
-                Arabic
+                {t("Arabic")}
             </TabsTrigger>
         </TabsList>
     );
@@ -111,8 +114,10 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
 };
 
 export const PoolsFields = ({ fields, formData, handleFieldChange, loading }) => {
+          const { t } = useTranslation();
+
     if (loading) {
-        return <div>Loading form data...</div>;
+        return <div>{t("Loadingformdata")}</div>;
     }
 
     const fieldsArray = Array.isArray(fields) ? fields : Object.values(fields).flat();

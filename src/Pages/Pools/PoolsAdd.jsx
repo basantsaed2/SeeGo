@@ -9,12 +9,14 @@ import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
 import { usePoolsForm, PoolsFields } from "./PoolsForm";
 import TitleSection from "@/components/TitleSection";
+import { useTranslation } from "react-i18next";
 
 export default function PoolsAdd() {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/pool/add` });
     const isLoading = useSelector((state) => state.loader.isLoading);
     const navigate = useNavigate();
+  const { t } = useTranslation();
 
     const { formData, fields, handleFieldChange, prepareFormData, LanguageTabs } =
         usePoolsForm(apiUrl);
@@ -22,7 +24,7 @@ export default function PoolsAdd() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const body = prepareFormData();
-        postData(body, "Pool added successfully!");
+        postData(body, t("Pooladdedsuccessfully"));
     };
 
     useEffect(() => {
@@ -38,7 +40,7 @@ export default function PoolsAdd() {
     return (
         <div className="w-full flex flex-col gap-5 p-6 relative">
             <h2 className="text-bg-primary text-center text-2xl font-semibold">
-                <TitleSection text={"Add Pool"} />
+                <TitleSection text={t("AddPool")} />
             </h2>
             <Tabs defaultValue="english" className="w-full">
                 {/* <LanguageTabs /> */}
@@ -65,7 +67,7 @@ export default function PoolsAdd() {
                     className="bg-bg-primary mb-10 ms-3 cursor-pointer hover:bg-teal-600 px-5 py-6 text-white w-full md:w-[30%] rounded-[15px] transition-all duration-200"
                     disabled={loadingPost}
                 >
-                    {loadingPost ? "Processing..." : "Done"}
+                    {loadingPost ? t("Processing") : t("Done")}
                 </Button>
             </div>
         </div>

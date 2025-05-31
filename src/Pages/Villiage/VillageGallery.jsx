@@ -22,9 +22,11 @@ import {
 } from "@/components/ui/select";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
+import { useTranslation } from "react-i18next";
 
 // ✅ مكون ImageCard
 function ImageCard({ imageUrl, onDelete }) {
+
   return (
     <div className="relative rounded-md overflow-hidden shadow-md">
       <img
@@ -50,6 +52,7 @@ function Gallery() {
     const { changeState, loadingChange } = useChangeState();
     const { deleteData, loadingDelete } = useDelete();
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+        const { t } = useTranslation();
 
     const { refetch: refetchVillageAdmin, loading: loadingVillageAdmin, data: VillageAdminData } = useGet({
         url: `${apiUrl}/admin_village`,
@@ -92,11 +95,11 @@ function Gallery() {
         setImages(data.village_gallary);
       } else {
         console.error("Unexpected API response:", data);
-        toast.error("Failed to load images.");
+        toast.error(t("Failedtoloadimages"));
       }
     } catch (error) {
       console.error("Failed to fetch gallery images:", error);
-      toast.error("Error loading gallery.");
+      toast.error(t("Errorloadinggallery"));
     } finally {
       setLoading(false);
     }
@@ -118,13 +121,13 @@ function Gallery() {
         setImages((prevImages) =>
           prevImages.filter((img) => img.id !== imageId)
         );
-        toast.success("Image deleted successfully.");
+        toast.success(t("Imagedeletedsuccessfully"));
       } else {
-        toast.error("Failed to delete image.");
+        toast.error(t("Failedtodeleteimage"));
       }
     } catch (error) {
       console.error("Error deleting image:", error);
-      toast.error("Error deleting image.");
+      toast.error(t("Errordeletingimage"));
     }
   };
 
@@ -145,7 +148,7 @@ function Gallery() {
           />
         ))
       ) : (
-        <p className="text-center col-span-full">No images found.</p>
+        <p className="text-center col-span-full">{t("Noimagesfound")} </p>
       )}
     </div>
   );
@@ -153,6 +156,8 @@ function Gallery() {
 
 // ✅ مكون Header
 function Header({ onUploadSuccess }) {
+          const { t } = useTranslation();
+
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const { id } = useParams();
   const token = localStorage.getItem("token");
@@ -161,7 +166,7 @@ function Header({ onUploadSuccess }) {
 
   const handleImageUpload = async () => {
     if (!imageFile) {
-      toast.error("Please select an image.");
+      toast.error(t('Pleaseselectanimage'));
       return;
     }
 
@@ -187,13 +192,13 @@ function Header({ onUploadSuccess }) {
         setImageFile(null);
         setStatus("1");
         onUploadSuccess();
-        toast.success("Image uploaded successfully.");
+        toast.success(t("Imageuploadedsuccessfully"));
       } else {
-        toast.error("Failed to upload image.");
+        toast.error(t("Failedtouploadimage"));
       }
     } catch (error) {
       console.error("Error uploading image:", error);
-      toast.error("Error uploading image.");
+      toast.error(t("Erroruploadingimage"));
     }
   };
 
@@ -202,13 +207,13 @@ function Header({ onUploadSuccess }) {
       <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
         <DialogTrigger asChild>
           <Button className="bg-bg-primary text-white cursor-pointer !px-4 !py-2 rounded-[16px] hover:bg-teal-500 transition-all ">
-            Add{" "}
+            {t('Add')}{" "}
           </Button>
         </DialogTrigger>
         <DialogContent className="bg-white !p-6 border-none rounded-lg shadow-lg max-w-3xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-bg-primary">
-              Add New Image
+              {t("AddNewImage")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -227,10 +232,10 @@ function Header({ onUploadSuccess }) {
               </SelectTrigger>
               <SelectContent className="bg-white border !p-3 border-bg-primary rounded-[10px] text-bg-primary">
                 <SelectItem value="1" className="text-bg-primary">
-                  Active
+                  {t("Active")}
                 </SelectItem>
                 <SelectItem value="0" className="text-bg-primary">
-                  Inactive
+                  {t("Inactive")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -241,13 +246,13 @@ function Header({ onUploadSuccess }) {
               variant="outline"
               className="border !px-3 !py-2 cursor-pointer border-teal-500 hover:bg-bg-primary hover:text-white transition-all text-bg-primary"
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               onClick={handleImageUpload}
               className="bg-bg-primary border border-teal-500 hover:bg-white  hover:text-bg-primary transition-all  !px-3 !py-2 cursor-pointer text-white"
             >
-              Save
+              {t('Save')}
             </Button>
           </DialogFooter>
         </DialogContent>

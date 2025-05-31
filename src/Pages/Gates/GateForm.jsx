@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Add from "@/components/AddFieldSection";
+import { useTranslation } from "react-i18next";
 
 export const useGateForm = (apiUrl, isEdit = false, initialData = null) => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ export const useGateForm = (apiUrl, isEdit = false, initialData = null) => {
             location: '',
         },
     });
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (isEdit && initialData) {
@@ -61,13 +63,13 @@ export const useGateForm = (apiUrl, isEdit = false, initialData = null) => {
     };
 
     const fields = [
-        { type: "input", placeholder: "Gate Name", name: "name", required: true },
-        { type: "file", placeholder: "Gate Image", name: "image", accept: "image/*" },
-        { type: "map", placeholder: "Enter Location", name: "location"},
+        { type: "input", placeholder: t("GateName"), name: t("name"), required: true },
+        { type: "file", placeholder: t("GateImage"), name: t("image"), accept: "image/*" },
+        { type: "map", placeholder: t("EnterLocation"), name: t("location")},
         {
             type: "switch",
-            name: "status",
-            placeholder: "Status",
+            name: t("status"),
+            placeholder: t("Status"),
             returnType: "binary",
             activeLabel: "Active",
             inactiveLabel: "Inactive"
@@ -83,6 +85,8 @@ export const useGateForm = (apiUrl, isEdit = false, initialData = null) => {
 };
 
 export const GateFormFields = ({ fields, formData, handleFieldChange, loading }) => {
-    if (loading) return <div>Loading...</div>;
+        const { t } = useTranslation();
+
+    if (loading) return <div>{t("Loading")}</div>;
     return <Add fields={fields} lang="en" values={formData.en} onChange={handleFieldChange} />;
 };

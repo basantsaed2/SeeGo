@@ -10,13 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { SecurityManFormFields ,useSecurityManForm } from "./SecurityManForm";
 import TitleSection from "@/components/TitleSection";
 import { ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 export default function SecurityManAdd() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/security/add` });
   const isLoading = useSelector((state) => state.loader.isLoading);
   const navigate = useNavigate();
-  
+  const { t } = useTranslation();
+
   const {
     formData,
     fields,
@@ -27,7 +29,7 @@ export default function SecurityManAdd() {
   const handleSubmit = async (e) => {  
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, "Gate added successfully!");
+    postData(body, t("Gateaddedsuccessfully"));
   }; 
   
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function SecurityManAdd() {
       {/* <ToastContainer/> */}
       {isLoading && <FullPageLoader />}
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
-        <TitleSection text={"Add Security Man"}/>
+        <TitleSection text={t('AddSecurityMan')}/>
       </h2>
       <Tabs defaultValue="english" className="w-full">
         <TabsContent value="english">
@@ -57,7 +59,7 @@ export default function SecurityManAdd() {
           className="bg-bg-primary !mb-10 !ms-3 cursor-pointer hover:bg-teal-600 !px-5 !py-6 text-white w-[30%] rounded-[15px] transition-all duration-200"
           disabled={loadingPost}
         >
-          {loadingPost ? "Processing..." : "Done"}
+          {loadingPost ? t("Processing") : t("Done")}
         </Button>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils"
-
+         
 function Table({
   className,
   ...props
@@ -71,14 +72,19 @@ function TableHead({
   className,
   ...props
 }) {
+  const { i18n } = useTranslation();
+  const direction = i18n.dir(); // "ltr" or "rtl"
+  const alignment = direction === "ltr" ? "text-left" : "text-right";
+
   return (
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        `text-foreground h-10 px-2 ${alignment} align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]`,
         className
       )}
-      {...props} />
+      {...props}
+    />
   );
 }
 
