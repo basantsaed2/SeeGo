@@ -46,7 +46,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useTranslation } from 'react-i18next';
 export default function DataTable({
   data,
   columns,
