@@ -153,7 +153,6 @@ const Posts = () => {
     const { postData: updatePost, loading: loadingPost, response } = usePost({
         url: `${apiUrl}/post/update/${selectedRow?.id}`,
     });
-  const {t}=useTranslation();
 
     const { formData, fields, handleFieldChange, prepareFormData } = usePostsForm(
         apiUrl,
@@ -184,6 +183,7 @@ const Posts = () => {
             setPosts(formatted);
         }
     }, [postData]);
+  const {t}=useTranslation();
 
     const handleEdit = (post) => {
         const fullPostData = postData?.post.find((p) => p.id === post.id);
@@ -230,7 +230,7 @@ const Posts = () => {
         <div className="!p-6 min-h-screen">
             <div className="flex justify-between !mb-6 items-center flex-wrap gap-4">
                 <Input
-                    placeholder="Search..."
+                    placeholder={t("Search")}
                     className="w-full !p-5 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}

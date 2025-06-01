@@ -56,42 +56,42 @@ const VisitorLimit = () => {
             name: t("guest"),
             type: "input",
             inputType: "number",
-            placeholder: "Owner Guest Limit",
+            placeholder: t("OwnerGuestLimit"),
             min: 0
         },
         {
             name: t("worker"),
             type: "input",
             inputType: "number",
-            placeholder: "Owner Worker Limit",
+            placeholder: t('OwnerWorkerLimit'),
             min: 0
         },
         {
             name: t("delivery"),
             type: "input",
             inputType: "number",
-            placeholder: "Owner Delivery Limit",
+            placeholder: t("OwnerDeliveryLimit"),
             min: 0
         },
         {
-            name: "renter_guest",
+            name: t("renter_guest"),
             type: "input",
             inputType: "number",
-            placeholder: "Owner Renter Guest Limit",
+            placeholder: t("OwnerRenterGuestLimit"),
             min: 0
         },
         {
-            name: "renter_worker",
+            name: t("renter_worker"),
             type: "input",
             inputType: "number",
-            placeholder: "Renter Worker Limit",
+            placeholder: t("RenterWorkerLimit"),
             min: 0
         },
         {
-            name: "renter_delivery",
+            name: t("renter_delivery"),
             type: "input",
             inputType: "number",
-            placeholder: "Renter Delivery Limit",
+            placeholder: t("RenterDeliveryLimit"),
             min: 0
         }
     ];
