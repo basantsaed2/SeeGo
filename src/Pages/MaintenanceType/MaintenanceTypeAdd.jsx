@@ -8,6 +8,7 @@ import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function MaintenanceTypeAdd() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -22,6 +23,7 @@ export default function MaintenanceTypeAdd() {
       maintenance_type_id: "",
     },
   });
+  const {t}=useTranslation();
 
    useEffect(() => {
     refetchMaintenanceType();
@@ -53,12 +55,12 @@ export default function MaintenanceTypeAdd() {
     e.preventDefault();
     const body = new FormData();
     body.append("maintenance_type_id", formData.en.maintenance_type_id || "");
-    postData(body,"MaintenanceType added successfully!")   
+    postData(body,t("MaintenanceTypeaddedsuccessfully"))   
   }; 
   const fieldsEn = [
     {
       type: "select",
-      placeholder: "Maintenance Type",
+      placeholder: t("MaintenanceType"),
       name: "maintenance_type_id",
       options: MaintenanceTypes,
     },
@@ -78,7 +80,7 @@ export default function MaintenanceTypeAdd() {
     <div className="w-full flex flex-col gap-5 p-6 relative">
       {isLoading && <FullPageLoader />}
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
-        Add Maintenance Type
+        {t("AddMaintenanceType")}
       </h2>
       <Tabs defaultValue="english" className="w-full">
         <TabsContent value="english">
@@ -95,7 +97,7 @@ export default function MaintenanceTypeAdd() {
           onClick={(e)=>{handleSubmit(e)}}
           className="bg-bg-primary !mb-10 !ms-3 cursor-pointer hover:bg-teal-600 !px-5 !py-6 text-white w-[30%] rounded-[15px] transition-all duration-200"
         >
-          Done
+          {t("Done")}
         </Button>
       </div>
     </div>

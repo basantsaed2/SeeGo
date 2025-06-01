@@ -17,7 +17,11 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CalendarDays, Home, Phone, User, Wrench } from "lucide-react";
 import { setNotificationTotals } from "@/Store/notificationSlice"; // Import action
+import { useTranslation } from "react-i18next";
+
 const Maintenance = () => {
+      const { t } = useTranslation();
+
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
     const dispatch = useDispatch();
@@ -100,13 +104,13 @@ const Maintenance = () => {
     };
 
     const columns = [
-        { key: "maintenance", label: "Maintenance Type" },
-        { key: "name", label: "User Name" },
-        { key: "phone", label: "User Phone" },
-        { key: "unit", label: "Unit" },
+        { key: "maintenance", label: ("MaintenanceType") },
+        { key: "name", label: t("UserName") },
+        { key: "phone", label: t("UserPhone") },
+        { key: "unit", label: t("Unit") },
         {
             key: "description",
-            label: "Details",
+            label: t("Details"),
             render: (row) => (
                 <Button
                     variant="link"
@@ -119,11 +123,11 @@ const Maintenance = () => {
                         setIsDialogOpen(true);
                     }}
                 >
-                    View Details
+                    {t("ViewDetails")}
                 </Button>
             ),
         },
-        { key: "status", label: "Status" },
+        { key: "status", label: t("Status") },
     ];
 
     if (isLoading || loadingMaintenance || loadingChange) {
@@ -140,7 +144,7 @@ const Maintenance = () => {
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700 shadow-md"
                     >
-                        Pending Maintenance
+                        {t("PendingMaintenance")}
                     </TabsTrigger>
                     <TabsTrigger
                         value="completed"
@@ -148,7 +152,7 @@ const Maintenance = () => {
                 data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                 hover:bg-teal-100 hover:text-teal-700 shadow-md"
                     >
-                        Completed Maintenance
+                        {t("CompletedMaintenance")}
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="pending">
@@ -182,7 +186,7 @@ const Maintenance = () => {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle className="text-xl font-semibold">Maintenance Request Details</DialogTitle>
+                        <DialogTitle className="text-xl font-semibold">{t("MaintenanceRequestDetails")}</DialogTitle>
                     </DialogHeader>
                     {selectedProblem ? (
                         <div className="!space-y-6">
@@ -203,7 +207,7 @@ const Maintenance = () => {
                                         : "bg-yellow-100 text-yellow-800"
                                         }`}
                                 >
-                                    {selectedProblem.status === 1 ? "Completed" : "Pending"}
+                                    {selectedProblem.status === 1 ? t("Completed") : t("Pending")}
                                 </span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -211,14 +215,14 @@ const Maintenance = () => {
                                     <div>
                                         <h3 className="font-medium flex items-center">
                                             <Wrench className="w-5 h-5 !mr-2 text-blue-600" />
-                                            Maintenance Type
+                                            {t("MaintenanceType")}
                                         </h3>
                                         <p className="!mt-1 !pl-7">
                                             {selectedProblem.maintenance_type?.name || "—"}
                                         </p>
                                     </div>
                                     <div>
-                                        <h3 className="font-medium">Description</h3>
+                                        <h3 className="font-medium">{t("Description")}</h3>
                                         <p className="!mt-1 bg-gray-50 !p-3 rounded-md">
                                             {selectedProblem.description || "No description provided"}
                                         </p>
@@ -227,7 +231,7 @@ const Maintenance = () => {
                             </div>
                         </div>
                     ) : (
-                        <p>No maintenance data available.</p>
+                        <p>{t("No maintenance data available")}</p>
                     )}
                 </DialogContent>
             </Dialog>

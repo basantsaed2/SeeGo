@@ -13,12 +13,12 @@ html[dir="ltr"] {
 }
 
 /* يمكن تخصيص عناصر معينة */
-html[dir="rtl"] span,
+/* html[dir="rtl"] span,
 html[dir="rtl"] h1,
 html[dir="rtl"] input,
 html[dir="rtl"] textarea {
   text-align: right;
-}
+} */
 
 html[dir="ltr"] span,
 html[dir="ltr"] h1,

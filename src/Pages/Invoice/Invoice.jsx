@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import { useEffect, useState } from "react";
 import {
@@ -43,6 +44,7 @@ export default function InvoiceCard() {
     const { refetch: refetchInvoice, loading: loadingInvoice, data: Invoice, error } = useGet({
         url: `${apiUrl}/payment_package/invoice`,
     });
+  const { t } = useTranslation();
 
     useEffect(() => {
         refetchInvoice();
@@ -67,7 +69,7 @@ export default function InvoiceCard() {
         toast.error("Failed to load invoice data.", { position: "top-center" });
         return (
             <div className="flex justify-center items-center h-screen">
-                <p className="text-red-500 font-medium">Error loading invoice data. Please try again later.</p>
+                <p className="text-red-500 font-medium">{t("ErrorloadinginvoicedataPleasetryagainlater")}</p>
             </div>
         );
     }
@@ -75,7 +77,7 @@ export default function InvoiceCard() {
     if (!invoiceData || !invoiceData.village || !invoiceData.package) {
         return (
             <div className="flex justify-center items-center h-screen">
-                <p className="text-gray-500 font-medium">No invoice data available for this village.</p>
+                <p className="text-gray-500 font-medium">{t("Noinvoicedataavailableforthisvillage")}</p>
             </div>
         );
     }
@@ -157,7 +159,7 @@ export default function InvoiceCard() {
                             <MapPin className="w-5 h-5 text-bg-primary" />
                             <div>
                                 <Badge className="!px-4 !py-1 text-sm text-white bg-bg-primary rounded-full !mb-2 transition-colors">
-                                    Invoice to:
+                                    {("Invoiceto")}
                                 </Badge>
                                 <p className="font-semibold text-xl text-gray-800">{village?.name || "N/A"}</p>
                                 <p className="text-gray-600 text-sm">{village?.location || "Location N/A"}</p>
@@ -167,7 +169,7 @@ export default function InvoiceCard() {
                             <Calendar className="w-5 h-5 text-bg-primary" />
                             <div>
                                 <Badge className="!px-4 !py-1 text-sm text-white bg-bg-primary rounded-full !mb-2 transition-colors">
-                                    Date:
+                                    {t("Date")}
                                 </Badge>
                                 <p className="font-semibold text-xl text-gray-800">{invoiceDate}</p>
                             </div>
@@ -176,7 +178,7 @@ export default function InvoiceCard() {
                             <FileText className="w-5 h-5 text-bg-primary" />
                             <div>
                                 <Badge className="!px-4 !py-1 text-sm text-white bg-bg-primary rounded-full !mb-2 transition-colors">
-                                    Invoice number:
+                                    {t("Invoicenumber")}
                                 </Badge>
                                 <p className="font-semibold text-xl text-gray-800">N: {village.id}</p>
                             </div>
@@ -187,13 +189,13 @@ export default function InvoiceCard() {
                         <table className="min-w-[600px] w-full table-auto text-left">
                             <thead className="bg-blue-100 text-gray-700 text-sm font-semibold">
                                 <tr>
-                                    <th className="!px-4 !py-3 whitespace-nowrap">Village</th>
-                                    <th className="!px-4 !py-3 whitespace-nowrap">Zone</th>
+                                    <th className="!px-4 !py-3 whitespace-nowrap">{t("Village")}</th>
+                                    <th className="!px-4 !py-3 whitespace-nowrap">{t("Zone")}</th>
                                     {/* <th className="!px-4 !py-3 whitespace-nowrap">Description</th> */}
-                                    <th className="!px-4 !py-3 whitespace-nowrap">Package</th>
+                                    <th className="!px-4 !py-3 whitespace-nowrap">{t("Package")}</th>
                                     {/* <th className="!px-4 !py-3 whitespace-nowrap">Subscriber Duration</th> */}
-                                    <th className="!px-4 !py-3 whitespace-nowrap">Fees</th>
-                                    <th className="!px-4 !py-3 whitespace-nowrap">Price</th>
+                                    <th className="!px-4 !py-3 whitespace-nowrap">{t("Fees")}</th>
+                                    <th className="!px-4 !py-3 whitespace-nowrap">{t("Price")}</th>
                                 </tr>
                             </thead>
                             <tbody className="text-sm text-gray-700 divide-y divide-blue-50">
@@ -224,27 +226,27 @@ export default function InvoiceCard() {
                     <div className="!mt-8 !p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md">
                         <div className="text-right !space-y-4">
                             <p className="text-base text-gray-600">
-                                <strong>Subtotal:</strong> {subtotal.toFixed(2)} EGP
+                                <strong>{t("Subtotal")}:</strong> {subtotal.toFixed(2)} EGP
                             </p>
                             <p className="text-base text-gray-600">
-                                <strong>Discount ({discount}%):</strong> -{discount.toFixed(2)} EGP
+                                <strong>{t("Discount")} ({discount}%):</strong> -{discount.toFixed(2)} EGP
                             </p>
                             <p className="text-base text-gray-600">
-                                <strong>TAX:</strong> {tax.toFixed(2)} EGP
+                                <strong>{t("TAX")}</strong> {tax.toFixed(2)} EGP
                             </p>
                             <div className="border-t border-blue-200 pt-4">
                                 <p className="text-2xl font-extrabold text-bg-primary animate-pulse">
-                                    <strong>Invoice Total:</strong> {invoiceTotal.toFixed(2)} EGP
+                                    <strong>{t("InvoiceTotal")}</strong> {invoiceTotal.toFixed(2)} EGP
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     <div className="!mt-8">
-                        <p className="text-lg font-medium text-gray-600 !mb-2">Subscription Progress:</p>
+                        <p className="text-lg font-medium text-gray-600 !mb-2">{t("SubscriptionProgress")}</p>
                         <div className="flex justify-between text-lg text-gray-600 !mt-2">
-                            <span>Start: {new Date(village.from).toLocaleDateString("en-US")}</span>
-                            <span>End: {new Date(village.to).toLocaleDateString("en-US")}</span>
+                            <span>{t("Start")} {new Date(village.from).toLocaleDateString("en-US")}</span>
+                            <span>{t("End")} {new Date(village.to).toLocaleDateString("en-US")}</span>
                         </div>
                     </div>
 
@@ -257,7 +259,7 @@ export default function InvoiceCard() {
                             aria-expanded={showDetails}
                             aria-controls="package-details"
                         >
-                            <span className="font-semibold tracking-wide">View Full Package Details</span>
+                            <span className="font-semibold tracking-wide">{t("ViewFullPackageDetails")}</span>
                             {showDetails ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                         </Button>
 
@@ -288,15 +290,15 @@ export default function InvoiceCard() {
                                 <div className="grid grid-cols-3 gap-4 !pt-2">
                                     <div className="flex items-center !space-x-2">
                                         <BadgeDollarSign className="text-green-500 w-5 h-5" />
-                                        <span><strong>Price:</strong> {packageData.price}</span>
+                                        <span><strong>{t("Price")}:</strong> {packageData.price}</span>
                                     </div>
                                     <div className="flex items-center !space-x-2">
                                         <BadgeDollarSign className="text-yellow-500 w-5 h-5" />
-                                        <span><strong>Fees:</strong> {packageData.feez}</span>
+                                        <span><strong>{t("Fees")}:</strong> {packageData.feez}</span>
                                     </div>
                                     <div className="flex items-center !space-x-2">
                                         <Percent className="text-pink-500 w-5 h-5" />
-                                        <span><strong>Discount:</strong> {packageData.discount}%</span>
+                                        <span><strong>{t("Discount")}:</strong> {packageData.discount}%</span>
                                     </div>
                                 </div>
 

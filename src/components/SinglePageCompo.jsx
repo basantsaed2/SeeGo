@@ -15,13 +15,18 @@ import VilliageAdmin from "@/Pages/Villiage/VilliageAdmins/VilliageAdmin";
 import VillageGallery from "@/Pages/Villiage/VillageGallery";
 // import Units from "@/Pages/Villages/Units";
 // import Gallery from "./Gallery";
+import { useTranslation } from "react-i18next";
 
 
 export default function VillageDetailsCard({
   data,
   status = "Active",
   entityType,
-}) {
+})
+
+{
+  const { t, i18n } = useTranslation();
+const dira = i18n.language === 'ar' ? 'rtl' : 'ltr';
   const location = useLocation();
   if (!data) return null;
 
@@ -40,7 +45,7 @@ export default function VillageDetailsCard({
                   hover:bg-teal-100 hover:text-teal-700"
             value="info"
           >
-            Infomation
+            {t("Infomation")}
           </TabsTrigger>
           <TabsTrigger
             className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
@@ -48,7 +53,7 @@ export default function VillageDetailsCard({
                   hover:bg-teal-100 hover:text-teal-700"
             value="admin"
           >
-            Admins
+            {t("Admins")}
           </TabsTrigger>
           <TabsTrigger
             className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
@@ -56,7 +61,7 @@ export default function VillageDetailsCard({
                   hover:bg-teal-100 hover:text-teal-700"
             value="gallery"
           >
-            Gallery
+            {t("Gallery")}
           </TabsTrigger>
 
           {/* Conditionally render the "Units" tab */}
@@ -67,7 +72,7 @@ export default function VillageDetailsCard({
                     hover:bg-teal-100 hover:text-teal-700"
               value="units"
             >
-              Units
+              {t("Units")}
             </TabsTrigger>
           )}
         </TabsList>
@@ -76,7 +81,7 @@ export default function VillageDetailsCard({
           <Card className="!p-8 bg-gradient-to-br from-[#f3fbfa] to-white w-full shadow-lg border-none rounded-2xl transition-all duration-300 hover:shadow-xl">
             <CardContent className="flex flex-col gap-6">
               {/* Header Section */}
-              <div className="flex items-center justify-between flex-wrap gap-4">
+              <div  dir={dira} className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                   {data.image && (
                     <img
@@ -103,18 +108,19 @@ export default function VillageDetailsCard({
               {/* Info Grid */}
               <div className="grid grid-cols-1 gap-4 text-sm text-bg-primary">
                 {[
-                  { field: 'location', icon: MapPin, label: 'Location' },
-                  { field: 'description', icon: FileText, label: 'Description' },
-                  { field: 'units', icon: Home, label: 'Units' },
-                  { field: 'population', icon: Users, label: 'Population' },
-                  { field: 'zone', icon: Globe, label: 'Zone' },
-                  { field: 'village', icon: MapPin, label: 'Village' },
-                  { field: 'phone', icon: Phone, label: 'Phone' },
+                  { field: 'location', icon: MapPin, label: t('Location') },
+                  { field: 'description', icon: FileText, label: t('Description') },
+                  { field: 'units', icon: Home, label: t('Units') },
+                  { field: 'population', icon: Users, label: t('Population') },
+                  { field: 'zone', icon: Globe, label: t('Zone')},
+                  { field: 'village', icon: MapPin, label: t('Village') },
+                  { field: 'phone', icon: Phone, label: t('Phone') },
                 ].map(({ field, icon: Icon, label }) => (
                   data[field] && (
                     <div
+                    dir={dira}
                       key={field}
-                      className="flex items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200"
+                      className="flex  items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200"
                     >
                       <Icon className="w-5 h-5 text-[#297878] flex-shrink-0" />
                       <div>
@@ -127,21 +133,21 @@ export default function VillageDetailsCard({
 
                 {/* Date Range Section */}
                 {(data.from || data.to) && (
-                  <div className="flex items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200">
+                  <div  dir={dira} className="flex items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200">
                     <Calendar className="w-5 h-5 text-[#297878] flex-shrink-0" />
                     <div className="flex items-center gap-2">
                       {data.from && (
                         <span className="flex items-center">
-                          <span className="font-semibold text-[#297878]">From:</span>
+                          <span className="font-semibold text-[#297878]">{t('From')}:</span>
                           <span className="!ml-2 text-gray-800">{formatDate(data.from)}</span>
                         </span>
                       )}
                       {data.from && data.to && (
-                        <span className="text-gray-500 !mx-2">→</span>
+                        <span  className={`text-gray-500  !mx-2 `}>{dira==="rtl"?"←":"→"}</span>
                       )}
                       {data.to && (
                         <span className="flex items-center">
-                          <span className="font-semibold text-[#297878]">To:</span>
+                          <span className="font-semibold text-[#297878]">{t("To")}:</span>
                           <span className="!ml-2 text-gray-800">{formatDate(data.to)}</span>
                         </span>
                       )}

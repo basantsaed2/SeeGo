@@ -8,6 +8,7 @@ import { useGet } from "@/Hooks/UseGet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button"; // Assuming you have a Button component
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"; // Assuming shadcn/ui Dialog component
+import { useTranslation } from "react-i18next";
 
 const RentSale = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -25,6 +26,7 @@ const RentSale = () => {
     useEffect(() => {
         refetchRentSale();
     }, [refetchRentSale]);
+  const {t}=useTranslation();
 
     useEffect(() => {
         if (RentSaleData && RentSaleData.offers) {
@@ -56,17 +58,17 @@ const RentSale = () => {
     }, [RentSaleData]);
 
     const columns = [
-        { key: "type", label: "Type" },
-        { key: "name", label: "User Name" },
-        { key: "phone", label: "User Phone" },
-        { key: "village", label: "Village" },
-        { key: "unit", label: "Unit" },
-        { key: "price", label: "Price" },
-        { key: "price_day", label: "Daily Price" },
-        { key: "price_month", label: "Monthly Price" },
+        { key: "type", label: t("Type") },
+        { key: "name", label: t("UserName") },
+        { key: "phone", label: t("UserPhone") },
+        { key: "village", label: t("Village") },
+        { key: "unit", label: t("Unit") },
+        { key: "price", label: t("Price") },
+        { key: "price_day", label: t("DailyPrice") },
+        { key: "price_month", label: t("MonthlyPrice")},
         {
             key: "details",
-            label: "Details",
+            label: t("Details"),
             render: (row) => (
                 <Button
                     variant="link"
@@ -76,7 +78,7 @@ const RentSale = () => {
                         setIsModalOpen(true);
                     }}
                 >
-                    View Details
+                    {t("ViewDetails")}
                 </Button>
             ),
         },
@@ -96,7 +98,7 @@ const RentSale = () => {
                         data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                         hover:bg-teal-100 hover:text-teal-700"
                     >
-                        Rent
+                        {t("Rent")}
                     </TabsTrigger>
                     <TabsTrigger
                         value="sale"
@@ -104,7 +106,7 @@ const RentSale = () => {
                         data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                         hover:bg-teal-100 hover:text-teal-700"
                     >
-                        Sale
+                        {t("Sale")}
                     </TabsTrigger>
                     <TabsTrigger
                         value="rentAndSale"
@@ -112,7 +114,7 @@ const RentSale = () => {
                         data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                         hover:bg-teal-100 hover:text-teal-700"
                     >
-                        Rent & Sale
+                        {t("Rent&Sale")}
                     </TabsTrigger>
                 </TabsList>
 
@@ -146,7 +148,7 @@ const RentSale = () => {
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Offer Description</DialogTitle>
+                        <DialogTitle>{t("OfferDescription")}</DialogTitle>
                     </DialogHeader>
                     <DialogDescription>{selectedDescription}</DialogDescription>
                 </DialogContent>

@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTranslation } from "react-i18next";
 
 const Services = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -20,6 +21,7 @@ const Services = () => {
     useEffect(() => {
         refetchService();
     }, [refetchService]);
+  const {t}=useTranslation();
 
     useEffect(() => {
         if (ServiceData && ServiceData.services) {
@@ -55,15 +57,15 @@ const Services = () => {
     }, [ServiceData]);
 
     const columns = [
-        { key: "img", label: "Image" },
-        { key: "name", label: "Provider Name" },
-        { key: "type", label: "Service Type" },
-        { key: "phone", label: "Phone" },
-        { key: "map", label: "Location" },
-        { key: "from", label: "Opening Time" },
-        { key: "to", label: "Closing Time" },
+        { key: "img", label: t("Image") },
+        { key: "name", label: t("ProviderName") },
+        { key: "type", label: t("ServiceType") },
+        { key: "phone", label: t("Phone") },
+        { key: "map", label: t("Location") },
+        { key: "from", label: t("OpeningTime") },
+        { key: "to", label: t("ClosingTime") },
         // { key: "rate", label: "Rate" },
-        { key: "statusText", label: "Status" },
+        { key: "statusText", label: t("Status") },
     ];
 
     if (isLoading || loadingService) {

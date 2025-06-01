@@ -10,8 +10,10 @@ import DataTable from "@/components/DataTableLayout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import Add from "@/components/AddFieldSection";
+import { useTranslation } from "react-i18next";
 
 const FeesDetails = () => {
+  const {t}=useTranslation();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams();
   const isLoading = useSelector((state) => state.loader.isLoading);
@@ -78,7 +80,7 @@ const FeesDetails = () => {
 
   useEffect(() => {
     if (!loadingPost && response) {
-      toast.success("Maintenance Fees payment added successfully!");
+      toast.success(t("MaintenanceFeespaymentaddedsuccessfully"));
       setIsModalOpen(false);
       setPayment({ amount: "" });
       setSelectedUser(null);
@@ -105,7 +107,7 @@ const FeesDetails = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedUser || !payment.amount || parseFloat(payment.amount) <= 0) {
-      toast.error("Please enter a valid payment amount.");
+      toast.error(t("Pleaseenteravalidpaymentamount"));
       return;
     }
 
@@ -115,27 +117,27 @@ const FeesDetails = () => {
     body.append("user_id", selectedUser.id);
     body.append("paid", parseFloat(payment.amount).toFixed(2));
 
-    await postData(body, "Maintenance Fees payment added successfully!");
+    await postData(body, t("MaintenanceFeespaymentaddedsuccessfully"));
   };
 
   const columns = [
-    { key: "name", label: "User Name" },
-    { key: "phone", label: "User Phone" },
-    { key: "unit", label: "Unit" },
-    { key: "unit_type", label: "Unit Type" },
-    { key: "total", label: "Total" },
-    { key: "paid", label: "Paid" },
-    { key: "remain", label: "Remain" },
+    { key: "name", label: t("UserName") },
+    { key: "phone", label: t("UserPhone") },
+    { key: "unit", label: t("Unit") },
+    { key: "unit_type", label: t("UnitType") },
+    { key: "total", label: t("Total") },
+    { key: "paid", label: t("Paid") },
+    { key: "remain", label: t("Remain") },
     {
       key: "payment",
-      label: "Add Payment",
+      label: t("AddPayment"),
       render: (row) => (
         <Button
           onClick={() => handleOpenModal(row)}
           className="inline-block cursor-pointer !px-3 !py-1 bg-bg-primary text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-500 transition-all duration-300 ease-in-out"
           disabled={parseFloat(row.remain) <= 0}
         >
-          Add Payment
+          {t("AddPayment")}
         </Button>
       ),
     },
@@ -143,7 +145,7 @@ const FeesDetails = () => {
 
   const actionColumns = [
     {
-      label: "Add Payment",
+      label: t("AddPayment"),
       onClick: (row) => handleOpenModal(row),
       className: "inline-block cursor-pointer !px-3 !py-1 bg-bg-primary text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-500 transition-all duration-300 ease-in-out",
       disabled: (row) => parseFloat(row.remain) <= 0,
@@ -153,10 +155,10 @@ const FeesDetails = () => {
   // Define fields for the Add component
   const paymentFields = [
     {
-      name: "amount",
+      name: t("amount"),
       type: "input",
       inputType: "number",
-      placeholder: "Payment Amount",
+      placeholder: t("PaymentAmount"),
     },
   ];
 
@@ -184,11 +186,11 @@ const FeesDetails = () => {
         </div>
         <div className="flex flex-wrap justify-center md:justify-end gap-4">
           <div className="flex items-center !space-x-1.5 bg-green-50 dark:bg-green-900/20 !px-3 !py-1.5 rounded-lg">
-            <span className="text-green-600 dark:text-green-400 font-medium">Total:</span>
+            <span className="text-green-600 dark:text-green-400 font-medium">{t("Total")}:</span>
             <span className="text-green-700 dark:text-green-300 font-semibold">{totals.grandTotal} EGP</span>
           </div>
           <div className="flex items-center !space-x-1.5 bg-blue-50 dark:bg-blue-900/20 !px-3 !py-1.5 rounded-lg">
-            <span className="text-blue-600 dark:text-blue-400 font-medium">Paid:</span>
+            <span className="text-blue-600 dark:text-blue-400 font-medium">{t("Paid")}:</span>
             <span className="text-blue-700 dark:text-blue-300 font-semibold">{totals.grandPaid} EGP</span>
           </div>
           <div
@@ -203,7 +205,7 @@ const FeesDetails = () => {
                   : "text-gray-600 dark:text-gray-400 font-medium"
               }
             >
-              Remain:
+              {t("Remain:")}:
             </span>
             <span
               className={
@@ -216,9 +218,9 @@ const FeesDetails = () => {
             </span>
           </div>
           <div className="flex items-center !space-x-1.5 bg-yellow-50 dark:bg-yellow-900/20 !px-3 !py-1.5 rounded-lg">
-            <span className="text-yellow-600 dark:text-yellow-400 font-medium">Unpaid:</span>
+            <span className="text-yellow-600 dark:text-yellow-400 font-medium">{t("Unpaid")}:</span>
             <span className="text-yellow-700 dark:text-yellow-300 font-semibold">
-              {MaintenanceFeesData?.maintenance_fees?.unpaid || 0} Users
+              {MaintenanceFeesData?.maintenance_fees?.unpaid || 0} {t("Users")}
             </span>
           </div>
         </div>
@@ -229,7 +231,7 @@ const FeesDetails = () => {
         <DialogContent className="bg-white !p-6 border-none rounded-lg shadow-lg max-w-md">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-bg-primary">
-              Add Payment for {selectedUser?.name || "User"}
+              {t("AddPaymentfor")} {selectedUser?.name || t("User")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
@@ -246,14 +248,14 @@ const FeesDetails = () => {
               variant="outline"
               className="border !px-3 !py-2 cursor-pointer border-teal-500 hover:bg-bg-primary hover:text-white transition-all text-bg-primary"
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               onClick={handleSubmit}
               className="bg-bg-primary border border-teal-500 hover:bg-white hover:text-bg-primary transition-all !px-3 !py-2 cursor-pointer text-white"
               disabled={loadingPost}
             >
-              {loadingPost ? "Submitting..." : "Submit"}
+              {loadingPost ? t("Submitting") : t("Submit")}
             </Button>
           </div>
         </DialogContent>

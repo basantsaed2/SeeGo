@@ -14,6 +14,8 @@ import { usePostsForm, PostsFields } from "./PostsForm";
 import { Edit, Trash, Eye, Plus } from "lucide-react"; // Assuming you're using Lucide icons
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
+
 import {
     Select,
     SelectTrigger,
@@ -31,6 +33,7 @@ const PostsCardLayout = ({ data, onEdit, onDelete }) => {
         setSelectedImage(imageUrl);
         setIsModalOpen(true);
     };
+  const {t}=useTranslation();
 
     const closeImageModal = () => {
         setIsModalOpen(false);
@@ -89,7 +92,7 @@ const PostsCardLayout = ({ data, onEdit, onDelete }) => {
                         </div>
                         <div className="!p-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                Post #{post.id}
+                                {t("Post")} #{post.id}
                             </h3>
                             <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
                                 {post.description}
@@ -150,6 +153,7 @@ const Posts = () => {
     const { postData: updatePost, loading: loadingPost, response } = usePost({
         url: `${apiUrl}/post/update/${selectedRow?.id}`,
     });
+  const {t}=useTranslation();
 
     const { formData, fields, handleFieldChange, prepareFormData } = usePostsForm(
         apiUrl,
@@ -195,7 +199,7 @@ const Posts = () => {
 
     useEffect(() => {
         if (!loadingPost && response) {
-            toast.success("Post updated successfully!");
+            toast.success(t("Postupdatedsuccessfully"));
             setIsEditOpen(false);
             setSelectedRow(null);
             refetchPost();
@@ -204,7 +208,7 @@ const Posts = () => {
 
     const handleSave = async () => {
         const body = prepareFormData();
-        updatePost(body, "New Feed updated successfully!");
+        updatePost(body, t("NewFeedupdatedsuccessfully"));
     };
 
     const handleDeleteConfirm = async () => {
@@ -221,6 +225,7 @@ const Posts = () => {
     if (isLoading || loadingPost || loadingPostData) {
         return <FullPageLoader />;
     }
+  const {t}=useTranslation();
 
     return (
         <div className="!p-6 min-h-screen">
@@ -237,7 +242,7 @@ const Posts = () => {
                         className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3"
                     >
                         <Plus className="w-5 h-5 !mr-2" />
-                        Add
+                        {t("Add")}
                     </Button>
                 </div>
             </div>
@@ -251,7 +256,7 @@ const Posts = () => {
                 {selectedRow && (
                     <>
                         <EditDialog
-                            title="Edit New Feed"
+                            title={t("EditNewFeed")}
                             open={isEditOpen}
                             onOpenChange={setIsEditOpen}
                             onSave={handleSave}

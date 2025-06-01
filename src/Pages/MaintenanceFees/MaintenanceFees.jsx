@@ -13,7 +13,7 @@ import { usePost } from "@/Hooks/UsePost";
 import { useMaintenanceForm, MaintenanceFormFields } from "./MaintenanceForm";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-
+import { useTranslation } from "react-i18next";
 const MaintenanceFees = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
@@ -23,7 +23,7 @@ const MaintenanceFees = () => {
     const { deleteData, loadingDelete, responseDelete } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
+const {t}=useTranslation();
     const { refetch: refetchMaintenanceFees, loading: loadingMaintenanceFees, data: MaintenanceFeesData } = useGet({
         url: `${apiUrl}/maintenance_feez/view_maintanence`
     });
@@ -83,7 +83,7 @@ const MaintenanceFees = () => {
 
     const handleSave = async () => {
         const body = prepareFormData();
-        postData(body, "Maintenance Fees updated successfully!")
+        postData(body, t("MaintenanceFeesupdatedsuccessfully"))
     };
 
     const handleDeleteConfirm = async () => {
@@ -101,15 +101,15 @@ const MaintenanceFees = () => {
     const columns = [
         {
             key: "name",
-            label: "Maintenance Fees",
+            label: t("MaintenanceFees"),
             render: (row) => (
                 <Link to={`details/${row.id}`} className="text-blue-600 hover:underline">
                     {row.name}
                 </Link>
             ),
         },
-        { key: "year", label: "Year" },
-        { key: "price", label: "Price" },
+        { key: "year", label: t("Year") },
+        { key: "price", label: t("Price") },
     ];
     if (isLoading || loadingMaintenanceFees) {
         return <FullPageLoader />;
@@ -126,7 +126,7 @@ const MaintenanceFees = () => {
             {selectedRow && (
                 <>
                     <EditDialog
-                        title="Edit Maintenance Fees"
+                        title={t("EditMaintenanceFees")}
                         open={isEditOpen}
                         onOpenChange={setIsEditOpen}
                         onSave={handleSave}
