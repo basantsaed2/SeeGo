@@ -46,6 +46,7 @@ import MaintenancesAdd from "./Pages/MaintenanceFees/MaintenanceAdd";
 import FeesDetails from "./Pages/MaintenanceFees/FeesDetails";
 import Packages from "./Pages/Packages/Packages";
 import VillageAdmin from "./Pages/Villiage/VilliageAdmins/VilliageAdmin";
+import InvoiceList from "./Pages/Invoice/InvoiceList";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -230,9 +231,10 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "invoice",
+        path: "invoice_list",
         children: [
-          { index: true, element: <InvoiceCard /> },
+          { index: true, element: <InvoiceList /> },
+          {path: "invoice", element: <InvoiceCard /> },
         ],
       },
       {

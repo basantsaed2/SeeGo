@@ -15,7 +15,10 @@ const VisitorLimit = () => {
     const [visitorLimit, setVisitorLimit] = useState({
         guest: 0,
         worker: 0,
-        delivery: 0
+        delivery: 0,
+        renter_guest: 0,
+        renter_worker: 0,   
+        renter_delivery: 0
     });
     const navigate = useNavigate();
 
@@ -51,21 +54,42 @@ const VisitorLimit = () => {
             name: "guest",
             type: "input",
             inputType: "number",
-            placeholder: "Guest Limit",
+            placeholder: "Owner Guest Limit",
             min: 0
         },
         {
             name: "worker",
             type: "input",
             inputType: "number",
-            placeholder: "Worker Limit",
+            placeholder: "Owner Worker Limit",
             min: 0
         },
         {
             name: "delivery",
             type: "input",
             inputType: "number",
-            placeholder: "Delivery Limit",
+            placeholder: "Owner Delivery Limit",
+            min: 0
+        },
+        {
+            name: "renter_guest",
+            type: "input",
+            inputType: "number",
+            placeholder: "Owner Renter Guest Limit",
+            min: 0
+        },
+        {
+            name: "renter_worker",
+            type: "input",
+            inputType: "number",
+            placeholder: "Renter Worker Limit",
+            min: 0
+        },
+        {
+            name: "renter_delivery",
+            type: "input",
+            inputType: "number",
+            placeholder: "Renter Delivery Limit",
             min: 0
         }
     ];

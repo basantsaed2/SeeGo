@@ -12,7 +12,6 @@ html[dir="ltr"] {
   text-align: left;
 }
 
-/* يمكن تخصيص عناصر معينة */
 html[dir="rtl"] span,
 html[dir="rtl"] h1,
 html[dir="rtl"] input,

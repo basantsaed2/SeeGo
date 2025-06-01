@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import {
   Home,
   DollarSign,
@@ -69,7 +69,7 @@ const navItems = [
     icon: <CreditCard size={20} />,
     subItems: [
       { label: "Packages", to: "/packages_list", icon: <Package size={20} /> },
-      { label: "Invoices", to: "/invoice", icon: <ReceiptText size={20} /> },
+      { label: "Invoices", to: "/invoice_list", icon: <ReceiptText size={20} /> },
     ],
   },
   {
@@ -118,6 +118,7 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate(); // Added useNavigate
   const isSidebarOpen = true;
   const { i18n } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
@@ -143,10 +144,19 @@ export function AppSidebar() {
   }, [location.pathname]);
 
   const toggleExpand = (label) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [label]: !prev[label],
-    }));
+    setExpandedItems((prev) => {
+      // Close all other lists
+      const newExpanded = {};
+      // Open the clicked list and navigate to its first sub-item
+      if (!prev[label]) {
+        newExpanded[label] = true;
+        const item = navItems.find((i) => i.label === label);
+        if (item?.subItems?.length > 0) {
+          navigate(item.subItems[0].to); // Navigate to the first sub-item
+        }
+      }
+      return newExpanded;
+    });
   };
 
   return (
@@ -179,16 +189,12 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="list-none p-0 bg-teal-600 flex flex-col gap-3">
               {navItems.map((item) => {
-                // Determine if the main item is active
                 const isActive = (() => {
                   if (item.to === "/") {
-                    // For the Home item, only activate if the path is exactly "/"
                     return location.pathname === "/";
                   } else if (item.subItems) {
-                    // For parent items with sub-items, check if any sub-item's path starts with the current location
                     return item.subItems.some((sub) => location.pathname.startsWith(sub.to));
                   } else if (item.to) {
-                    // For other direct links, check if the current location starts with its 'to' path
                     return location.pathname.startsWith(item.to);
                   }
                   return false;
@@ -198,9 +204,7 @@ export function AppSidebar() {
 
                 return (
                   <SidebarMenuItem key={item.label}>
-                    {/* Main menu item */}
                     {item.to && !item.subItems ? (
-                      // If it's a direct link (like Home, Units, Payments, News Feed)
                       <Link to={item.to}>
                         <SidebarMenuButton
                           isActive={isActive}
@@ -215,7 +219,6 @@ export function AppSidebar() {
                         </SidebarMenuButton>
                       </Link>
                     ) : (
-                      // If it's a parent item with sub-items (like Assets, User List)
                       <SidebarMenuButton
                         onClick={() => toggleExpand(item.label)}
                         isActive={isActive}
@@ -233,9 +236,8 @@ export function AppSidebar() {
                       </SidebarMenuButton>
                     )}
 
-                    {/* Submenu items */}
                     {item.subItems && isExpanded && (
-                      <div className="!ml-6 !mt-1 flex flex-col gap-1">
+                      <div className="!ml-6 !mt-3 flex flex-col gap-3">
                         {item.subItems.map((subItem) => {
                           const isSubActive = location.pathname.startsWith(subItem.to);
                           return (
