@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { usePost } from '@/Hooks/UsePost'; // Corrected import path
 import { useGet } from '@/Hooks/UseGet'; // Corrected import path
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from "react-i18next";
 
 const Packages = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -24,6 +25,7 @@ const Packages = () => {
     const [receipt, setReceipt] = useState(null);
     const { refetch: refetchPackages, loading: loadingPackages, data: PackagesData } = useGet({ url: `${apiUrl}/payment_package/lists` });
     const { postData, loading: loadingPost, response } = usePost({ url: `${apiUrl}/payment_package` });
+  const { t } = useTranslation();
 
     useEffect(() => {
         refetchPackages();
@@ -55,7 +57,7 @@ const Packages = () => {
 const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedPackage || !selectedPaymentMethod || !receipt) {
-        toast.error('Please select a payment method and upload a receipt.');
+        toast.error(t('Pleaseselectapaymentmethodanduploadareceipt'));
         return;
     }
 
@@ -66,7 +68,7 @@ const handleSubmit = async (e) => {
     body.append("discount", selectedPackage.discount || '0');
     body.append("receipt", receipt);
 
-    await postData(body, "Package Paid Success!");
+    await postData(body, t("PackagePaidSuccess"));
 };
 
 const handleFileChange = (e) => {
@@ -76,12 +78,12 @@ const handleFileChange = (e) => {
 return (
     <div className="!p-10">
         <div className="flex justify-between items-center !mb-6">
-            <h1 className="text-3xl font-bold text-bg-primary">Choose Your Package</h1>
+            <h1 className="text-3xl font-bold text-bg-primary">{t("ChooseYourPackage")}</h1>
             <a
                 href="/"
                 className="bg-gray-500 hover:bg-gray-600 text-white rounded-lg !px-4 !py-2 text-sm font-medium transition-colors"
             >
-                Skip
+                {t("Skip")}
             </a>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -110,7 +112,7 @@ return (
                         </div>
                         {subscription.discount !== '—' && (
                             <span className="bg-gray-300 text-black text-xs font-semibold !px-2 !py-1 rounded-full">
-                                {subscription.discount}% OFF
+                                {subscription.discount}% {t("OFF")}
                             </span>
                         )}
                     </CardHeader>
@@ -127,26 +129,26 @@ return (
                         </p>
                         <div className="!mt-3 space-y-2">
                             <p className="text-sm text-gray-700">
-                                <span className="font-medium">Service:</span>{' '}
+                                <span className="font-medium">{t("Service")}</span>{' '}
                                 {subscription.serviceName}
                             </p>
                             {subscription.type === 'village' && (
                                 <>
                                     <p className="text-sm text-gray-700">
-                                        <span className="font-medium">Admin Number:</span>{' '}
+                                        <span className="font-medium">{t("AdminNumber")}</span>{' '}
                                         {subscription.admin_num}
                                     </p>
                                     <p className="text-sm text-gray-700">
-                                        <span className="font-medium">Security Number:</span>{' '}
+                                        <span className="font-medium">{t("SecurityNumber")}</span>{' '}
                                         {subscription.security_num}
                                     </p>
                                     <p className="text-sm text-gray-700">
-                                        <span className="font-medium">Maintenance Module:</span>{' '}
-                                        {subscription.maintenance_module ? 'Enabled' : 'Disabled'}
+                                        <span className="font-medium">{t("MaintenanceModule")}</span>{' '}
+                                        {subscription.maintenance_module ? t('Enabled') : t('Disabled')}
                                     </p>
                                     <p className="text-sm text-gray-700">
-                                        <span className="font-medium">Beach/Pool Module:</span>{' '}
-                                        {subscription.beach_pool_module ? 'Enabled' : 'Disabled'}
+                                        <span className="font-medium">{t("BeachPoolModule")}</span>{' '}
+                                        {subscription.beach_pool_module ?  t('Enabled') : t('Disabled')}
                                     </p>
                                 </>
                             )}
@@ -159,7 +161,7 @@ return (
                             className="bg-bg-primary hover:bg-teal-600 cursor-pointer text-white rounded-lg !px-4 !py-2"
                             disabled={loadingPost || isLoading}
                         >
-                            Pay
+                            {t("Pay")}
                         </Button>
                     </CardFooter>
                 </Card>

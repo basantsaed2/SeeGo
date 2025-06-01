@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
 import { useChangeState } from "@/Hooks/useChangeState";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTranslation } from "react-i18next";
+
 import {
     Dialog,
     DialogContent,
@@ -25,6 +27,7 @@ const Payments = () => {
     const [PaymentsUpcoming, setPaymentsUpcoming] = useState([]);
     const [PaymentsHistory, setPaymentsHistory] = useState([]);
     const { changeState, loadingChange } = useChangeState();
+  const {t}=useTranslation();
 
     const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
     const [selectedReceiptUrl, setSelectedReceiptUrl] = useState("");
@@ -95,13 +98,13 @@ const Payments = () => {
     };
 
     const baseColumnsHistory = [
-        { key: "name", label: "User Name" },
-        { key: "phone", label: "Phone" },
-        { key: "maintenance", label: "Maintenance Name" },
-        { key: "paid", label: "Paid" },
+        { key: "name", label: t("UserName") },
+        { key: "phone", label: t("Phone") },
+        { key: "maintenance", label: t("MaintenanceName") },
+        { key: "paid", label: t("Paid") },
         {
             key: "receipt",
-            label: "Receipt",
+            label: t("Receipt"),
             render: (row) => (
                 row.receipt ? (
                     <div className="flex items-center gap-2">
@@ -118,7 +121,7 @@ const Payments = () => {
                             }}
                             className="text-blue-600 hover:text-blue-800 hover:underline"
                         >
-                            View
+                            {t("View")}
                         </button>
                     </div>
                 ) : (
@@ -128,13 +131,13 @@ const Payments = () => {
         }];
 
     const baseColumns = [
-        { key: "name", label: "User Name" },
-        { key: "phone", label: "Phone" },
-        { key: "maintenance", label: "Maintenance Name" },
-        { key: "paid", label: "Paid" },
+        { key: "name", label: t("UserName") },
+        { key: "phone", label: t("Phone") },
+        { key: "maintenance", label: t("MaintenanceName") },
+        { key: "paid", label: t("Paid") },
         {
             key: "receipt",
-            label: "Receipt",
+            label: t("Receipt"),
             render: (row) => (
                 row.receipt ? (
                     <div className="flex items-center gap-2">
@@ -151,7 +154,7 @@ const Payments = () => {
                             }}
                             className="text-blue-600 hover:text-blue-800 hover:underline"
                         >
-                            View
+                            {t("View")}
                         </button>
                     </div>
                 ) : (
@@ -163,7 +166,7 @@ const Payments = () => {
 
     const actionColumn = {
         key: "actions",
-        label: "Actions",
+        label: t("Actions"),
         render: (row) => {
             return (
                 <div className="flex items-center justify-center !mt-2 !pt-2 gap-4">
@@ -187,7 +190,7 @@ const Payments = () => {
                                 d="M5 13l4 4L19 7"
                             />
                         </svg>
-                        Accept
+                        {t("Accept")}
                     </button>
 
                     {/* Reject Button */}
@@ -210,7 +213,7 @@ const Payments = () => {
                                 d="M6 18L18 6M6 6l12 12"
                             />
                         </svg>
-                        Reject
+                        {t("Reject")}
                     </button>
                 </div>
             );
@@ -233,7 +236,7 @@ const Payments = () => {
                       data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                       hover:bg-teal-100 hover:text-teal-700 shadow-md"
                     >
-                        Upcoming Payments
+                        {t("UpcomingPayments")}
                     </TabsTrigger>
                     <TabsTrigger
                         value="history"
@@ -241,7 +244,7 @@ const Payments = () => {
                       data-[state=active]:bg-bg-primary data-[state=active]:text-white 
                       hover:bg-teal-100 hover:text-teal-700 shadow-md"
                     >
-                        History Payments
+                        {t("HistoryPayments")}
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="upcoming">

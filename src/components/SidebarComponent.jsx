@@ -29,6 +29,7 @@ import { MdOutlinePool, MdOutlineSyncProblem, MdOutlineSupervisedUserCircle } fr
 import { GrHostMaintenance } from "react-icons/gr";
 import { GiOpenGate } from "react-icons/gi";
 import { FaUserShield } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 import {
   Sidebar,
@@ -40,87 +41,86 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 
-const navItems = [
-  { label: "Home", to: "/", icon: <Home size={20} /> },
-  { label: "Units", to: "/units", icon: <Building size={20} /> },
-  {
-    label: "Assets",
-    icon: <Building2 size={20} />,
-    subItems: [
-      { label: "Gates", to: "/gates", icon: <GiOpenGate size={20} /> },
-      { label: "Pools", to: "/pools", icon: <MdOutlinePool size={20} /> },
-      { label: "Beaches", to: "/beaches", icon: <TbBeach size={20} /> },
-    ],
-  },
-  {
-    label: "User List",
-    icon: <Users size={20} />,
-    subItems: [
-      { label: "Owners", to: "/owners", icon: <FaBuildingUser size={20} /> },
-      { label: "Security Man", to: "/security_man", icon: <FaUserShield size={20} /> },
-      { label: "Admins", to: "/admins", icon: <UserCog size={20} /> },
-    ],
-  },
-  {
-    label: "Subscription",
-    icon: <CreditCard size={20} />,
-    subItems: [
-      { label: "Packages", to: "/packages_list", icon: <Package size={20} /> },
-      { label: "Invoices", to: "/invoice_list", icon: <ReceiptText size={20} /> },
-    ],
-  },
-  {
-    label: "Request",
-    icon: <ListChecks size={20} />,
-    subItems: [
-      { label: "Problems", to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
-      { label: "Maintenance Request", to: "/maintenance_request", icon: <GrHostMaintenance size={20} /> },
-    ],
-  },
-  {
-    label: "Entrance",
-    icon: <DoorOpen size={20} />,
-    subItems: [
-      { label: "Visits", to: "/visits", icon: <Handshake size={20} /> },
-      { label: "Visitor Limit", to: "/visitor_limit", icon: <ScrollText size={20} /> },
-    ],
-  },
-  {
-    label: "Settings",
-    icon: <Settings size={20} />,
-    subItems: [
-      { label: "Village Single Page", to: "/villiage_info", icon: <Info size={20} /> },
-    ],
-  },
-  {
-    label: "Maintenance",
-    icon: <Wrench size={20} />,
-    subItems: [
-      { label: "Maintenance Fees", to: "/maintenance_fees", icon: <FaMoneyBillTransfer size={20} /> },
-      { label: "Maintenance Type", to: "/maintenance_type", icon: <Wrench size={20} /> },
-    ],
-  },
-  {
-    label: "Data",
-    icon: <BarChart2 size={20} />,
-    subItems: [
-      { label: "Rent & Sale", to: "/rent_sale", icon: <DollarSign size={20} /> },
-      { label: "Rent", to: "/rents", icon: <Building size={20} /> },
-      { label: "Service Provider", to: "/services", icon: <UserCog size={20} /> },
-    ],
-  },
-  { label: "Payments", to: "/payments", icon: <DollarSign size={20} /> },
-  { label: "News Feed", to: "/posts", icon: <Newspaper size={20} /> },
-];
-
 export function AppSidebar() {
+  const { t, i18n } = useTranslation();
+
+  const navItems = [
+    { label: t("Home"), to: "/", icon: <Home size={20} /> },
+    { label: t("Units"), to: "/units", icon: <Building size={20} /> },
+    {
+      label: t("Assets"),
+      icon: <Building2 size={20} />,
+      subItems: [
+        { label: t("Gates"), to: "/gates", icon: <GiOpenGate size={20} /> },
+        { label: t("Pools"), to: "/pools", icon: <MdOutlinePool size={20} /> },
+        { label: t("Beaches"), to: "/beaches", icon: <TbBeach size={20} /> },
+      ],
+    },
+    {
+      label: t("UserList"),
+      icon: <Users size={20} />,
+      subItems: [
+        { label: t("Owners"), to: "/owners", icon: <FaBuildingUser size={20} /> },
+        { label: t("SecurityMan"), to: "/security_man", icon: <FaUserShield size={20} /> },
+        { label: t("Admins"), to: "/admins", icon: <UserCog size={20} /> },
+      ],
+    },
+    {
+      label: t("Subscription"),
+      icon: <CreditCard size={20} />,
+      subItems: [
+        { label: t("Packages"), to: "/packages_list", icon: <Package size={20} /> },
+      { label: "Invoices", to: "/invoice_list", icon: <ReceiptText size={20} /> },
+      ],
+    },
+    {
+      label: t("Request"),
+      icon: <ListChecks size={20} />,
+      subItems: [
+        { label: t("Problems"), to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
+        { label: t("MaintenanceRequest"), to: "/maintenance_request", icon: <GrHostMaintenance size={20} /> },
+      ],
+    },
+    {
+      label: t("Entrance"),
+      icon: <DoorOpen size={20} />,
+      subItems: [
+        { label: t("Visits"), to: "/visits", icon: <Handshake size={20} /> },
+        { label: t("VisitorLimit"), to: "/visitor_limit", icon: <ScrollText size={20} /> },
+      ],
+    },
+    {
+      label: t("Settings"),
+      icon: <Settings size={20} />,
+      subItems: [
+        { label: t("VillageSinglePage"), to: "/villiage_info", icon: <Info size={20} /> },
+      ],
+    },
+    {
+      label: t("Maintenance"),
+      icon: <Wrench size={20} />,
+      subItems: [
+        { label: t("MaintenanceFees"), to: "/maintenance_fees", icon: <FaMoneyBillTransfer size={20} /> },
+        { label: t("MaintenanceType"), to: "/maintenance_type", icon: <Wrench size={20} /> },
+      ],
+    },
+    {
+      label: t("Data"),
+      icon: <BarChart2 size={20} />,
+      subItems: [
+        { label: t("RentSale"), to: "/rent_sale", icon: <DollarSign size={20} /> },
+        { label: t("Rent"), to: "/rents", icon: <Building size={20} /> },
+        { label: t("ServiceProvider"), to: "/services", icon: <UserCog size={20} /> },
+      ],
+    },
+    { label: t("Payments"), to: "/payments", icon: <DollarSign size={20} /> },
+    { label: t("NewsFeed"), to: "/posts", icon: <Newspaper size={20} /> },
+  ];
   const location = useLocation();
   const navigate = useNavigate(); // Added useNavigate
   const isSidebarOpen = true;
-  const { i18n } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
   const user = useSelector((state) => state.auth.user);
   const villageName = user?.village?.village?.name || "SEA GO";

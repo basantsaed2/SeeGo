@@ -8,6 +8,8 @@ import { useGet } from "@/Hooks/UseGet";
 import { useChangeState } from "@/Hooks/useChangeState";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
+
 import {
   Dialog,
   DialogContent,
@@ -33,6 +35,7 @@ const Problems = () => {
   useEffect(() => {
     refetchProblem();
   }, [refetchProblem]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (ProblemData && ProblemData.problem_reports) {
@@ -76,11 +79,11 @@ const Problems = () => {
   };
 
   const pendingColumns = [
-    { key: "name", label: "User Problem" },
-    { key: "map", label: "Location" },
+    { key: "name", label: t("UserProblem") },
+    { key: "map", label: t("Location") },
     { 
       key: "description", 
-      label: "Details",
+      label: t("Details"),
       render: (row) => (
         <Button 
           variant="link" 
@@ -90,22 +93,22 @@ const Problems = () => {
             setIsDialogOpen(true);
           }}
         >
-          View Details
+          {t("ViewDetails")}
         </Button>
       )
     },
      { 
       key: "status", 
-      label: "Status",
+      label: t("Status"),
     },
   ];
 
   const resolvedColumns = [
-    { key: "name", label: "User Problem" },
-    { key: "map", label: "Location" },
+     { key: "name", label: t("UserProblem") },
+    { key: "map", label: t("Location") },
     { 
       key: "description", 
-      label: "Details",
+      label: t("Details"),
       render: (row) => (
         <Button 
           variant="link" 
@@ -115,13 +118,13 @@ const Problems = () => {
             setIsDialogOpen(true);
           }}
         >
-          View Details
+          {t("ViewDetails")}
         </Button>
       )
     },
     { 
       key: "status", 
-      label: "Status",
+      label: t("Status"),
       render: (row) => (
         <span className={`!px-3 !py-1 rounded-full text-sm ${row.status === "resolved" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}>
           {formatStatus(row.status)}
@@ -144,7 +147,7 @@ const Problems = () => {
             data-[state=active]:bg-bg-primary data-[state=active]:text-white 
             hover:bg-teal-100 hover:text-teal-700"
           >
-            Pending
+            {t("Pending")}
           </TabsTrigger>
           <TabsTrigger
             value="resolved"
@@ -152,7 +155,7 @@ const Problems = () => {
             data-[state=active]:bg-bg-primary data-[state=active]:text-white 
             hover:bg-teal-100 hover:text-teal-700"
           >
-            Resolved
+            {t("Resolved")}
           </TabsTrigger>
         </TabsList>
 
@@ -183,7 +186,7 @@ const Problems = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Problem Details</DialogTitle>
+            <DialogTitle>{t("ProblemDetails")}</DialogTitle>
           </DialogHeader>
           {selectedProblem && (
             <div className="!space-y-6">
@@ -197,11 +200,11 @@ const Problems = () => {
                 </div>
               )}
               <div>
-                <h3 className="font-medium text-lg">Description:</h3>
+                <h3 className="font-medium text-lg">{t("Description")}</h3>
                 <p className="text-gray-700 !mt-2">{selectedProblem.description}</p>
               </div>
               <div>
-                <h3 className="font-medium text-lg">Status:</h3>
+                <h3 className="font-medium text-lg">{t("Status")}</h3>
                 <p className={`!mt-2 !px-4 !py-2 inline-block rounded-full ${
                   selectedProblem.status === "resolved" 
                     ? "bg-green-100 text-green-800" 

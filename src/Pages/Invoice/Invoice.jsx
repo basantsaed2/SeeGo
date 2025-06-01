@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "react-i18next";
 
 import { useEffect, useState } from "react";
 import {
@@ -44,6 +45,7 @@ export default function InvoiceCard() {
   });
   const location = useLocation();
   const invoiceFromState = location.state?.invoiceData;
+  const { t } = useTranslation();
 
   useEffect(() => {
     refetchInvoice();
@@ -64,19 +66,19 @@ export default function InvoiceCard() {
     );
   }
 
-  if (error) {
-    toast.error("Failed to load invoice data.", { position: "top-center" });
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-red-500 font-medium">Error loading invoice data. Please try again later.</p>
-      </div>
-    );
-  }
+    if (error) {
+        toast.error("Failed to load invoice data.", { position: "top-center" });
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-red-500 font-medium">{t("ErrorloadinginvoicedataPleasetryagainlater")}</p>
+            </div>
+        );
+    }
 
   if (!invoiceFromState || !village) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500 font-medium">No invoice data available for this village.</p>
+                <p className="text-gray-500 font-medium">{t("Noinvoicedataavailableforthisvillage")}</p>
       </div>
     );
   }

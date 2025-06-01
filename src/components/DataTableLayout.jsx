@@ -338,7 +338,7 @@ export default function DataTable({
           <div className="flex items-center gap-3 flex-wrap">
             <Select value={filterValue} onValueChange={setFilterValue}>
               <SelectTrigger className="w-[120px] border-bg-primary focus:ring-bg-primary rounded-[10px] !px-2">
-                <SelectValue placeholder="Filter by" />
+                <SelectValue placeholder={t("Filterby")} />
               </SelectTrigger>
               <SelectContent className="bg-white border-bg-primary rounded-md shadow-lg !p-3">
                 <SelectItem value="active">{t('Active')}</SelectItem>

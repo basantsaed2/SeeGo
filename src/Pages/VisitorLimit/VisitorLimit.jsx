@@ -8,6 +8,7 @@ import { useGet } from "@/Hooks/UseGet";
 import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
 import Add from "@/components/AddFieldSection";
+import { useTranslation } from "react-i18next";
 
 const VisitorLimit = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -21,6 +22,7 @@ const VisitorLimit = () => {
         renter_delivery: 0
     });
     const navigate = useNavigate();
+  const { t } = useTranslation();
 
     const { refetch: refetchVisitorLimit, loading: loadingVisitorLimitData, data: VisitorLimitData } = useGet({
         url: `${apiUrl}/visitor_limit`,
@@ -46,26 +48,26 @@ const VisitorLimit = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
-        updateVisitorLimit(visitorLimit,"Visitor limits updated successfully!");
+        updateVisitorLimit(visitorLimit,t('Visitorlimitsupdatedsuccessfully'));
     };
 
     const fields = [
         {
-            name: "guest",
+            name: t("guest"),
             type: "input",
             inputType: "number",
             placeholder: "Owner Guest Limit",
             min: 0
         },
         {
-            name: "worker",
+            name: t("worker"),
             type: "input",
             inputType: "number",
             placeholder: "Owner Worker Limit",
             min: 0
         },
         {
-            name: "delivery",
+            name: t("delivery"),
             type: "input",
             inputType: "number",
             placeholder: "Owner Delivery Limit",
@@ -101,7 +103,7 @@ const VisitorLimit = () => {
     return (
         <div className="min-h-screen">
             <div className=" !p-6">
-                <h1 className="text-2xl text-bg-primary font-semibold !mb-6">Visitor Limits</h1>
+                <h1 className="text-2xl text-bg-primary font-semibold !mb-6">{t("VisitorLimits")}</h1>
                 
                 <Add 
                     fields={fields} 
@@ -116,7 +118,7 @@ const VisitorLimit = () => {
                         className="bg-bg-primary hover:bg-white hover:text-bg-primary cursor-pointer text-white font-medium !py-2 !px-6 rounded-lg"
                         disabled={loadingVisitorLimit}
                     >
-                        {loadingVisitorLimit ? "Saving..." : "Save Changes"}
+                        {loadingVisitorLimit ? t("Saving") : t("SaveChanges")}
                     </button>
                 </div>
             </div>

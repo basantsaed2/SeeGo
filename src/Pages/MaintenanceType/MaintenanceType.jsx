@@ -10,6 +10,8 @@ import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
 import { useChangeState } from "@/Hooks/useChangeState";
+import { useTranslation } from "react-i18next";
+
 const MaintenanceType = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
@@ -18,6 +20,7 @@ const MaintenanceType = () => {
   const { deleteData, loadingDelete, responseDelete } = useDelete();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { changeState, loadingChange } = useChangeState();
+  const {t}=useTranslation();
 
   const { refetch: refetchMaintenanceType, loading: loadingMaintenanceType, data: MaintenanceTypeData } = useGet({ url: `${apiUrl}/maintenance_type` });
 
@@ -77,7 +80,7 @@ const MaintenanceType = () => {
       setMaintenanceType((prev) =>
         prev.map((Type) =>
           Type.id === row.id
-            ? { ...Type, status: newStatus === 1 ? "Active" : "Inactive" }
+            ? { ...Type, status: newStatus === 1 ? t("Active") : t("Inactive") }
             : Type
         )
       );
@@ -85,9 +88,9 @@ const MaintenanceType = () => {
   };
 
   const columns = [
-    { key: "img", label: "Image" },
-    { key: "name", label: "Maintenance Type" },
-    { key: "status", label: "Status" },
+    { key: "img", label: t("Image") },
+    { key: "name", label: t("MaintenanceType") },
+    { key: "status", label: t("Status") },
   ];
   if (isLoading || loadingMaintenanceType) {
     return <FullPageLoader />;

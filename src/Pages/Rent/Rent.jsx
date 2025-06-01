@@ -6,12 +6,14 @@ import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useTranslation } from "react-i18next";
 
 const Rent = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const isLoading = useSelector((state) => state.loader.isLoading);
     const [Rent, setRent] = useState([]);
     const [RentDetails, setRentDetails] = useState([]);
+  const {t}=useTranslation();
 
     const { refetch: refetchRent, loading: loadingRent, data: RentData } = useGet({
         url: `${apiUrl}/rents`,
@@ -67,18 +69,18 @@ const Rent = () => {
     }, [RentData]);
 
     const columns = [
-        { key: "img", label: "Image ID" },
-        { key: "renter", label: "Renter" },
-        { key: "phone", label: "Renter Phone" },
-        { key: "owner", label: "Owner" },
-        { key: "ownerPhone", label: "Owner Phone" },
+        { key: "img", label: t("ImageID") },
+        { key: "renter", label: t("Renter") },
+        { key: "phone", label: t("RenterPhone") },
+        { key: "owner", label: t("Owner") },
+        { key: "ownerPhone", label: t("OwnerPhone") },
         // { key: "code", label: "Code" },
-        { key: "from", label: "From" },
-        { key: "to", label: "To" },
-        { key: "people", label: "No.People" },
+        { key: "from", label: t("From") },
+        { key: "to", label: t("To") },
+        { key: "people", label: t("No.People") },
         // { key: "name", label: "User Name" },
         // { key: "phone", label: "User Phone" },
-        { key: "unit", label: "Unit" },
+        { key: "unit", label: t("Unit") },
         // { key: "floor", label: "Apartment Floor" },
     ];
 

@@ -7,11 +7,13 @@ import FullPageLoader from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 const Visits = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
   const [visits, setVisits] = useState([]);
+  const { t } = useTranslation();
 
   const {
     refetch: refetchVisit,
@@ -54,16 +56,16 @@ const Visits = () => {
         </div>
       ),
     },
-    { key: "phone", label: "Visitor Phone" },
-    { key: "user_type", label: "Visitor Type" },
-    { key: "unit", label: "Units" },
-    { key: "unit_type", label: "Unit Type" },
+    { key: "phone", label: t("VisitorPhone") },
+    { key: "user_type", label: t("VisitorType") },
+    { key: "unit", label: t("Units") },
+    { key: "unit_type", label: t("UnitType") },
     {
       key: "date",
-      label: "Date",
+      label: t("Date"),
       render: (row) => (row.date ? format(row.date, "MMM dd, yyyy") : "—"), // Format for display
     },
-    { key: "time", label: "Time" },
+    { key: "time", label: t("Time") },
   ];
 
   const handleDateRangeChange = ({ startDate, endDate }) => {

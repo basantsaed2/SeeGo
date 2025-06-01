@@ -38,7 +38,7 @@ export default function VilliageSinglePage() {
         }
         setLoading(false);
     }, [SinglePageData]);
-
+const {t}=useTranslation();
     if (loading || loadingSinglePage) return <Loading />;
     if (!villageData) return <p className="text-center text-red-500">{t("Failedtoloadvillagedata")}</p>;
 
