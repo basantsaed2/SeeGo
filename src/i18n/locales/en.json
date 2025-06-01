@@ -327,18 +327,22 @@
 "View":"View",
 "Reject":"Reject",
 "UpcomingPayments":"Upcoming Payments",
-"HistoryPayments":"History Payments"
+"HistoryPayments":"History Payments",
+"PackageName":"Package Name",
+"Amount":"Amount",
+  "OwnerGuestLimit":"Owner Guest Limit",
+  "OwnerWorkerLimit":"Owner Worker Limit",
+  "OwnerDeliveryLimit":"Owner Delivery Limit",
+  "OwnerRenterGuestLimit":"Owner Renter Guest Limit",
+  "renter_worker":"renter_worker",
+  "RenterWorkerLimit":"Renter Worker Limit",
+  "renter_delivery":"renter_delivery",
+  "RenterDeliveryLimit":"Renter Delivery Limit",
 
+  "renter_guest":"renter_guest",
+"ViewInvoice":"View Invoice",
+"Status:":"Status:"
 
-
-
-
-
-
-
-
-
-  
 
 
 }

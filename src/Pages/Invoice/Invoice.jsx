@@ -45,8 +45,8 @@ export default function InvoiceCard() {
   });
   const location = useLocation();
   const invoiceFromState = location.state?.invoiceData;
-  const { t } = useTranslation();
-
+  const { t ,i18n} = useTranslation();
+const dir=i18n.language==="ar"?"rtl":"ltr"
   useEffect(() => {
     refetchInvoice();
   }, [refetchInvoice]);
@@ -117,7 +117,9 @@ export default function InvoiceCard() {
             backgroundPosition: "center",
           }}
         >
-          <div className="flex items-center !space-x-4">
+          {dir==="rtl"?(<div  className={`flex items-center  justify-end    !space-x-4`}>
+            <h2 className={`text-xl  sm:text-2xl font-semibold tracking-wide drop-shadow-lg  `}>
+            </h2>
             {village.image_link && (
               <img
                 src={village.image_link}
@@ -126,10 +128,25 @@ export default function InvoiceCard() {
                 aria-label="Village Logo"
               />
             )}
-            <h2 className="text-xl sm:text-2xl font-semibold tracking-wide drop-shadow-lg">
+
+            
+          </div>
+        ):(<div  className={`flex items-center   !space-x-4`}>
+            {village.image_link && (
+              <img
+                src={village.image_link}
+                alt="Village Logo"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-4 border-white shadow-lg object-cover transition-transform duration-300 hover:scale-110"
+                aria-label="Village Logo"
+              />
+            )}
+
+            <h2 className={`text-xl  sm:text-2xl font-semibold tracking-wide drop-shadow-lg  `}>
               {village.name}
             </h2>
-          </div>
+          </div>)}
+        
+
         </CardHeader>
 
         <CardContent className="!p-4 md:!p-6 lg:!p-8">
@@ -141,8 +158,8 @@ export default function InvoiceCard() {
                 className="w-full h-32 sm:h-48 md:h-64 object-cover"
                 aria-label="Village Cover Image"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end !p-4 md:!p-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-white">
+              <div  className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end !p-4 md:!p-6">
+                <h2  className={`   text-xl sm:text-2xl font-bold text-white`}>
                   {village?.name || "N/A"}
                 </h2>
               </div>
@@ -154,7 +171,7 @@ export default function InvoiceCard() {
               <MapPin className="w-5 h-5 text-bg-primary flex-shrink-0" />
               <div>
                 <Badge className="!px-4 !py-1 text-sm text-white bg-bg-primary rounded-full !mb-2 transition-colors">
-                  Invoice to:
+                  {t("Invoiceto")}
                 </Badge>
                 <p className="font-semibold text-lg text-gray-800">{village?.name || "N/A"}</p>
                 <p className="text-gray-600 text-sm">{village?.location || "Location N/A"}</p>
@@ -164,7 +181,7 @@ export default function InvoiceCard() {
               <Calendar className="w-5 h-5 text-bg-primary flex-shrink-0" />
               <div>
                 <Badge className="!px-4 !py-1 text-sm text-white bg-bg-primary rounded-full !mb-2 transition-colors">
-                  Date:
+                  {t("Date")}
                 </Badge>
                 <p className="font-semibold text-lg text-gray-800">{invoiceDate}</p>
               </div>
@@ -173,10 +190,10 @@ export default function InvoiceCard() {
               <FileText className="w-5 h-5 text-bg-primary flex-shrink-0" />
               <div>
                 <Badge className="!px-4 !py-1 text-sm text-white bg-bg-primary rounded-full !mb-2 transition-colors">
-                  Status:
+                  {t("Status")}
                 </Badge>
                 <p className={`font-semibold text-lg !px-3 !py-1 rounded-full ${invoiceFromState.status === "Active"? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}>{invoiceFromState.status === "Active"? "Paid" : "UnPaid"}</p>
+            }`}>{invoiceFromState.status === "Active"? t("Paid") : t("UnPaid")}</p>
               </div>
             </div>
           </div>
@@ -185,16 +202,16 @@ export default function InvoiceCard() {
             <Table className="min-w-full text-left">
               <TableHeader className="bg-blue-100 text-gray-700 text-xs sm:text-sm font-semibold">
                 <TableRow>
-                  <TableHead className="!px-4 !py-3 whitespace-nowrap">Village</TableHead>
-                  <TableHead className="!px-4 !py-3 whitespace-nowrap">Zone</TableHead>
-                  <TableHead className="!px-4 !py-3 whitespace-nowrap">Package</TableHead>
-                  <TableHead className="!px-4 !py-3 whitespace-nowrap">Price</TableHead>
-                  <TableHead className="!px-4 !py-3 whitespace-nowrap">Discount</TableHead>
-                  <TableHead className="!px-4 !py-3 whitespace-nowrap">Total After Discount</TableHead>
+                  <TableHead className="!px-4 !py-3 whitespace-nowrap">{t("Village")}</TableHead>
+                  <TableHead className="!px-4 !py-3 whitespace-nowrap">{t("Zone")}</TableHead>
+                  <TableHead className="!px-4 !py-3 whitespace-nowrap">{t("Package")}</TableHead>
+                  <TableHead className="!px-4 !py-3 whitespace-nowrap">{t("Price")}</TableHead>
+                  <TableHead className="!px-4 !py-3 whitespace-nowrap">{t("Discount")}</TableHead>
+                  <TableHead className="!px-4 !py-3 whitespace-nowrap">{t('TotalAfterDiscount')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="text-xs sm:text-sm text-gray-700 divide-y divide-blue-50">
-                <TableRow className="hover:bg-blue-50 transition-colors">
+                <TableRow className={`${dir==="rtl"?"text-right":" text-left"} hover:bg-blue-50 transition-colors`}>
                   <TableCell className="!px-4 !py-3 whitespace-nowrap">
                     {village.translations?.[0]?.value || village.name || "N/A"}
                   </TableCell>
@@ -221,24 +238,24 @@ export default function InvoiceCard() {
           <div className="!mt-8 !p-4 md:!p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md">
             <div className="text-right !space-y-4">
               <p className="text-sm sm:text-base text-gray-600">
-                <strong>Subtotal:</strong> {invoiceFromState.total_before_discount.toFixed(2)} EGP
+                <strong>{t("Subtotal")}</strong> {invoiceFromState.total_before_discount.toFixed(2)} EGP
               </p>
               <p className="text-sm sm:text-base text-gray-600">
-                <strong>Discount ({invoiceFromState.discount}%):</strong> -{invoiceFromState.discount.toFixed(2)} EGP
+                <strong>{t("Discount")} ({invoiceFromState.discount}%):</strong> -{invoiceFromState.discount.toFixed(2)} EGP
               </p>
               <div className="border-t border-blue-200 !pt-4">
                 <p className="text-xl sm:text-2xl font-extrabold text-bg-primary animate-pulse">
-                  <strong>Invoice Total:</strong> {invoiceFromState.amount.toFixed(2)} EGP
+                  <strong>{t("InvoiceTotal")}</strong> {invoiceFromState.amount.toFixed(2)} EGP
                 </p>
               </div>
             </div>
           </div>
 
           <div className="!mt-8">
-            <p className="text-base sm:text-lg font-medium text-gray-600 !mb-2">Subscription Progress:</p>
+            <p className="text-base sm:text-lg font-medium text-gray-600 !mb-2">{t("SubscriptionProgress")}:</p>
             <div className="flex justify-between text-sm md:text-base text-gray-600 !mt-2">
-              <span>Start: {new Date(village.from).toLocaleDateString("en-US")}</span>
-              <span>End: {new Date(village.to).toLocaleDateString("en-US")}</span>
+              <span>{t("Start")}{new Date(village.from).toLocaleDateString("en-US")}</span>
+              <span>{t("End")} {new Date(village.to).toLocaleDateString("en-US")}</span>
             </div>
           </div>
 
@@ -250,7 +267,7 @@ export default function InvoiceCard() {
               aria-expanded={showDetails}
               aria-controls="package-details"
             >
-              <span className="font-semibold tracking-wide">View Full Package Details</span>
+              <span className="font-semibold tracking-wide">{t("ViewFullPackageDetails")}</span>
               {showDetails ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </Button>
 
@@ -266,15 +283,15 @@ export default function InvoiceCard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 !pt-2">
                   <div className="flex items-center !space-x-2">
                     <BadgeDollarSign className="text-green-500 w-5 h-5 flex-shrink-0" />
-                    <span><strong>Price:</strong> {invoiceFromState.total_before_discount}</span>
+                    <span><strong>{t("Price")}:</strong> {invoiceFromState.total_before_discount}</span>
                   </div>
                   <div className="flex items-center !space-x-2">
                     <Percent className="text-pink-500 w-5 h-5 flex-shrink-0" />
-                    <span><strong>Discount:</strong> {invoiceFromState.discount}%</span>
+                    <span><strong>{t("Discount")}:</strong> {invoiceFromState.discount}%</span>
                   </div>
                   <div className="flex items-center !space-x-2">
                     <BadgeDollarSign className="text-yellow-500 w-5 h-5 flex-shrink-0" />
-                    <span><strong>Total After Discount:</strong> {invoiceFromState.amount}</span>
+                    <span><strong>{t("TotalAfterDiscount")}:</strong> {invoiceFromState.amount}</span>
                   </div>
                 </div>
               </div>

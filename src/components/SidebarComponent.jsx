@@ -72,7 +72,7 @@ export function AppSidebar() {
       icon: <CreditCard size={20} />,
       subItems: [
         { label: t("Packages"), to: "/packages_list", icon: <Package size={20} /> },
-      { label: "Invoices", to: "/invoice_list", icon: <ReceiptText size={20} /> },
+      { label: t("Invoices"), to: "/invoice_list", icon: <ReceiptText size={20} /> },
       ],
     },
     {
