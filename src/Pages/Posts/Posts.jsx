@@ -225,7 +225,6 @@ const Posts = () => {
     if (isLoading || loadingPost || loadingPostData) {
         return <FullPageLoader />;
     }
-  const {t}=useTranslation();
 
     return (
         <div className="!p-6 min-h-screen">
