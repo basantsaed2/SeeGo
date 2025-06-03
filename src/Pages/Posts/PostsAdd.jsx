@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import {  useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import "react-toastify/dist/ReactToastify.css";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";

@@ -21,29 +21,37 @@ export const usePostsForm = (apiUrl, isEdit = false, initialData = null) => {
         }
     }, [initialData, isEdit]);
 
-    const handleFieldChange = (lang, name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [lang]: {
-                ...prev[lang],
-                [name]: value,
-            },
-        }));
-    };
+const handleFieldChange = (lang, name, value) => {
+    setFormData(prev => ({
+        ...prev,
+        [lang]: {
+            ...prev[lang],
+            [name]: name === "image"
+                ? (value ? Array.from(value) : []) // safe conversion
+                : value,
+        },
+    }));
+};
 
-    const prepareFormData = () => {
-        const body = new FormData();
-        body.append("description", formData.en.description);
-        if (formData.en.image) {
-            body.append("image", formData.en.image);
-        }
-        return body;
-    };
+
+const prepareFormData = () => {
+    const body = new FormData();
+    body.append("description", formData.en.description);
+
+    if (formData.en.image && Array.isArray(formData.en.image)) {
+        formData.en.image.forEach((img) => {
+            body.append("images[]", img); // back-end should accept 'images[]' as array
+        });
+    }
+
+    return body;
+};
+
 
     const fields = {
         en: [
             { type: "textarea", placeholder: "Post", name: "description", required: true },
-            { type: "file", placeholder: "Post Image", name: "image", accept: "image/*" },
+        { type: "file", placeholder: "Post Images", name: "image", accept: "image/*", multiple: true },
         ]
     };
 

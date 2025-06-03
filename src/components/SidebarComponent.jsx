@@ -91,13 +91,8 @@ export function AppSidebar() {
         { label: t("VisitorLimit"), to: "/visitor_limit", icon: <ScrollText size={20} /> },
       ],
     },
-    {
-      label: t("Settings"),
-      icon: <Settings size={20} />,
-      subItems: [
-        { label: t("VillageSinglePage"), to: "/villiage_info", icon: <Info size={20} /> },
-      ],
-    },
+        { label: t("Images"), to: "/images", icon: <ScrollText size={20} /> },
+
     {
       label: t("Maintenance"),
       icon: <Wrench size={20} />,

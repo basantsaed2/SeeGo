@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DeleteDialog from "@/components/DeleteDialog";
@@ -34,7 +34,7 @@ const BeachesGallery = () => {
     const { postData, loadingPost, response, error: postError } = usePost({
         url: `${apiUrl}/beach/add_gallery/${id}`,
     });
-    const { deleteData, loadingDelete, error: deleteError } = useDelete();
+    const { deleteData, loadingDelete } = useDelete();
 
     useEffect(() => {
         refetchBeach();

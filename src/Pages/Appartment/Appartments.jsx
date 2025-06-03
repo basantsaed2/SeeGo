@@ -131,6 +131,8 @@ const Appartments = () => {
                 addRoute="/units/add"
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                showFilter={false}
+                showSearch={true}
                 pageDetailsRoute={false}
                 additionalLink="/units/create_code"
                 additionalLinkLabel={t("CreateCode")}

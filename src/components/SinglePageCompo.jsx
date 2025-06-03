@@ -10,75 +10,121 @@ import {
   Calendar,
   Globe,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
 import VilliageAdmin from "@/Pages/Villiage/VilliageAdmins/VilliageAdmin";
-import VillageGallery from "@/Pages/Villiage/VillageGallery";
-// import Units from "@/Pages/Villages/Units";
-// import Gallery from "./Gallery";
+import VGallery from "@/Pages/Villiage/VGallery";
+import Units from "@/Pages/Villiage/Units";
+import Gallery from "./Gallery";
 import { useTranslation } from "react-i18next";
-
+import { useLocation } from "react-router-dom";
+import Profile from "@/Pages/Profile/Profile";
 
 export default function VillageDetailsCard({
   data,
   status = "Active",
   entityType,
-})
-
-{
+}) {
   const { t, i18n } = useTranslation();
-const dira = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  const dira = i18n.language === "ar" ? "rtl" : "ltr";
   const location = useLocation();
+
   if (!data) return null;
 
   const formatDate = (dateString) => {
-    // Example implementation - adjust based on your needs
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
+  const isImagesPath = location.pathname.includes("/images");
+  const isProfilePath = location.pathname.includes("/profile");
+
+  let defaultTabValue = "info"; // Default for all other paths
+  if (isImagesPath) {
+    defaultTabValue = "gallery";
+  } else if (isProfilePath) {
+    defaultTabValue = "info";
+  }
+
+  // Determine the number of columns for TabsList based on which tabs will be visible
+  let gridColsClass;
+  if (isImagesPath) {
+    gridColsClass = 'grid-cols-1'; // Only 'Images' for pure /images path
+  } else if (isProfilePath) {
+    gridColsClass = 'grid-cols-2'; // Only 'Information' and 'Profile' for /profile path
+  } else {
+    gridColsClass = 'grid-cols-4'; // Default for village pages (Info, Admin, Images, Units)
+  }
+
+
   return (
     <div className="w-full">
-      <Tabs defaultValue="info" className="w-full">
-        <TabsList className="w-full grid grid-cols-4 gap-2 md:gap-6 bg-transparent !my-6">
-          <TabsTrigger
-            className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
-                  data-[state=active]:bg-bg-primary data-[state=active]:text-white
-                  hover:bg-teal-100 hover:text-teal-700"
-            value="info"
-          >
-            {t("Infomation")}
-          </TabsTrigger>
-          <TabsTrigger
-            className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
-                  data-[state=active]:bg-bg-primary data-[state=active]:text-white
-                  hover:bg-teal-100 hover:text-teal-700"
-            value="admin"
-          >
-            {t("Admins")}
-          </TabsTrigger>
-          <TabsTrigger
-            className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
-                  data-[state=active]:bg-bg-primary data-[state=active]:text-white
-                  hover:bg-teal-100 hover:text-teal-700"
-            value="gallery"
-          >
-            {t("Gallery")}
-          </TabsTrigger>
-
-          {/* Conditionally render the "Units" tab */}
-          {entityType === "village" && (
+      <Tabs defaultValue={defaultTabValue} className="w-full">
+        <TabsList className={`w-full grid gap-2 md:gap-6 bg-transparent !my-6 ${gridColsClass}`}>
+          {/* Information Tab */}
+          {/* Show if NOT pure /images path, and also show for /profile path */}
+          {!isImagesPath && (
             <TabsTrigger
               className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
                     data-[state=active]:bg-bg-primary data-[state=active]:text-white
                     hover:bg-teal-100 hover:text-teal-700"
+              value="info"
+            >
+              {t("Infomation")}
+            </TabsTrigger>
+          )}
+
+          {/* Admin Tab (only for non-image/profile specific pages) */}
+          {!isImagesPath && !isProfilePath && (
+            <TabsTrigger
+              className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
+                        data-[state=active]:bg-bg-primary data-[state=active]:text-white
+                        hover:bg-teal-100 hover:text-teal-700"
+              value="admin"
+            >
+              {t("Admins")}
+            </TabsTrigger>
+          )}
+
+          {/* Images/Gallery Tab */}
+          {/* Hide if it's the /profile path */}
+          {!isProfilePath && (
+            <TabsTrigger
+              className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
+                    data-[state=active]:bg-bg-primary data-[state=active]:text-white
+                    hover:bg-teal-100 hover:text-teal-700"
+              value="gallery"
+            >
+              {t("Images")}
+            </TabsTrigger>
+          )}
+
+          {/* Units Tab (only for specific entityType and non-image/profile specific pages) */}
+          {!isImagesPath && !isProfilePath && entityType === "village" && (
+            <TabsTrigger
+              className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
+                                data-[state=active]:bg-bg-primary data-[state=active]:text-white
+                                hover:bg-teal-100 hover:text-teal-700"
               value="units"
             >
               {t("Units")}
             </TabsTrigger>
           )}
+
+          {/* Profile Tab (only for profile specific pages) */}
+          {isProfilePath && (
+            <TabsTrigger
+              className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
+                        data-[state=active]:bg-bg-primary data-[state=active]:text-white
+                        hover:bg-teal-100 hover:text-teal-700"
+              value="profile"
+            >
+              {t("Profile")}
+            </TabsTrigger>
+          )}
         </TabsList>
 
-        <TabsContent value="info">
-          <Card className="!p-8 bg-gradient-to-br from-[#f3fbfa] to-white w-full shadow-lg border-none rounded-2xl transition-all duration-300 hover:shadow-xl">
+        {/* TabsContent - simplified conditional rendering */}
+<TabsContent value="info">
+          <Card className="!p-8 !mb-2 bg-gradient-to-br from-[#f3fbfa] to-white w-full shadow-lg border-none rounded-2xl transition-all duration-300 hover:shadow-xl">
             <CardContent className="flex flex-col gap-6">
               {/* Header Section */}
               <div  dir={dira} className="flex items-center justify-between flex-wrap gap-4">
@@ -158,16 +204,22 @@ const dira = i18n.language === 'ar' ? 'rtl' : 'ltr';
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="admin">
-          {<VilliageAdmin />}
+          <VilliageAdmin />
         </TabsContent>
+
         <TabsContent value="gallery">
-          <VillageGallery />
+          <Gallery />
         </TabsContent>
-        {/* <TabsContent value="units">
+
+        <TabsContent value="profile">
+          <Profile />
+        </TabsContent>
+
+        <TabsContent value="units">
           <Units />
-        </TabsContent> */}
+        </TabsContent>
       </Tabs>
     </div>
   );

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react"; // Add useMemo
 import { useParams } from "react-router-dom";
 import { useGet } from "@/Hooks/UseGet";
 import { usePost } from "@/Hooks/UsePost";
@@ -7,13 +7,13 @@ import FullPageLoader from "@/components/Loading";
 import { useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import DataTable from "@/components/DataTableLayout";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"; // Removed DialogTrigger as it's not directly used for the modal open
 import { Button } from "@/components/ui/button";
 import Add from "@/components/AddFieldSection";
 import { useTranslation } from "react-i18next";
 
 const FeesDetails = () => {
-  const {t}=useTranslation();
+  const { t } = useTranslation();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams();
   const isLoading = useSelector((state) => state.loader.isLoading);
@@ -47,7 +47,7 @@ const FeesDetails = () => {
         name: u.user_name || "—",
         phone: u.user_phone || "—",
         unit: u.unit || "—",
-        unit_type: u.unit_type || "—",
+        unit_type: u.unit_type || "—", // Ensure unit_type is always a string
         total: u.total ? parseFloat(u.total).toFixed(2) : "0.00",
         paid: u.paid ? parseFloat(u.paid).toFixed(2) : "0.00",
         remain: u.remaines ? parseFloat(u.remaines).toFixed(2) : "0.00",
@@ -143,24 +143,41 @@ const FeesDetails = () => {
     },
   ];
 
-  const actionColumns = [
-    {
-      label: t("AddPayment"),
-      onClick: (row) => handleOpenModal(row),
-      className: "inline-block cursor-pointer !px-3 !py-1 bg-bg-primary text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-teal-500 transition-all duration-300 ease-in-out",
-      disabled: (row) => parseFloat(row.remain) <= 0,
-    },
-  ];
-
-  // Define fields for the Add component
+  // Define fields for the Add component (for modal)
   const paymentFields = [
     {
-      name: t("amount"),
+      name: t("amount"), // Using t() for the name
       type: "input",
       inputType: "number",
       placeholder: t("PaymentAmount"),
     },
   ];
+
+  // --- NEW LOGIC FOR UNIT TYPE FILTER ---
+  const unitTypeOptions = useMemo(() => {
+    const types = new Set();
+    types.add("all"); // Always include an "all" option
+
+    maintenanceFees.forEach(fee => {
+      if (fee.unit_type) {
+        types.add(fee.unit_type.toLowerCase()); // Store in lowercase for consistent filtering
+      }
+    });
+    return Array.from(types);
+  }, [maintenanceFees]);
+
+  const unitTypeLabels = useMemo(() => {
+    const labels = {
+      all: t("All"), // Translate "All"
+    };
+    unitTypeOptions.forEach(type => {
+      if (type !== "all") {
+        labels[type] = t(type.charAt(0).toUpperCase() + type.slice(1)); // Capitalize and translate, e.g., "apartment" -> "Apartment"
+      }
+    });
+    return labels;
+  }, [unitTypeOptions, t]); // Depend on unitTypeOptions and t for re-calculation
+
 
   if (isLoading || loadingMaintenanceFees) {
     return <FullPageLoader />;
@@ -237,7 +254,7 @@ const FeesDetails = () => {
           <div className="space-y-4">
             <Add
               fields={paymentFields}
-              lang="en"
+              lang="en" // Keep lang as 'en' or change based on your Add component's localization strategy
               values={payment}
               onChange={(lang, name, value) => handleChange(name, value)}
             />
@@ -265,8 +282,14 @@ const FeesDetails = () => {
         data={maintenanceFees}
         columns={columns}
         showAddButton={false}
-        showActionColumns={false}
-        actionColumns={actionColumns}
+        showActionColumns={false} // Keep this false if you're handling action buttons within columns
+        // actionColumns={actionColumns} // Removed this line as the "Add Payment" button is now in `columns` via `render`
+        // --- NEW PROPS FOR UNIT TYPE FILTER ---
+        filterByKey="unit_type"
+        filterOptions={unitTypeOptions}
+        filterLabelsText={unitTypeLabels}
+        // Ensure showFilter is true if you want the filter to appear
+        showFilter={true}
       />
     </div>
   );

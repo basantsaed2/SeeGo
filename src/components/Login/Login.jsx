@@ -42,6 +42,7 @@ const Login = () => {
     if (!loadingPost && response) {
       dispatch(setUser(response?.data));
       localStorage.setItem("user", JSON.stringify(response?.data));
+localStorage.setItem("village_id", response?.data?.village?.village?.id);
       localStorage.setItem("token", response?.data.token);
       const redirectTo = new URLSearchParams(location.search).get("redirect");
       if (response?.data?.village?.village?.package_id === null) {

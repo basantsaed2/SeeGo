@@ -47,6 +47,8 @@ import FeesDetails from "./Pages/MaintenanceFees/FeesDetails";
 import Packages from "./Pages/Packages/Packages";
 import VillageAdmin from "./Pages/Villiage/VilliageAdmins/VilliageAdmin";
 import InvoiceList from "./Pages/Invoice/InvoiceList";
+import VGalleryPage from "./Pages/Villiage/VGallery";
+import ProfileSinglePage from "./Pages/Profile/ProfileSinglePage";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -236,6 +238,17 @@ const router = createBrowserRouter([
           { index: true, element: <InvoiceList /> },
           {path: "invoice", element: <InvoiceCard /> },
         ],
+      },
+      {
+        path:"images",element:<VilliageSinglePage/>
+      },
+            {
+        path: "profile",
+        element: (
+          <ProtectedRoute>
+            <ProfileSinglePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "*",

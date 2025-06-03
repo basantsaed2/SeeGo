@@ -1,83 +1,3 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import DataTable from "@/components/DataTableLayout";
-// import { ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-// import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-// import { useSelector } from "react-redux";
-// import FullPageLoader from "@/components/Loading";
-// import { useGet } from "@/Hooks/UseGet";
-
-// const Owners = () => {
-//   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-//   const isLoading = useSelector((state) => state.loader.isLoading);
-//   const [owners, setOwners] = useState([]);
-
-//   const { refetch: refetchOwner, loading: loadingOwner, data: OwnerData } = useGet({ url: `${apiUrl}/owner` });
-
-//   useEffect(() => {
-//     refetchOwner();
-//   }, [refetchOwner]);
-
-//   useEffect(() => {
-//     if (OwnerData && OwnerData.owners) {
-//       console.log("Owner Data:", OwnerData);
-//       const formatted = OwnerData?.owners?.map((u) => {
-//         return {
-//           id: u.id,
-//           name: u.name || "—",
-//           parent: u.parent?.name || "—",
-//           email: u.email || "—",
-//           phone: u.phone || "—",
-//           gender: u.gender || "—",
-//           appartment: u.appartments?.unit || "—",
-//           status: u.status === 1 ? "Active" : "Inactive",
-//           img: u.image_link ? (
-//             <img
-//               src={u.image_link}
-//               alt={u.name}
-//               className="w-12 h-12 object-cover rounded-md"
-//             />
-//           ) : (
-//             <Avatar className="w-12 h-12">
-//               <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
-//             </Avatar>
-//           ),
-//           password: "",
-//           birthDate: u.birthDate || "",
-//         };
-//       });
-//       setOwners(formatted);
-//     }
-//   }, [OwnerData]);
-
-//   const columns = [
-//     { key: "img", label: "Image" },
-//     { key: "name", label: "Owner Name" },
-//     { key: "parent", label: "Owner Type" },
-//     { key: "appartment", label: "Unit" },
-//     { key: "email", label: "Email" },
-//     { key: "phone", label: "Phone" },
-//     { key: "gender", label: "Gender" },
-//   ];
-//   if (isLoading) {
-//     return <FullPageLoader />;
-//   }
-//   return (
-//     <div className="p-4">
-//       <ToastContainer />
-//       <DataTable
-//         data={owners}
-//         columns={columns}
-//         showAddButton={false}
-//         showActionColumns={false}
-//         pageDetailsRoute={true}
-//       />
-//     </div>
-//   );
-// };
-
-// export default Owners;
 "use client";
 import { useEffect, useState } from "react";
 import DataTable from "@/components/DataTableLayout";
@@ -95,10 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog"; // Use your custom dialog components
-import { ChevronRight, Building } from "lucide-react";
+} from "@/components/ui/dialog";
 import { HomeIcon } from "lucide-react";
 
 // Custom component for rendering the unit cell
@@ -119,7 +36,7 @@ const UnitCell = ({ appartments }) => {
       <DialogTrigger asChild>
         <button
           className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors"
-          aria-label={`View all ${appartments.length} units`}
+          aria-label={t("ViewAllUnits", { count: appartments.length })} // Use translation for accessibility
         >
           {appartments[0].unit}...
           <span className="!ml-1">›</span> {/* Simple chevron replacement */}
@@ -127,7 +44,7 @@ const UnitCell = ({ appartments }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-gradient-to-b from-white to-gray-50 border-2 border-transparent bg-clip-padding rounded-xl shadow-xl">
         <DialogHeader className="relative pb-4">
-          <DialogTitle className="text-2xl !text-bg-primary font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 flex items-center gap-2">
+          <DialogTitle className="text-2xl !text-bg-primary font-bold bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 flex items-center gap-2">
             <HomeIcon className="w-6 h-6 text-bg-primary" />
             {t("AllUnits")}
           </DialogTitle>
@@ -143,9 +60,6 @@ const UnitCell = ({ appartments }) => {
                     ({apt.location})
                   </span>
                 )}
-                {/* {index < appartments.length - 1 && (
-                  <span className="text-gray-400 !mx-2">|</span>
-                )} */}
               </span>
             ))}
           </div>
@@ -159,6 +73,8 @@ const Owners = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
   const [owners, setOwners] = useState([]);
+  const [ownerTypes, setOwnerTypes] = useState([]); // State to store unique owner types
+  const { t } = useTranslation();
 
   const {
     refetch: refetchOwner,
@@ -175,16 +91,21 @@ const Owners = () => {
   useEffect(() => {
     if (OwnerData && OwnerData.owners) {
       console.log("Owner Data:", OwnerData);
+      const uniqueOwnerTypes = new Set(); // Use a Set to store unique types
+
       const formatted = OwnerData?.owners?.map((u) => {
+        const ownerType = u.user_type || "—";
+        uniqueOwnerTypes.add(ownerType); // Add owner type to the Set
+
         return {
           id: u.id,
           name: u.name || "—",
-          parent: u.user_type || "—",
+          parent: ownerType, // Use user_type as the owner type for filtering
           email: u.email || "—",
           phone: u.phone || "—",
           gender: u.gender || "—",
-          appartment: <UnitCell appartments={u.appartments} />, // Use custom component
-          status: u.status === 1 ? t("Active") : t("Inactive"),
+          appartment: <UnitCell appartments={u.appartments} />,
+          status: u.status === 1 ? t("Active") : t("Inactive"), // Still formatting status for display, but not for filter
           img: u.image_link ? (
             <img
               src={u.image_link}
@@ -201,14 +122,16 @@ const Owners = () => {
         };
       });
       setOwners(formatted);
+
+      // Convert Set to array for filter options, add 'all'
+      setOwnerTypes(["all", ...Array.from(uniqueOwnerTypes)]);
     }
-  }, [OwnerData]);
-  const { t } = useTranslation();
+  }, [OwnerData, t]); // Add t to dependency array for translation in useEffect
 
   const columns = [
     { key: "img", label: t("Image") },
     { key: "name", label: t("OwnerName") },
-    { key: "parent", label: t("OwnerType") },
+    { key: "parent", label: t("OwnerType") }, // This will be the column used for filtering
     { key: "appartment", label: t("Unit") },
     { key: "email", label: t("Email") },
     { key: "phone", label: t("Phone") },
@@ -228,6 +151,13 @@ const Owners = () => {
         showAddButton={false}
         showActionColumns={false}
         pageDetailsRoute={true}
+        // *** IMPORTANT CHANGES HERE ***
+        // 1. Specify the key to filter by:
+        filterByKey="parent"
+        filterOptions={ownerTypes}
+        filterLabelsText={{
+          all: t("AllOwnerTypes"), 
+        }}
       />
     </div>
   );

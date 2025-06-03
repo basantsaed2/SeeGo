@@ -26,111 +26,140 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const PostsCardLayout = ({ data, onEdit, onDelete }) => {
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const { t } = useTranslation();
 
-    const openImageModal = (imageUrl) => {
-        setSelectedImage(imageUrl);
-        setIsModalOpen(true);
-    };
-  const {t}=useTranslation();
+  const openImageModal = (images, index = 0) => {
+    setSelectedImages(images);
+    setCurrentIndex(index);
+    setIsModalOpen(true);
+  };
 
-    const closeImageModal = () => {
-        setIsModalOpen(false);
-        setSelectedImage(null);
-    };
+  const closeImageModal = () => {
+    setIsModalOpen(false);
+    setSelectedImages([]);
+    setCurrentIndex(0);
+  };
 
-    return (
-        <>
-            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {data.map((post) => (
-                    <div
-                        key={post.id}
-                        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? selectedImages.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === selectedImages.length - 1 ? 0 : prev + 1));
+  };
+
+  return (
+    <>
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {data.map((post, index) => {
+          const images = post.images || (post.imageUrl ? [post.imageUrl] : []);
+          return (
+            <div
+              key={post.id}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+            >
+              <div className="relative">
+                {images.length > 0 ? (
+                  <div
+                    className="w-full h-48 cursor-pointer"
+                    onClick={() => openImageModal(images)}
+                  >
+                    <img
+                      src={images[0]}
+                      alt="Thumbnail"
+                      className="w-full h-48 object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    <span className="text-gray-500 dark:text-gray-400">No Image</span>
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 flex !space-x-2">
+                  {images.length > 0 && (
+                    <button
+                      onClick={() => openImageModal(images)}
+                      className="!p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                      title="View Image"
                     >
-                        <div className="relative">
-                            {post.image !== "—" ? (
-                                <>
-                                    {/* Clickable image area */}
-                                    <div
-                                        className="w-full h-48 cursor-pointer"
-                                        onClick={() => openImageModal(post.imageUrl)}
-                                    >
-                                        {post.image}
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                    <span className="text-gray-500 dark:text-gray-400">No Image</span>
-                                </div>
-                            )}
-                            <div className="absolute top-2 right-2 flex !space-x-2">
-                                {post.image !== "—" && (
-                                    <button
-                                        onClick={() => openImageModal(post.imageUrl)}
-                                        className="!p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                                        title="View Image"
-                                    >
-                                        <Eye className="w-4 h-4" />
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => onEdit(post)}
-                                    className="!p-2 bg-bg-primary text-white rounded-full hover:bg-[#58c2c2] transition-colors"
-                                    title="Edit Post"
-                                >
-                                    <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => onDelete(post)}
-                                    className="!p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                                    title="Delete Post"
-                                >
-                                    <Trash className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </div>
-                        <div className="!p-4">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                                {t("Post")} #{post.id}
-                            </h3>
-                            <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
-                                {post.description}
-                            </p>
-                        </div>
-                    </div>
-                ))}
+                      <Eye className="w-4 h-4" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => onEdit(post)}
+                    className="!p-2 bg-bg-primary text-white rounded-full hover:bg-[#58c2c2] transition-colors"
+                    title="Edit Post"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onDelete(post)}
+                    className="!p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    title="Delete Post"
+                  >
+                    <Trash className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              <div className="!p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {t("Post")} #{post.id}
+                </h3>
+                <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+                  {post.description}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Carousel Modal */}
+      {isModalOpen && selectedImages.length > 0 && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
+          onClick={closeImageModal}
+        >
+          <div
+            className="relative max-w-full max-h-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeImageModal}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300"
+              title="Close"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Carousel */}
+            <div className="flex items-center justify-center gap-4">
+              <button onClick={handlePrev} className="text-white hover:text-gray-300 text-3xl px-4">
+                ‹
+              </button>
+              <img
+                src={selectedImages[currentIndex]}
+                alt="Full view"
+                className="max-w-[80vw] max-h-[80vh] object-contain"
+              />
+              <button onClick={handleNext} className="text-white hover:text-gray-300 text-3xl px-4">
+                ›
+              </button>
             </div>
 
-            {/* Image Modal */}
-            {isModalOpen && selectedImage && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 !p-4"
-                    onClick={closeImageModal}
-                >
-                    <div
-                        className="relative max-w-full max-h-full"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <button
-                            onClick={closeImageModal}
-                            className="absolute -top-10 right-0 text-white hover:text-gray-300"
-                            title="Close"
-                        >
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                        <img
-                            src={selectedImage}
-                            alt="Full view"
-                            className="max-w-[90vw] max-h-[90vh] object-contain"
-                        />
-                    </div>
-                </div>
-            )}
-        </>
-    );
+            <div className="text-center text-white mt-4 text-sm">
+              {currentIndex + 1} / {selectedImages.length}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 
@@ -231,7 +260,7 @@ const Posts = () => {
             <div className="flex justify-between !mb-6 items-center flex-wrap gap-4">
                 <Input
                     placeholder={t("Search")}
-                    className="w-full !p-5 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
+                    className="w-full !p-2 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                 />
