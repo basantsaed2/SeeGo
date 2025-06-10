@@ -23,6 +23,10 @@ export function Combobox({ value, onValueChange, options, placeholder, className
   const triggerRef = React.useRef(null);
   const [contentWidth, setContentWidth] = React.useState("200px");
 
+  // Find the selected option's label based on the value
+  const selectedOption = options.find((option) => option.value === value);
+  const displayText = selectedOption ? selectedOption.label : placeholder;
+
   // Update content width based on trigger width
   React.useEffect(() => {
     if (triggerRef.current) {
@@ -38,14 +42,11 @@ export function Combobox({ value, onValueChange, options, placeholder, className
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn(
-            "w-full justify-between overflow-hidden",
-            className
-          )}
+          className={cn("w-full justify-between overflow-hidden", className)}
           ref={triggerRef}
         >
           <span className="truncate flex-1 text-left">
-            {value || placeholder}
+            {displayText} {/* Use displayText instead of value */}
           </span>
           <ChevronsUpDown className="!ml-2 h-4 w-4 text-bg-primary font-bold shrink-0" />
         </Button>

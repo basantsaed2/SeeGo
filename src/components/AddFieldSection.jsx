@@ -56,7 +56,7 @@ export default function Add({ fields, lang, values, onChange }) {
                         type={field.inputType || "text"}
                         placeholder={field.placeholder}
                         value={value}
-                         multiple={field.multiple}
+                        multiple={field.multiple}
                         onChange={(e) => handleChange(field.name, e.target.value)}
                         className={`!px-5 !py-3 ${commonInputClass}`}
                       />
@@ -89,26 +89,26 @@ export default function Add({ fields, lang, values, onChange }) {
                       />
                     );
 
-case "file":
-  return (
-    <div className="space-y-2">
-      <Input
-        id={field.name}
-        type="file"
-        multiple={field.multiple} // ← أضفناها هنا لتفعيل اختيار صور متعددة
-        onChange={(e) =>
-          handleChange(
-            field.name,
-            field.multiple ? Array.from(e.target.files) : e.target.files?.[0]
-          )
-        }
-        className={`min-h-[46px] flex items-center text-gray-500 ${commonInputClass} file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200`}
-      />
-    </div>
-  );
+                  case "file":
+                    return (
+                      <div className="space-y-2">
+                        <Input
+                          id={field.name}
+                          type="file"
+                          multiple={field.multiple} // ← أضفناها هنا لتفعيل اختيار صور متعددة
+                          onChange={(e) =>
+                            handleChange(
+                              field.name,
+                              field.multiple ? Array.from(e.target.files) : e.target.files?.[0]
+                            )
+                          }
+                          className={`min-h-[46px] flex items-center text-gray-500 ${commonInputClass} file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200`}
+                        />
+                      </div>
+                    );
 
 
-                    case "multi-select":
+                  case "multi-select":
                     return (
                       <ComboboxMultiSelect
                         id={fieldId}
@@ -132,23 +132,23 @@ case "file":
                       />
                     );
 
-                  // case "multi-select":
-                  //   return (
-                  //     <MultiSelectDropdown
-                  //       id={fieldId} // Ensure fieldId is defined
-                  //       options={field.options}
-                  //       value={value}
-                  //       onChange={(val) =>
-                  //         // Note: Your original multi-select had field.lang in onChange,
-                  //         // but the outer handleChange expects just name and value.
-                  //         // Assuming you meant to pass 'lang' from props, not field.lang.
-                  //         onChange(lang, field.name, val)
-                  //       }
-                  //       placeholder={field.placeholder}
-                  //     />
-                  //   );
+                    // case "multi-select":
+                    //   return (
+                    //     <MultiSelectDropdown
+                    //       id={fieldId} // Ensure fieldId is defined
+                    //       options={field.options}
+                    //       value={value}
+                    //       onChange={(val) =>
+                    //         // Note: Your original multi-select had field.lang in onChange,
+                    //         // but the outer handleChange expects just name and value.
+                    //         // Assuming you meant to pass 'lang' from props, not field.lang.
+                    //         onChange(lang, field.name, val)
+                    //       }
+                    //       placeholder={field.placeholder}
+                    //     />
+                    //   );
 
-                  // case "select":
+                    // case "select":
                     return (
                       <Select
                         id={field.name}
