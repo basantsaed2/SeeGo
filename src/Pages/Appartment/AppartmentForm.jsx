@@ -65,6 +65,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
 
     const prepareFormData = () => {
         const body = new FormData();
+        console.log("bbb",formData.en.name)
         body.append("unit", formData.en.name);
         body.append("appartment_type_id", formData.en.type);
         if (formData.en.map) {
@@ -75,7 +76,7 @@ export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) =>
     };
 
     const fields = [
-        { type: "input", placeholder: t("UnitName"), name: t("name"), required: true },
+        { type: "input", placeholder: t("UnitName"), name:  "name", required: true },
         {
             type: "select",
             placeholder: t("Type"),
