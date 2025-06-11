@@ -50,8 +50,8 @@ const Home = () => {
   }
 
   return (
-    <div className="!p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="!p-4 flex !gap-3 md:flex-row flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
         {/* Units Number */}
         
@@ -87,16 +87,7 @@ const Home = () => {
           </div>
         </Link>
 
-        {/*Rents Count*/}
-        <Link to={"rents"} className="bg-[#F2FAFA] text-bg-primary rotate-90 relative top-18 right-[6%]  !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
-          <div className="!p-4 flex items-center justify-center   rotate-[-90deg]">
-            <FaUsers className="text-6xl text-[#0E7490]" />
-          </div>
-          <div className="!p-2 rotate-[-90deg]">
-            <div className="text-3xl  font-bold">{homeStats.rents_count}</div>
-            <div className="">{t("NumberOfRentalUnits")}</div>
-          </div>
-        </Link>
+
 
         {/* Beach Entries */}
         <Link to={"beaches"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
@@ -130,6 +121,18 @@ const Home = () => {
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.maintenance_request_count}</div>
             <div className="">{t("MaintenanceRequest")}</div>
+          </div>
+        </Link>
+      </div>
+      <div>
+        {/*Rents Count*/}
+        <Link to={"rents"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex md:flex-col flex-row items-start border-r-4 border-bg-primary">
+          <div className="!p-4 flex flex-row  items-center justify-center  ">
+            <FaUsers className="text-6xl text-[#0E7490]" />
+          </div>
+          <div className="!p-2 ">
+            <div className="text-3xl  font-bold">{homeStats.rents_count}</div>
+            <div className="">{t("NumberOfRentalUnits")}</div>
           </div>
         </Link>
       </div>
