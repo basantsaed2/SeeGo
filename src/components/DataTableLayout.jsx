@@ -295,9 +295,9 @@ export default function DataTable({
     }
     if (col.key === "map") {
       const url = row[col.key];
-      if (!url || typeof url !== 'string' || !url.startsWith('http')) {
-        return <span className="text-gray-400 italic">{t("InvalidURL")}</span>;
-      }
+      // if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+      //   return <span className="text-gray-400 italic">{t("InvalidURL")}</span>;
+      // }
       const displayText = url.length > 20 ? `${url.substring(0, 10)}...${url.substring(url.length - 10)}` : url;
       return (
         <div className="w-[120px] truncate">

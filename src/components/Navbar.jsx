@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageContext } from "./../context/LanguageContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "./ui/sidebar";
+import axios from "axios"; // For making the API request
+import { toast } from "react-toastify"; // Optional: for notifications
 
 export default function Navbar() {
   const userData = JSON.parse(localStorage.getItem("user"));
@@ -47,10 +49,48 @@ export default function Navbar() {
   );
   const totalNotifications = newMaintenanceCount + newProblemCount;
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/login");
+
+  const handleLogout = async () => {
+    try {
+      // Make a DELETE request to the logout endpoint
+      const response = await axios.get(
+        "https://bcknd.sea-go.org/api/logout",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust token key as needed
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // Check if the logout was successful
+      if (response.status === 200 || response.status === 204) { // 204 No Content is common for DELETE
+        // Clear authentication data
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("village_id");
+        sessionStorage.clear(); // Optional: clear session storage
+
+        // Show success message (optional)
+        toast.success(t("Logout successful") || "Logged out successfully!");
+
+        // Redirect to login page
+        navigate("/login"); // Adjust path as needed
+      } else {
+        throw new Error("Logout failed");
+      }
+    } catch (error) {
+      // Handle errors (e.g., network issues, unauthorized)
+      console.error("Logout error:", error);
+      toast.error(
+        error.response?.data?.message || t("An error occurred during logout") ||
+        "Failed to logout"
+      );
+      // Optionally clear local data and redirect on error
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("village_id");
+      navigate("/login");
+    }
   };
 
   // Function to handle navigation to the profile page (for both avatar and text area)
@@ -121,11 +161,10 @@ export default function Navbar() {
                 <DropdownMenuItem
                   key={lang.code}
                   onClick={() => changeLanguage(lang.code)}
-                  className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${
-                    i18n.language === lang.code
-                      ? "bg-teal-100 text-teal-800 font-semibold"
-                      : "hover:bg-teal-50 focus:bg-teal-50"
-                  }`}
+                  className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${i18n.language === lang.code
+                    ? "bg-teal-100 text-teal-800 font-semibold"
+                    : "hover:bg-teal-50 focus:bg-teal-50"
+                    }`}
                   aria-selected={i18n.language === lang.code}
                 >
                   <span className="text-lg">{lang.flag}</span>

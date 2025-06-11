@@ -129,7 +129,7 @@ export default function MapLocationPicker({ value, onChange, placeholder }) {
         placeholder={placeholder || "Search location"}
         value={locationName}
         onChange={handleInputChange}
-        className="rounded-[15px] border border-gray-300 !px-5 !py-6 focus:border-bg-primary focus:ring-bg-primary"
+        className="rounded-[15px] border border-gray-300 !px-5 !py-3 focus:border-bg-primary focus:ring-bg-primary"
       />
       <div
         ref={mapRef}
