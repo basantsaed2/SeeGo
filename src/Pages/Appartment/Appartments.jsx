@@ -5,13 +5,11 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditDialog from "@/components/EditDialog";
 import DeleteDialog from "@/components/DeleteDialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
-import { useChangeState } from "@/Hooks/useChangeState";
 import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
@@ -23,8 +21,7 @@ const Appartments = () => {
     const [Appartments, setAppartments] = useState([]);
     const [selectedRow, setselectedRow] = useState(null);
     const [rowEdit, setRowEdit] = useState(null);
-    const { changeState, loadingChange, responseChange } = useChangeState();
-    const { deleteData, loadingDelete, responseDelete } = useDelete();
+    const { deleteData, loadingDelete} = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
@@ -37,7 +34,6 @@ const Appartments = () => {
         fields,
         handleFieldChange,
         prepareFormData,
-        loadingAppartmentData
     } = useAppartmentForm(apiUrl, true, rowEdit); // true for edit mode
 
     useEffect(() => {
