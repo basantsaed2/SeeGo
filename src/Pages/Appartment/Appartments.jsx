@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EditDialog from "@/components/EditDialog";
 import DeleteDialog from "@/components/DeleteDialog";
-import {  useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useGet } from "@/Hooks/UseGet";
@@ -21,7 +21,7 @@ const Appartments = () => {
     const [Appartments, setAppartments] = useState([]);
     const [selectedRow, setselectedRow] = useState(null);
     const [rowEdit, setRowEdit] = useState(null);
-    const { deleteData, loadingDelete} = useDelete();
+    const { deleteData, loadingDelete } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
@@ -55,18 +55,17 @@ const Appartments = () => {
     }, [AppartmentData]);
 
     // Fix the initial data format in handleEdit
-   const handleEdit = (Appartment) => {
-    const fullAppartmentData = AppartmentData?.appartments.find(o => o.id === Appartment.id);
-    setselectedRow(Appartment);
-    setIsEditOpen(true);
-    setRowEdit({
-        name: fullAppartmentData?.unit || "",
-        type: fullAppartmentData?.type?.id?.toString() || "",
-        appartment_type_id: fullAppartmentData?.type?.id?.toString() || "",
-        map: fullAppartmentData?.location || "", // Add map field
-    });
-};
-
+    const handleEdit = (Appartment) => {
+        const fullAppartmentData = AppartmentData?.appartments.find((o) => o.id === Appartment.id);
+        setselectedRow(Appartment);
+        setIsEditOpen(true);
+        setRowEdit({
+            name: fullAppartmentData?.unit || "",
+            type: fullAppartmentData?.type?.id?.toString() || "", // Ensure type is a string
+            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "", // Include for consistency
+            map: fullAppartmentData?.location || "",
+        });
+    };
     const handleDelete = (Appartment) => {
         setselectedRow(Appartment);
         setIsDeleteOpen(true);

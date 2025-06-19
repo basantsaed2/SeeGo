@@ -3,11 +3,7 @@ import { useGet } from "@/Hooks/UseGet";
 import Add from "@/components/AddFieldSection";
 import { useTranslation } from "react-i18next";
 
-export const useAppartmentForm = (
-  apiUrl,
-  isEdit = false,
-  initialData = null
-) => {
+export const useAppartmentForm = (apiUrl, isEdit = false, initialData = null) => {
   const [formData, setFormData] = useState({
     en: {
       name: "",
@@ -29,7 +25,7 @@ export const useAppartmentForm = (
       setFormData({
         en: {
           name: initialData.name || "",
-          type: initialData.type || "",
+          type: initialData.appartment_type_id?.toString() || initialData.type?.toString() || "", // Ensure type is a string
           map: initialData.map || "",
         },
       });
@@ -41,48 +37,52 @@ export const useAppartmentForm = (
   }, [refetchAppartment]);
 
   useEffect(() => {
-    if (
-      AppartmentData &&
-      AppartmentData.zones &&
-      AppartmentData.appartment_type
-    ) {
-      setTypes(
-        AppartmentData.appartment_type.map((type) => ({
-          label: type.name,
-          value: type.id.toString(),
-        }))
-      );
+    if (AppartmentData?.appartment_type) {
+      const typeOptions = AppartmentData.appartment_type.map((type) => ({
+        label: type.name,
+        value: type.id.toString(), // Ensure value is a string
+      }));
+      setTypes(typeOptions);
 
-      // If in edit mode, ensure form data is updated with the options
-      if (isEdit && initialData) {
-        setFormData((prev) => ({
-          en: {
-            ...prev.en,
-            type: initialData.type || initialData.appartment_type_id || "",
-          },
-        }));
+      // If in edit mode, ensure formData.type matches an option in types
+      if (isEdit && initialData && typeOptions.length > 0) {
+        const matchingType = typeOptions.find(
+          (type) => type.value === initialData.appartment_type_id?.toString() || type.value === initialData.type?.toString()
+        );
+        if (matchingType && formData.en.type !== matchingType.value) {
+          setFormData((prev) => ({
+            en: {
+              ...prev.en,
+              type: matchingType.value,
+            },
+          }));
+        }
       }
     }
   }, [AppartmentData, isEdit, initialData]);
-  const handleFieldChange = (lang, name, value) => {
-    setFormData((prev) => ({
+
+const handleFieldChange = (lang, name, value) => {
+  console.log(`handleFieldChange: lang=${lang}, name=${name}, value=${value}`);
+  setFormData((prev) => {
+    const updated = {
       ...prev,
       [lang]: {
         ...prev[lang],
         [name]: value,
       },
-    }));
-  };
+    };
+    console.log("Updated formData:", updated); // Debug log
+    return updated;
+  });
+};
 
   const prepareFormData = () => {
     const body = new FormData();
-    console.log("bbb", formData.en.name);
     body.append("unit", formData.en.name);
     body.append("appartment_type_id", formData.en.type);
     if (formData.en.map) {
       body.append("location", formData.en.map);
     }
-
     return body;
   };
 
@@ -93,11 +93,9 @@ export const useAppartmentForm = (
       placeholder: t("Type"),
       name: "type",
       options: types,
-      value: formData.en.type, // Ensure this is passed
+      value: formData.en.type, // Bind to formData.en.type
     },
     { type: "map", placeholder: t("EnterLocation"), name: "map" },
-
-    // { type: "file", placeholder: "Appartment Image", name: "image", accept: "image/*" },
   ];
 
   return {
@@ -105,7 +103,7 @@ export const useAppartmentForm = (
     fields,
     handleFieldChange,
     prepareFormData,
-    loading: loadingAppartment, // Consistent naming
+    loading: loadingAppartment,
   };
 };
 
@@ -122,13 +120,13 @@ export const AppartmentFormFields = ({
   }
 
   return (
-      <div className="relative z-50">
-    <Add
-      fields={fields}
-      lang="en"
-      values={formData.en}
-      onChange={handleFieldChange}
-    />
+    <div className="relative z-50">
+      <Add
+        fields={fields}
+        lang="en"
+        values={formData.en}
+        onChange={handleFieldChange}
+      />
     </div>
   );
 };

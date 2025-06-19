@@ -160,7 +160,7 @@ const Pools = () => {
                 <img
                   src={Pool.image || "/placeholder-Pool.jpg"} // Replace with actual image URL
                   alt={Pool.name}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-fit"
                 />
               </div>
 

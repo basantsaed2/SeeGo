@@ -91,28 +91,28 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
     };
 
     const fields = [
-        { type: "input", placeholder: t("AdminName"), name: t("name"), required: true },
-        { type: "input", placeholder: t("Phone"), name: t("phone"), required: true },
-        { type: "input", inputType: "email", placeholder: t("Email"), name: t("email"), required: true },
+        { type: "input", placeholder: t("AdminName"), name:"name", required: true },
+        { type: "input", placeholder: t("Phone"), name: "phone", required: true },
+        { type: "input", inputType: "email", placeholder: t("Email"), name:"email", required: true },
         {
             type: "input",
             inputType: "password",
             placeholder: t("Password"),
-            name: t("Password"),
+            name: "Password",
             note: isEdit ? t(t("Leaveemptytokeepcurrentpassword")) : "",
             required: !isEdit
         },
         {
             type: "select",
             placeholder: t("AdminRole"),
-            name: t("admin_position_id"),
+            name: "admin_position_id",
             options: positions,
             value: formData.en.admin_position_id // Make sure this is included
         },
-        { type: "file", placeholder: t("Image"), name: t("image"), accept: "image/*" },
+        { type: "file", placeholder: t("Image"), name:"image", accept: "image/*" },
         {
             type: "switch",
-            name: t("status"),
+            name: "status",
             placeholder: t("Status"),
             returnType: "binary",
             activeLabel: "Active",

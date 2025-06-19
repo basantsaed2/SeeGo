@@ -132,43 +132,6 @@ export default function Add({ fields, lang, values, onChange }) {
                       />
                     );
 
-                    // case "multi-select":
-                    //   return (
-                    //     <MultiSelectDropdown
-                    //       id={fieldId} // Ensure fieldId is defined
-                    //       options={field.options}
-                    //       value={value}
-                    //       onChange={(val) =>
-                    //         // Note: Your original multi-select had field.lang in onChange,
-                    //         // but the outer handleChange expects just name and value.
-                    //         // Assuming you meant to pass 'lang' from props, not field.lang.
-                    //         onChange(lang, field.name, val)
-                    //       }
-                    //       placeholder={field.placeholder}
-                    //     />
-                    //   );
-
-                    // case "select":
-                    return (
-                      <Select
-                        id={field.name}
-                        key={index}
-                        value={value}
-                        onValueChange={(val) => handleChange(field.name, val)}
-                      >
-                        <SelectTrigger className={`w-full !px-5 !py-6 ${commonInputClass}`}>
-                          <SelectValue placeholder={field.placeholder} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border-teal-600 rounded-md shadow-lg !p-3 z-[1000]">
-                          {field.options?.map((option, i) => (
-                            <SelectItem key={i} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    );
-
                   case "switch":
                     const isChecked = typeof value === 'string'
                       ? value === 'active' || value === '1'

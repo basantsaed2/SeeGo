@@ -26,7 +26,7 @@ const SecurityMan = () => {
   const { deleteData, loadingDelete } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-          const { t } = useTranslation();
+  const { t } = useTranslation();
 
   const { refetch: refetchSecuritys, loading: loadingSecuritys, data: SecuritysData } = useGet({ url: `${apiUrl}/security` });
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/security/update/${selectedRow?.id}` });
@@ -46,16 +46,22 @@ const SecurityMan = () => {
     if (SecuritysData && SecuritysData.security) {
       console.log("Securitys Data:", SecuritysData);
       const formatted = SecuritysData?.security?.map((u) => {
+        // Determine types based on non-empty arrays
+        const types = [];
+        if (u.pool?.length > 0) types.push("pool");
+        if (u.beach?.length > 0) types.push("beach");
+        if (u.gate?.length > 0) types.push("gate");
+
         return {
           id: u.id,
           name: u.name || "—",
           email: u.email || "—",
           phone: u.phone || "—",
-          type: u.type || "—",
-          pool_ids: u.pool.map((p) => p.id).join(", "),
-          beach_ids: u.beach.map((b) => b.id).join(", "),
-          gate_ids: u.gate.map((g) => g.id).join(", "),
-          status: u.status === 1 ? "Active" : "Inactive",
+          pool_ids: u.pool?.map((p) => p.id).join(", ") || "—",
+          beach_ids: u.beach?.map((b) => b.id).join(", ") || "—",
+          gate_ids: u.gate?.map((g) => g.id).join(", ") || "—",
+          status: u.status === 1 ? t("Active") : t("Inactive"),
+          type: types.length > 0 ? types.join(", ") : "—", // Join types for display
           img: u.image_link ? (
             <img
               src={u.image_link}
@@ -71,22 +77,27 @@ const SecurityMan = () => {
       });
       setSecuritys(formatted);
     }
-  }, [SecuritysData]);
+  }, [SecuritysData, t]);
 
   const handleEdit = (Securitys) => {
     const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
+    console.log("fullSecuritysData:", fullSecuritysData); // Debug
     setselectedRow(Securitys);
     setIsEditOpen(true);
     setRowEdit({
       ...fullSecuritysData,
-      pool_ids: fullSecuritysData.pool_ids || [],
-      beach_ids: fullSecuritysData.beach_ids || [],
-      gate_ids: fullSecuritysData.gate_ids || [],
+      pool_ids: fullSecuritysData.pool?.map(p => p.id) || [],
+      beach_ids: fullSecuritysData.beach?.map(b => b.id) || [],
+      gate_ids: fullSecuritysData.gate?.map(g => g.id) || [],
+      types: [
+        ...(fullSecuritysData.pool?.length > 0 ? ["pool"] : []),
+        ...(fullSecuritysData.beach?.length > 0 ? ["beach"] : []),
+        ...(fullSecuritysData.gate?.length > 0 ? ["gate"] : []),
+      ],
       image_link: fullSecuritysData?.image_link || null,
-      status: Securitys.status,
+      status: Securitys.status === t("Active") ? 1 : 0,
     });
   };
-
   const handleDelete = (Securitys) => {
     setselectedRow(Securitys);
     setIsDeleteOpen(true);

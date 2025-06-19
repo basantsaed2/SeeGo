@@ -63,12 +63,12 @@ export const useGateForm = (apiUrl, isEdit = false, initialData = null) => {
     };
 
     const fields = [
-        { type: "input", placeholder: t("GateName"), name: t("name"), required: true },
-        { type: "file", placeholder: t("GateImage"), name: t("image"), accept: "image/*" },
-        { type: "map", placeholder: t("EnterLocation"), name: t("location")},
+        { type: "input", placeholder: t("GateName"), name: "name", required: true },
+        { type: "file", placeholder: t("GateImage"), name: "image", accept: "image/*" },
+        { type: "map", placeholder: t("EnterLocation"), name: "location"},
         {
             type: "switch",
-            name: t("status"),
+            name: "status",
             placeholder: t("Status"),
             returnType: "binary",
             activeLabel: "Active",

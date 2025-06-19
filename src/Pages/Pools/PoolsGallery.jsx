@@ -66,7 +66,7 @@ const PoolsGallery = () => {
         setPreviewImages(previews);
     };
 
-    const handleUpload =  async (e) => {
+    const handleUpload = async (e) => {
         e.preventDefault();
 
         if (selectedFiles.length === 0) {
@@ -263,7 +263,7 @@ const PoolsGallery = () => {
                 />
             )}
         </div>
-    );  
+    );
 };
 
 export default PoolsGallery;

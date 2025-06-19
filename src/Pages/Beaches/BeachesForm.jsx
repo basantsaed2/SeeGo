@@ -59,20 +59,20 @@ export const useBeachesForm = (apiUrl, isEdit = false, initialData = null) => {
     };
     const fields = {
         en: [
-            { type: "input", placeholder: t("BeachName"), name: t("name"), required: true },
+            { type: "input", placeholder: t("BeachName"), name: "name", required: true },
             {
                 type: "time",
-                name: t("from"),
+                name: "from",
                 placeholder: t("OpeningTime"),
                 required: true
             },
             {
                 type: "time",
-                name: t("to"),
+                name: "to",
                 placeholder: t("ClosingTime"),
                 required: true
             },
-            { type: "file", placeholder: t("BeachImage"), name: t("image"), accept: "image/*" },
+            { type: "file", placeholder: t("BeachImage"), name:"image", accept: "image/*" },
             {
                 type: "switch",
                 name: t("status"),

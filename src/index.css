@@ -5,6 +5,11 @@
 @tailwind utilities;
 
 
+/* This should be in your global CSS */
+:root {
+  --radix-dialog-content-z-index: 1000;
+  --radix-popover-content-z-index: 1001;
+}
 
 @theme {
     /* Accent */
@@ -50,13 +55,16 @@
   z-index: 999999 !important;
 }
 
-/* Fix for modal backdrops */
+/* Add this to your global CSS */
 .ReactModal__Overlay {
-  z-index: 1000 !important; /* Lower than toast */
+  z-index: 1000 !important;
 }
 
-/* Fix for dialog backdrops */
 [role="dialog"] {
-  z-index: 1000 !important; /* Lower than toast */
+  z-index: 1000 !important;
 }
 
+/* Combobox dropdown should be higher */
+.PopoverContent {
+  z-index: 1001 !important;
+}

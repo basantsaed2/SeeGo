@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import * as ReactDOM from 'react-dom';
+
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,7 +38,7 @@ export function Combobox({ value, onValueChange, options, placeholder, className
   }, [open]);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -51,38 +53,41 @@ export function Combobox({ value, onValueChange, options, placeholder, className
           <ChevronsUpDown className="!ml-2 h-4 w-4 text-bg-primary font-bold shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className={cn("!p-0 bg-white")}
-        style={{ width: contentWidth }}
-        align="start"
-      >
-        <Command>
-          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="h-9" />
-          <CommandList>
-            <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                >
-                  {option.label}
-                  <Check
-                    className={cn(
-                      "!ml-auto h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
+      {ReactDOM.createPortal(
+        <PopoverContent
+          className={cn("!p-0 bg-white")}
+          style={{ width: contentWidth }}
+          align="start"
+        >
+          <Command>
+            <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="h-9" />
+            <CommandList>
+              <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                      onValueChange(currentValue === value ? "" : currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    {option.label}
+                    <Check
+                      className={cn(
+                        "!ml-auto h-4 w-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>,
+        document.body
+      )}
     </Popover>
   );
 }
@@ -110,7 +115,7 @@ export function ComboboxMultiSelect({ value, onValueChange, options, placeholder
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={true}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -125,42 +130,45 @@ export function ComboboxMultiSelect({ value, onValueChange, options, placeholder
           <span className="truncate flex-1 text-left">
             {selectedValues.length > 0
               ? selectedValues
-                  .map((val) => options.find((opt) => opt.value === val)?.label)
-                  .join(", ") || placeholder
+                .map((val) => options.find((opt) => opt.value === val)?.label)
+                .join(", ") || placeholder
               : placeholder}
           </span>
           <ChevronsUpDown className="!ml-2 h-4 w-4 text-bg-primary font-bold shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className={cn("!p-0 bg-white")}
-        style={{ width: contentWidth }}
-        align="start"
-      >
-        <Command>
-          <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="h-9" />
-          <CommandList>
-            <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={() => handleSelect(option.value)}
-                >
-                  {option.label}
-                  <Check
-                    className={cn(
-                      "!ml-auto h-4 w-4",
-                      selectedValues.includes(option.value) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
+      {ReactDOM.createPortal(
+        <PopoverContent
+          className={cn("!p-0 bg-white")}
+          style={{ width: contentWidth }}
+          align="start"
+        >
+          <Command>
+            <CommandInput placeholder={`Search ${placeholder.toLowerCase()}...`} className="h-9" />
+            <CommandList>
+              <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={() => handleSelect(option.value)}
+                  >
+                    {option.label}
+                    <Check
+                      className={cn(
+                        "!ml-auto h-4 w-4",
+                        selectedValues.includes(option.value) ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>,
+        document.body
+      )}
     </Popover>
   );
 }

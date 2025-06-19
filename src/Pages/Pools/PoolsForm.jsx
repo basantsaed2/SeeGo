@@ -59,22 +59,22 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
 
     const fields = {
         en: [
-            { type: "input", placeholder: t("PoolName"), name: t("name"), required: true },
+            { type: "input", placeholder: t("PoolName"), name: "name", required: true },
             {
                 type: "time",
-                name: t("from"),
+                name: "from",
                 placeholder: t("OpeningTime"),
                 required: true
             },
             {
                 type: "time",
-                name: t("to"),
+                name: "to",
                 placeholder: t("ClosingTime"),
             },
-            { type: "file", placeholder: t("PoolImage"), name: t("image"), accept: "image/*" },
+            { type: "file", placeholder: t("PoolImage"), name: "image", accept: "image/*" },
             {
                 type: "switch",
-                name: t("status"),
+                name: "status",
                 placeholder: t("Status"),
                 returnType: "binary",
                 activeLabel: "Active",

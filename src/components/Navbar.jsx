@@ -196,7 +196,7 @@ export default function Navbar() {
                 <Bell className="w-5 h-5 text-teal-600" />
                 {totalNotifications > 0 && !notificationLoading && (
                   <Badge
-                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full !px--2 !py--0.5 text-xs font-medium transition-transform duration-200 ease-in-out transform hover:scale-110"
+                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full !px-2 !py-0.5 text-xs font-medium transition-transform duration-200 ease-in-out transform hover:scale-110"
                   >
                     {totalNotifications}
                   </Badge>
@@ -207,38 +207,38 @@ export default function Navbar() {
               align="end"
               className="w-72 bg-white shadow-lg rounded-lg border border-gray-100 !p-2 transition-all duration-200"
             >
-              <DropdownMenuLabel className="text-lg font-semibold text-teal-700 !px--4 !py--2">
+              <DropdownMenuLabel className="text-lg font-semibold text-teal-700 !px-4 !py-2">
                 {t("notifications")}
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-gray-200" />
               {totalNotifications === 0 && !notificationLoading ? (
-                <DropdownMenuItem className="!px--4 !py--3 text-gray-500 italic cursor-default" disabled>
+                <DropdownMenuItem className="!px-4 !py-3 text-gray-500 italic cursor-default" disabled>
                   {t("no_new_notifications")}
                 </DropdownMenuItem>
               ) : (
                 <>
                   <DropdownMenuItem
                     onClick={() => navigate("/maintenance_request")}
-                    className="flex items-center gap-3 !px--4 !py--3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
+                    className="flex items-center gap-3 !px-4 !py-3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
                   >
                     <Wrench className="w-5 h-5 text-teal-600" />
                     <span className="flex-1 text-gray-800">{t("new_maintenance_requests")}</span>
                     <Badge
                       variant="secondary"
-                      className="bg-teal-100 text-teal-700 !px--2 !py--0.5 rounded-full"
+                      className="bg-teal-100 text-teal-700 !px-2 !py-0.5 rounded-full"
                     >
                       {newMaintenanceCount}
                     </Badge>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => navigate("/problems")}
-                    className="flex items-center gap-3 !px--4 !py--3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
+                    className="flex items-center gap-3 !px-4 !py-3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
                   >
                     <AlertTriangle className="w-5 h-5 text-orange-600" />
                     <span className="flex-1 text-gray-800">{t("new_problem_reports")}</span>
                     <Badge
                       variant="secondary"
-                      className="bg-orange-100 text-orange-700 !px--2 !!py---0.5 rounded-full"
+                      className="bg-orange-100 text-orange-700 !px-2 !!py-0.5 rounded-full"
                     >
                       {newProblemCount}
                     </Badge>
