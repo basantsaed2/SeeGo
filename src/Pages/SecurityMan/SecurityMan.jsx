@@ -80,24 +80,29 @@ const SecurityMan = () => {
   }, [SecuritysData, t]);
 
   const handleEdit = (Securitys) => {
-    const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
-    console.log("fullSecuritysData:", fullSecuritysData); // Debug
-    setselectedRow(Securitys);
-    setIsEditOpen(true);
-    setRowEdit({
-      ...fullSecuritysData,
-      pool_ids: fullSecuritysData.pool?.map(p => p.id) || [],
-      beach_ids: fullSecuritysData.beach?.map(b => b.id) || [],
-      gate_ids: fullSecuritysData.gate?.map(g => g.id) || [],
-      types: [
-        ...(fullSecuritysData.pool?.length > 0 ? ["pool"] : []),
-        ...(fullSecuritysData.beach?.length > 0 ? ["beach"] : []),
-        ...(fullSecuritysData.gate?.length > 0 ? ["gate"] : []),
-      ],
-      image_link: fullSecuritysData?.image_link || null,
-      status: Securitys.status === t("Active") ? 1 : 0,
-    });
-  };
+  const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
+  console.log("fullSecuritysData:", fullSecuritysData); // Debug
+  
+  setselectedRow(Securitys);
+  setIsEditOpen(true);
+  
+  // Prepare the data for the form
+  setRowEdit({
+    ...fullSecuritysData,
+    // Convert array of objects to array of IDs (as strings)
+    pool_ids: fullSecuritysData.pool?.map(p => p.id.toString()) || [],
+    beach_ids: fullSecuritysData.beach?.map(b => b.id.toString()) || [],
+    gate_ids: fullSecuritysData.gate?.map(g => g.id.toString()) || [],
+    // Determine types based on what exists
+    types: [
+      ...(fullSecuritysData.pool?.length > 0 ? ["pool"] : []),
+      ...(fullSecuritysData.beach?.length > 0 ? ["beach"] : []),
+      ...(fullSecuritysData.gate?.length > 0 ? ["gate"] : []),
+    ],
+    image_link: fullSecuritysData?.image_link || null,
+    status: Securitys.status === t("Active") ? 1 : 0,
+  });
+};
   const handleDelete = (Securitys) => {
     setselectedRow(Securitys);
     setIsDeleteOpen(true);

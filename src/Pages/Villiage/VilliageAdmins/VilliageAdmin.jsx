@@ -25,7 +25,7 @@ const VillageAdmin = () => {
     const { deleteData, loadingDelete } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-      const { t } = useTranslation();
+    const { t } = useTranslation();
 
     const { refetch: refetchVillageAdmin, loading: loadingVillageAdmin, data: VillageAdminData } = useGet({
         url: `${apiUrl}/admin_village`,
@@ -34,7 +34,7 @@ const VillageAdmin = () => {
         url: `${apiUrl}/admin_village/update/${selectedRow?.id}`,
     });
 
-    const { formData, fields, handleFieldChange, prepareFormData} = useVillageAdminForm(
+    const { formData, fields, handleFieldChange, prepareFormData } = useVillageAdminForm(
         apiUrl,
         true,
         rowEdit
@@ -53,6 +53,7 @@ const VillageAdmin = () => {
                     phone: u.phone || "—",
                     email: u.email || "—",
                     admin_position: u.position?.name || "—",
+                    admin_position_id: u.position?.id || "—",
                     status: u.status === 1 ? "Active" : "Banned",
                 };
             });
@@ -61,11 +62,14 @@ const VillageAdmin = () => {
     }, [VillageAdminData]);
 
     const handleEdit = (VillageAdmin) => {
+        console.log("VillageAdmin", VillageAdmin)
         const fullVillageAdminData = VillageAdminData?.admins.find((o) => o.id === VillageAdmin.id);
         setSelectedRow(VillageAdmin);
         setIsEditOpen(true);
         setRowEdit({
             ...fullVillageAdminData,
+            admin_position: fullVillageAdminData?.position?.name || '',
+            admin_position_id: fullVillageAdminData?.position?.id?.toString() || "",
             status: VillageAdmin.status,
         });
     };
@@ -161,7 +165,7 @@ const VillageAdmin = () => {
                                 <TabsContent value="english">
                                     <VillageAdminFields
                                         fields={fields}
-                                        formData={formData.en}
+                                        formData={formData}
                                         handleFieldChange={handleFieldChange}
                                         loading={loadingVillageAdmin}
                                     />

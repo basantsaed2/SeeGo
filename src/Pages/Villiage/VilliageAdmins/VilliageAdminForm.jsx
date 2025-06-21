@@ -10,6 +10,7 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
             email: "",
             phone: "",
             password: "",
+            admin_position: "",
             admin_position_id: "",
             status: isEdit ? 0 : "",
             image: null,
@@ -17,26 +18,26 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
     });
     const [positions, setPositions] = useState([]);
     const { refetch: refetchPositions, loading: loadingPositions, data: PositionsData } = useGet({ url: `${apiUrl}/admin_village` });
-      const { t } = useTranslation();
+    const { t } = useTranslation();
 
     // Initialize form data for edit mode
     useEffect(() => {
         if (isEdit && initialData) {
-            console.log("initialData", initialData)
+            console.log('Initializing form with:', initialData);
             setFormData({
                 en: {
                     name: initialData.name || "",
                     email: initialData.email || "",
                     phone: initialData.phone || "",
                     password: "",
-                    admin_position_id: initialData.admin_position_id,
+                    admin_position_id: initialData.position?.id?.toString() ||
+                        initialData.admin_position_id?.toString() || "",
                     image: initialData.image || null,
                     status: initialData.status === "Active" ? 1 : 0,
                 }
             });
         }
     }, [initialData, isEdit]);
-
     // Fetch position data
     useEffect(() => {
         refetchPositions();
@@ -47,7 +48,7 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
             setPositions(
                 PositionsData.village_positions.map((position) => ({
                     label: position.name,
-                    value: position.id.toString(),
+                    value: position.id.toString(), // Ensure string value
                 }))
             );
 
@@ -61,9 +62,9 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
                 }));
             }
         }
-    }, [PositionsData, isEdit, initialData]);
-
+    }, [PositionsData]);
     const handleFieldChange = (lang, name, value) => {
+        console.log(`Field ${name} changed to:`, value);
         setFormData(prev => ({
             ...prev,
             [lang]: {
@@ -91,25 +92,25 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
     };
 
     const fields = [
-        { type: "input", placeholder: t("AdminName"), name:"name", required: true },
+        { type: "input", placeholder: t("AdminName"), name: "name", required: true },
         { type: "input", placeholder: t("Phone"), name: "phone", required: true },
-        { type: "input", inputType: "email", placeholder: t("Email"), name:"email", required: true },
+        { type: "input", inputType: "email", placeholder: t("Email"), name: "email", required: true },
         {
             type: "input",
             inputType: "password",
             placeholder: t("Password"),
-            name: "Password",
-            note: isEdit ? t(t("Leaveemptytokeepcurrentpassword")) : "",
+            name: "password", // Fixed typo: was "Password" with capital 'P'
+            note: isEdit ? t("Leaveemptytokeepcurrentpassword") : "",
             required: !isEdit
         },
         {
             type: "select",
             placeholder: t("AdminRole"),
-            name: "admin_position_id",
+            name: "admin_position_id", // Add name property
             options: positions,
-            value: formData.en.admin_position_id // Make sure this is included
+            value: formData.en.admin_position_id, // Bind to admin_position_id
         },
-        { type: "file", placeholder: t("Image"), name:"image", accept: "image/*" },
+        { type: "file", placeholder: t("Image"), name: "image", accept: "image/*" },
         {
             type: "switch",
             name: "status",
@@ -119,19 +120,18 @@ export const useVillageAdminForm = (apiUrl, isEdit = false, initialData = null) 
             inactiveLabel: "Inactive"
         },
     ];
-
+    
     return {
         formData,
         fields,
-        loadingPositions,
         handleFieldChange,
         prepareFormData,
-        loading: loadingPositions,
+        loadingPositions,
     };
 };
 
 export const VillageAdminFields = ({ fields, formData, handleFieldChange, loading }) => {
-          const { t } = useTranslation();
+    const { t } = useTranslation();
 
     if (loading) {
         return <div>{t("Loadingformdata")}</div>;

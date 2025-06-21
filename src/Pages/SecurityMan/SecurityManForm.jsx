@@ -27,26 +27,26 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
     const [gates, setGates] = useState([]);
     const [dynamicFields, setDynamicFields] = useState([]);
 
-    useEffect(() => {
-        if (isEdit && initialData) {
-            console.log("initialData in form:", initialData); // Debug
-            setFormData({
-                en: {
-                    name: initialData.name || "",
-                    phone: initialData.phone || "",
-                    email: initialData.email || "",
-                    password: "", // Typically not returned by API for security
-                    types: initialData.types || [], // Ensure types is an array
-                    status: initialData.status === t("Active") ? 1 : 0,
-                    image_link: initialData.image_link || null,
-                    image: initialData.image_link || null,
-                    pool_ids: initialData.pool_ids || [],
-                    beach_ids: initialData.beach_ids || [],
-                    gate_ids: initialData.gate_ids || [],
-                }
-            });
-        }
-    }, [initialData, isEdit, t]);
+   useEffect(() => {
+  if (isEdit && initialData) {
+    console.log("Initial data received:", initialData);
+    setFormData({
+      en: {
+        name: initialData.name || "",
+        phone: initialData.phone || "",
+        email: initialData.email || "",
+        password: "", // Typically not returned by API for security
+        types: initialData.types || [], // Ensure types is an array
+        status: initialData.status === t("Active") ? 1 : 0,
+        image_link: initialData.image_link || null,
+        image: initialData.image_link || null,
+        pool_ids: initialData.pool_ids || [], // Should be array of strings
+        beach_ids: initialData.beach_ids || [], // Should be array of strings
+        gate_ids: initialData.gate_ids || [], // Should be array of strings
+      }
+    });
+  }
+}, [initialData, isEdit, t]);
 
 
     useEffect(() => {

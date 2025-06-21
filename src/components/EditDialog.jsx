@@ -23,17 +23,19 @@ export default function EditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="bg-white !p-6 rounded-lg shadow-lg w-full"
-        onPointerDownOutside={(e) => {
-          // Prevent closing when clicking on Combobox
-          const isCombobox = e.target.closest('[role="combobox"]');
-          if (isCombobox) e.preventDefault();
-        }}
         onInteractOutside={(e) => {
-          // Prevent closing when interacting with Select dropdown
+          // Allow combobox to handle its own interactions
+          const isCombobox = e.target.closest('[role="combobox"]');
           const isSelect = e.target.closest('[role="listbox"]');
-          if (isSelect) e.preventDefault();
+          const isCommand = e.target.closest('[cmdk-input-wrapper]');
+          
+          if (isCombobox || isSelect || isCommand) {
+            e.preventDefault();
+            return;
+          }
+          onOpenChange(false);
         }}
-        style={{ zIndex: 1000 }} // Ensure dialog is below dropdown (if needed)
+        style={{ zIndex: 1000 }}
       >
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold text-bg-primary">
@@ -43,7 +45,6 @@ export default function EditDialog({
         <div
           className="space-y-4"
           onClick={(e) => {
-            // Prevent clicks inside dialog from propagating
             e.stopPropagation();
           }}
         >

@@ -54,17 +54,3 @@
   position: relative !important;
   z-index: 999999 !important;
 }
-
-/* Add this to your global CSS */
-.ReactModal__Overlay {
-  z-index: 1000 !important;
-}
-
-[role="dialog"] {
-  z-index: 1000 !important;
-}
-
-/* Combobox dropdown should be higher */
-.PopoverContent {
-  z-index: 1001 !important;
-}

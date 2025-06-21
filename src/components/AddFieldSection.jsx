@@ -123,9 +123,12 @@ export default function Add({ fields, lang, values, onChange }) {
                   case "select":
                     return (
                       <Combobox
+                        key={`${field.name}-${values?.[field.name]}`} // Add key to force re-render
                         id={fieldId}
-                        value={value}
-                        onValueChange={(val) => handleChange(field.name, val)}
+                        value={values?.[field.name]?.toString() || ""}
+                        onValueChange={(val) => {
+                          handleChange(field.name, val);
+                        }}
                         options={field.options}
                         placeholder={field.placeholder}
                         className={`w-full !px-5 !py-6 ${commonInputClass}`}

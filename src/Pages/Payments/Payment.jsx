@@ -169,15 +169,15 @@ const Payments = () => {
         label: t("Actions"),
         render: (row) => {
             return (
-                <div className="flex items-center justify-center !mt-2 !pt-2 gap-4">
+                <div className="flex flex-col md:flex-row items-center gap-1">
                     {/* Accept Button */}
                     <button
                         onClick={() => handleApprove(row.id)}
-                        className="flex items-center justify-center gap-2 !px-5 !py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-sm font-semibold shadow-lg transition-all duration-200 transform hover:scale-105 disabled:bg-green-200 disabled:cursor-not-allowed disabled:scale-100"
+                        className="flex items-center justify-center gap-1 !px-1 !py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-xs font-semibold shadow-lg transition-all duration-200 transform hover:scale-105 disabled:bg-green-200 disabled:cursor-not-allowed disabled:scale-100"
                         aria-label="Accept payment"
                     >
                         <svg
-                            className="w-4 h-4"
+                            className="w-3 h-3"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -196,11 +196,11 @@ const Payments = () => {
                     {/* Reject Button */}
                     <button
                         onClick={() => handleReject(row.id)}
-                        className="flex items-center justify-center gap-2 !px-5 !py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl text-sm font-semibold shadow-lg transition-all duration-200 transform hover:scale-105"
+                        className="flex items-center justify-center gap-1 !px-1 !py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl text-xs font-semibold shadow-lg transition-all duration-200 transform hover:scale-105"
                         aria-label="Reject payment"
                     >
                         <svg
-                            className="w-4 h-4"
+                            className="w-3 h-3"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
