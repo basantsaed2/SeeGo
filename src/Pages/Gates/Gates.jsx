@@ -56,7 +56,7 @@ const Gates = () => {
         name: u.name || "—",
         map: u.location || "—",
         status: u.status === 1 ? "Active" : "Inactive",
-        image_link: u.image_link || "/placeholder-gate.jpg",
+        image_link: u.image_link || "",
       }));
       setGates(formatted);
     }
