@@ -59,7 +59,7 @@ const Pools = () => {
         to: u.to || "—",
         fromTo: `${u.from || "—"} - ${u.to || "—"}`,
         status: u.status === 1 ? "Active" : "Inactive",
-        image: u.gallery[0].image_link || "", // Placeholder image
+        image: u.gallery[0]?.image_link || "", // Placeholder image
       }));
       setPools(formatted);
     }
