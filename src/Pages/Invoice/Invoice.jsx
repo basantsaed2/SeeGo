@@ -34,7 +34,6 @@ import { useGet } from "@/Hooks/UseGet";
 import HeaderInvoiceImage from "@/assets/HeaderInvoice.png";
 import FooterInvoiceImage from "@/assets/FooterInvoice.png";
 import { useLocation } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
 
 export default function InvoiceCard() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
