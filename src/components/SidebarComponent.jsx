@@ -25,7 +25,11 @@ import {
 } from "lucide-react";
 import { FaBuildingUser, FaMoneyBillTransfer } from "react-icons/fa6";
 import { TbBeach } from "react-icons/tb";
-import { MdOutlinePool, MdOutlineSyncProblem, MdOutlineSupervisedUserCircle } from "react-icons/md";
+import {
+  MdOutlinePool,
+  MdOutlineSyncProblem,
+  MdOutlineSupervisedUserCircle,
+} from "react-icons/md";
 import { GrHostMaintenance } from "react-icons/gr";
 import { GiOpenGate } from "react-icons/gi";
 import { FaUserShield } from "react-icons/fa";
@@ -62,25 +66,51 @@ export function AppSidebar() {
       label: t("UserList"),
       icon: <Users size={20} />,
       subItems: [
-        { label: t("Owners"), to: "/owners", icon: <FaBuildingUser size={20} /> },
-        { label: t("SecurityMan"), to: "/security_man", icon: <FaUserShield size={20} /> },
+        {
+          label: t("Owners"),
+          to: "/owners",
+          icon: <FaBuildingUser size={20} />,
+        },
+        {
+          label: t("SecurityMan"),
+          to: "/security_man",
+          icon: <FaUserShield size={20} />,
+        },
         { label: t("Admins"), to: "/admins", icon: <UserCog size={20} /> },
       ],
     },
-    {
-      label: t("Subscription"),
-      icon: <CreditCard size={20} />,
-      subItems: [
-        { label: t("Packages"), to: "/packages_list", icon: <Package size={20} /> },
-      { label: t("Invoices"), to: "/invoice_list", icon: <ReceiptText size={20} /> },
-      ],
-    },
+    { label: t("NewsFeed"), to: "/posts", icon: <Newspaper size={20} /> },
+
     {
       label: t("Request"),
       icon: <ListChecks size={20} />,
       subItems: [
-        { label: t("Problems"), to: "/problems", icon: <MdOutlineSyncProblem size={20} /> },
-        { label: t("MaintenanceRequest"), to: "/maintenance_request", icon: <GrHostMaintenance size={20} /> },
+        {
+          label: t("Problems"),
+          to: "/problems",
+          icon: <MdOutlineSyncProblem size={20} />,
+        },
+        {
+          label: t("MaintenanceRequest"),
+          to: "/maintenance_request",
+          icon: <GrHostMaintenance size={20} />,
+        },
+      ],
+    },
+    {
+      label: t("Settings"),
+      icon: <Settings size={20} />,
+      subItems: [
+        {
+          label: t("MaintenanceType"),
+          to: "/maintenance_type",
+          icon: <Wrench size={20} />,
+        },
+        {
+          label: t("VisitorLimit"),
+          to: "/visitor_limit",
+          icon: <ScrollText size={20} />,
+        },
       ],
     },
     {
@@ -88,30 +118,65 @@ export function AppSidebar() {
       icon: <DoorOpen size={20} />,
       subItems: [
         { label: t("Visits"), to: "/visits", icon: <Handshake size={20} /> },
-        { label: t("VisitorLimit"), to: "/visitor_limit", icon: <ScrollText size={20} /> },
+        {
+          label: t("Entrance Pool"),
+          to: "/entrance_pool",
+          icon: <ScrollText size={20} />,
+        },
+        {
+          label: t("Entrance Beach"),
+          to: "/entrance_beach",
+          icon: <ScrollText size={20} />,
+        },
+                {
+          label: t("Entrance Gate"),
+          to: "/entrance_gate",
+          icon: <ScrollText size={20} />,
+        },
       ],
     },
-        { label: t("Images"), to: "/images", icon: <ScrollText size={20} /> },
+    { label: t("Images"), to: "/images", icon: <ScrollText size={20} /> },
 
     {
-      label: t("Maintenance"),
-      icon: <Wrench size={20} />,
-      subItems: [
-        { label: t("MaintenanceFees"), to: "/maintenance_fees", icon: <FaMoneyBillTransfer size={20} /> },
-        { label: t("MaintenanceType"), to: "/maintenance_type", icon: <Wrench size={20} /> },
-      ],
+      label: t("MaintenanceFees"),
+      to: "/maintenance_fees",
+      icon: <FaMoneyBillTransfer size={20} />,
     },
+    {
+      label: t("ServiceProvider"),
+      to: "/services",
+      icon: <UserCog size={20} />,
+    },
+
     {
       label: t("Data"),
       icon: <BarChart2 size={20} />,
       subItems: [
-        { label: t("RentSale"), to: "/rent_sale", icon: <DollarSign size={20} /> },
+        {
+          label: t("RentSale"),
+          to: "/rent_sale",
+          icon: <DollarSign size={20} />,
+        },
         { label: t("Rent"), to: "/rents", icon: <Building size={20} /> },
-        { label: t("ServiceProvider"), to: "/services", icon: <UserCog size={20} /> },
       ],
     },
     { label: t("Payments"), to: "/payments", icon: <DollarSign size={20} /> },
-    { label: t("NewsFeed"), to: "/posts", icon: <Newspaper size={20} /> },
+    {
+      label: t("Subscription"),
+      icon: <CreditCard size={20} />,
+      subItems: [
+        {
+          label: t("Packages"),
+          to: "/packages_list",
+          icon: <Package size={20} />,
+        },
+        {
+          label: t("Invoices"),
+          to: "/invoice_list",
+          icon: <ReceiptText size={20} />,
+        },
+      ],
+    },
   ];
   const location = useLocation();
   const navigate = useNavigate(); // Added useNavigate
@@ -188,7 +253,9 @@ export function AppSidebar() {
                   if (item.to === "/") {
                     return location.pathname === "/";
                   } else if (item.subItems) {
-                    return item.subItems.some((sub) => location.pathname.startsWith(sub.to));
+                    return item.subItems.some((sub) =>
+                      location.pathname.startsWith(sub.to)
+                    );
                   } else if (item.to) {
                     return location.pathname.startsWith(item.to);
                   }
@@ -205,7 +272,11 @@ export function AppSidebar() {
                           isActive={isActive}
                           className={`flex justify-between items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-lg font-medium
                             ${isSidebarOpen ? "rounded-full" : ""}
-                            ${isActive ? "bg-white text-bg-primary shadow-md" : "hover:bg-white hover:text-bg-primary"}`}
+                            ${
+                              isActive
+                                ? "bg-white text-bg-primary shadow-md"
+                                : "hover:bg-white hover:text-bg-primary"
+                            }`}
                         >
                           <div className="flex items-center gap-3">
                             {item.icon}
@@ -219,14 +290,24 @@ export function AppSidebar() {
                         isActive={isActive}
                         className={`flex justify-between items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-lg font-medium
                           ${isSidebarOpen ? "rounded-full" : ""}
-                          ${isActive ? "bg-white text-bg-primary shadow-md" : "hover:bg-white hover:text-bg-primary"}`}
+                          ${
+                            isActive
+                              ? "bg-white text-bg-primary shadow-md"
+                              : "hover:bg-white hover:text-bg-primary"
+                          }`}
                       >
                         <div className="flex items-center gap-3">
                           {item.icon}
                           <span className="text-lg">{item.label}</span>
                         </div>
                         {item.subItems && (
-                          <span>{isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}</span>
+                          <span>
+                            {isExpanded ? (
+                              <ChevronDown size={16} />
+                            ) : (
+                              <ChevronRight size={16} />
+                            )}
+                          </span>
                         )}
                       </SidebarMenuButton>
                     )}
@@ -234,17 +315,25 @@ export function AppSidebar() {
                     {item.subItems && isExpanded && (
                       <div className="!ml-6 !mt-3 flex flex-col gap-3">
                         {item.subItems.map((subItem) => {
-                          const isSubActive = location.pathname.startsWith(subItem.to);
+                          const isSubActive = location.pathname.startsWith(
+                            subItem.to
+                          );
                           return (
                             <Link to={subItem.to} key={subItem.label}>
                               <SidebarMenuButton
                                 isActive={isSubActive}
                                 className={`flex justify-start items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-base
                                   ${isSidebarOpen ? "rounded-full" : ""}
-                                  ${isSubActive ? "bg-white text-bg-primary shadow-md" : "hover:bg-white hover:text-bg-primary"}`}
+                                  ${
+                                    isSubActive
+                                      ? "bg-white text-bg-primary shadow-md"
+                                      : "hover:bg-white hover:text-bg-primary"
+                                  }`}
                               >
                                 {subItem.icon}
-                                <span className="text-base">{subItem.label}</span>
+                                <span className="text-base">
+                                  {subItem.label}
+                                </span>
                               </SidebarMenuButton>
                             </Link>
                           );

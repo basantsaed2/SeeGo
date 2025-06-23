@@ -56,7 +56,7 @@ export function Combobox({ value, onValueChange, options, placeholder, className
           className={cn("w-full justify-between overflow-hidden", className)}
           ref={triggerRef}
         >
-          <span className="truncate flex-1 text-left">
+          <span className="truncate text-gray-400 font-normal flex-1 text-left">
             {displayText}
           </span>
           <ChevronsUpDown className="!ml-2 h-4 w-4 text-bg-primary font-bold shrink-0" />
@@ -90,6 +90,7 @@ export function Combobox({ value, onValueChange, options, placeholder, className
                 <CommandItem
                   key={option.value}
                   value={option.value}
+                    className="!px-4 !py-2 cursor-pointer hover:bg-gray-100"
                   onSelect={() => {
                     // Removed event parameter since CommandItem doesn't pass it
                     handleValueChange(option.value);
@@ -151,7 +152,7 @@ export function ComboboxMultiSelect({ value, onValueChange, options, placeholder
           className={cn("w-full justify-between overflow-hidden", className)}
           ref={triggerRef}
         >
-          <span className="truncate flex-1 text-left">
+          <span className="truncate !text-gray-200 flex-1 text-left">
             {selectedValues.length > 0
               ? selectedValues
                   .map((val) => options.find((opt) => opt.value === val)?.label)

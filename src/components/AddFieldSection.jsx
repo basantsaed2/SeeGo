@@ -15,7 +15,7 @@ import { Combobox, ComboboxMultiSelect } from "./ui/combobox";
 
 export default function Add({ fields, lang, values, onChange }) {
   const commonInputClass =
-    "rounded-[15px] border border-gray-300 focus:border-bg-primary focus:ring-bg-primary";
+    "rounded-[10px] !p-2 border border-gray-300 focus:border-bg-primary focus:ring-bg-primary";
 
   const handleChange = (name, value) => {
     if (onChange) {
@@ -123,7 +123,8 @@ export default function Add({ fields, lang, values, onChange }) {
                   case "select":
                     return (
                       <Combobox
-                        key={`${field.name}-${values?.[field.name]}`} // Add key to force re-render
+                        key={`${field.name}-${values?.[field.name]}`}
+ // Add key to force re-render
                         id={fieldId}
                         value={values?.[field.name]?.toString() || ""}
                         onValueChange={(val) => {
@@ -131,7 +132,7 @@ export default function Add({ fields, lang, values, onChange }) {
                         }}
                         options={field.options}
                         placeholder={field.placeholder}
-                        className={`w-full !px-5 !py-6 ${commonInputClass}`}
+                        className={`w-full !p-3 !mb-2 border border-gray-300 rounded-[10px] shadow-sm focus:outline-none focus:ring-2 focus:ring-bg-primary focus:border-bg-primary transition-all ${commonInputClass}`}
                       />
                     );
 

@@ -33,8 +33,8 @@ import Loading from "@/components/Loading";
 import { useGet } from "@/Hooks/UseGet";
 import HeaderInvoiceImage from "@/assets/HeaderInvoice.png";
 import FooterInvoiceImage from "@/assets/FooterInvoice.png";
-import { FaArrowRight } from "react-icons/fa6";
 import { useLocation } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 export default function InvoiceCard() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -90,14 +90,7 @@ const dir=i18n.language==="ar"?"rtl":"ltr"
   });
 
   const parsedRenewalDate = new Date(village.to);
-  const renewalToDate =
-    village.to && !isNaN(parsedRenewalDate.getTime())
-      ? parsedRenewalDate.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })
-      : "N/A";
+
 
   const startDate = new Date(village.from);
   const totalDays = (parsedRenewalDate - startDate) / (1000 * 60 * 60 * 24);

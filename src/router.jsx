@@ -49,6 +49,9 @@ import VillageAdmin from "./Pages/Villiage/VilliageAdmins/VilliageAdmin";
 import InvoiceList from "./Pages/Invoice/InvoiceList";
 import VGalleryPage from "./Pages/Villiage/VGallery";
 import ProfileSinglePage from "./Pages/Profile/ProfileSinglePage";
+import EPool from "./Pages/Entrance/EPool";
+import EBeach from "./Pages/Entrance/EBeach";
+import EGate from "./Pages/Entrance/EGate";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -249,6 +252,24 @@ const router = createBrowserRouter([
             <ProfileSinglePage />
           </ProtectedRoute>
         ),
+      },
+            {
+        path: "entrance_pool",
+        children: [
+          { index: true, element: <EPool /> },
+        ],
+      },
+                  {
+        path: "entrance_beach",
+        children: [
+          { index: true, element: <EBeach /> },
+        ],
+      },
+                        {
+        path: "entrance_gate",
+        children: [
+          { index: true, element: <EGate /> },
+        ],
       },
       {
         path: "*",

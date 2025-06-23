@@ -91,7 +91,7 @@ const RentSale = () => {
     return (
         <div className="p-4">
             <Tabs defaultValue="rent" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 gap-4 bg-transparent !mb-6">
+                <TabsList className="grid w-full grid-cols-2 gap-4 bg-transparent !mb-6">
                     <TabsTrigger
                         value="rent"
                         className="rounded-[10px] border text-bg-primary !py-2 transition-all 
@@ -108,14 +108,7 @@ const RentSale = () => {
                     >
                         {t("Sale")}
                     </TabsTrigger>
-                    <TabsTrigger
-                        value="rentAndSale"
-                        className="rounded-[10px] border text-bg-primary !py-2 transition-all 
-                        data-[state=active]:bg-bg-primary data-[state=active]:text-white 
-                        hover:bg-teal-100 hover:text-teal-700"
-                    >
-                        {t("Rent&Sale")}
-                    </TabsTrigger>
+
                 </TabsList>
 
                 <TabsContent value="rent">
@@ -134,14 +127,7 @@ const RentSale = () => {
                         showActionColumns={false}
                     />
                 </TabsContent>
-                <TabsContent value="rentAndSale">
-                    <DataTable
-                        data={rentAndSaleData}
-                        columns={columns}
-                        showAddButton={false}
-                        showActionColumns={false}
-                    />
-                </TabsContent>
+
             </Tabs>
 
             {/* Modal for showing description */}

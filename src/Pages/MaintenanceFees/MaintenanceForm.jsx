@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useGet } from "@/Hooks/UseGet";
 import Add from "@/components/AddFieldSection";
 
 export const useMaintenanceForm = (apiUrl, isEdit = false, initialData = null) => {
@@ -44,7 +43,16 @@ export const useMaintenanceForm = (apiUrl, isEdit = false, initialData = null) =
 
     const fields = [
         { type: "input", placeholder: "Maintenance Fees", name: "name", required: true },
-        { type: "input", placeholder: "Year", name: "year", required: true },
+    {
+      type: "select",
+      placeholder: "Select Year",
+      name: "year",
+      required: true,
+      options: Array.from({ length: 40 }, (_, i) => {
+        const year = new Date().getFullYear() - i;
+        return { value: year.toString(), label: year.toString() };
+      }),
+    },
         { type: "input", inputType:"number", placeholder: "Price", name: "price", required: true },
     ];
 

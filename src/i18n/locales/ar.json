@@ -346,8 +346,11 @@
  "TotalAfterDiscount": "الإجمالي بعد الخصم",
   "Status:": "الحالة:",
    "UpcomingPayments": "المدفوعات القادمة",
-  "HistoryPayments": "سجل المدفوعات"
-
-
-
+  "HistoryPayments": "سجل المدفوعات",
+  "Upgrade": "ترقية",
+  "Pay": "ادفع",
+  "CurrentPackage": "الباقة الحالية",
+  "ConfirmUpgrade": "تأكيد الترقية",
+  "ConfirmPayment": "تأكيد الدفع",
+  "Processing...": "جاري المعالجة..."
 }
