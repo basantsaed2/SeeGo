@@ -178,7 +178,7 @@ const CoverPage = () => {
         <img
           src={coverImage || "https://via.placeholder.com/1200x400"}
           alt="Cover"
-          className="w-full h-full object-cover"
+          class="w-full h-full object-fill"
         />
 
         {coverImage && (
@@ -253,7 +253,10 @@ const CoverPage = () => {
             </DialogContent>
           </Dialog>
 
-          <Dialog open={openEditProfileDialog} onOpenChange={setOpenEditProfileDialog}>
+          <Dialog
+            open={openEditProfileDialog}
+            onOpenChange={setOpenEditProfileDialog}
+          >
             <DialogTrigger asChild />
             <DialogContent className="bg-white !p-6 border-none rounded-lg shadow-lg max-w-3xl">
               <DialogHeader>

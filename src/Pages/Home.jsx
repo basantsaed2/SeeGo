@@ -66,13 +66,13 @@ const Home = () => {
         </Link>
 
         {/* Today’s Visits */}
-        <Link to={"visits"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
+        <Link to={"total-entrance"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaUserFriends className="text-6xl text-[#0E7490]" />
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.visits_village}</div>
-            <div className="">{t("Today’sVisits")}</div>
+            <div className="">{t("Total Entrance")}</div>
           </div>
         </Link>
 

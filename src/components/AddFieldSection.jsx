@@ -89,23 +89,23 @@ export default function Add({ fields, lang, values, onChange }) {
                       />
                     );
 
-                  case "file":
-                    return (
-                      <div className="space-y-2">
-                        <Input
-                          id={field.name}
-                          type="file"
-                          multiple={field.multiple} // ← أضفناها هنا لتفعيل اختيار صور متعددة
-                          onChange={(e) =>
-                            handleChange(
-                              field.name,
-                              field.multiple ? Array.from(e.target.files) : e.target.files?.[0]
-                            )
-                          }
-                          className={`min-h-[46px] flex items-center text-gray-500 ${commonInputClass} file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200`}
-                        />
-                      </div>
-                    );
+case "file":
+  return (
+    <div className="space-y-2">
+      <Input
+        id={field.name}
+        type="file"
+        multiple={field.multiple}
+        onChange={(e) =>
+          handleChange(
+            field.name,
+            field.multiple ? Array.from(e.target.files) : e.target.files?.[0]
+          )
+        }
+        className={`min-h-[46px] flex items-center text-gray-500 ${commonInputClass} file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200`}
+      />
+    </div>
+  );
 
 
                   case "multi-select":
@@ -183,7 +183,9 @@ export default function Add({ fields, lang, values, onChange }) {
       {/* Render map fields first, outside the grid */}
       {mapFields.map((field, index) => {
         if (field.showIf && !field.showIf(values)) return null;
-        const value = values?.[field.name] || "";
+const value = field.type === "file"
+  ? values?.[field.name]
+  : values?.[field.name] || "";
 
         return (
           <div key={`map-${index}`} className="w-full space-y-2">

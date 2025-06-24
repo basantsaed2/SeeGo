@@ -1,5 +1,4 @@
-
-import { useState,useEffect } from "react";
+import {useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,7 +6,7 @@ import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { usePost } from "@/Hooks/UsePost";
 import { useNavigate } from "react-router-dom";
-import { SecurityManFormFields ,useSecurityManForm } from "./SecurityManForm";
+import { SecurityManFormFields, useSecurityManForm } from "./SecurityManForm";
 import TitleSection from "@/components/TitleSection";
 import { ToastContainer } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -26,20 +25,51 @@ export default function SecurityManAdd() {
     prepareFormData
   } = useSecurityManForm(apiUrl);
 
-  const handleSubmit = async (e) => {  
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const body = prepareFormData();
     postData(body, t("Gateaddedsuccessfully"));
-  }; 
-  
-  useEffect(() => {
-    if (!loadingPost && response) {
-        navigate(-1);}
-  }, [response, loadingPost]);
+  };
+
+useEffect(() => {
+  console.log("🧪 useEffect triggered", response);
+
+  if (!response || loadingPost) return;
+
+  const message = response.data?.message;
+  const errors = response.data?.errors;
+
+  console.log("🚀 message:", message);
+  console.log("🧨 errors:", errors);
+
+  // إذا فيه message تحتوي على subscribe → روح للباكدج
+  if (typeof message === "string" && message.includes("subscribe")) {
+    console.log("✅ Navigating to /packages_list");
+    navigate("/packages_list");
+  }
+
+  // أو لو الـ errors فيها رسالة تدل على الاشتراك
+  else if (
+    typeof errors === "string" &&
+    errors.includes("subscribe")
+  ) {
+    console.log("✅ Navigating to /packages_list from errors");
+    navigate("/packages_list");
+  }
+
+  // أي حالة تانية → ارجع للخلف
+  else {
+    console.log("🔁 Navigating back");
+    navigate(-1);
+  }
+}, [response, loadingPost, navigate]);
+
+
+
 
   return (
     <div className="w-full flex flex-col gap-5 p-6 relative">
-      {/* <ToastContainer/> */}
+      <ToastContainer/>
       {isLoading && <FullPageLoader />}
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
         <TitleSection text={t('AddSecurityMan')}/>

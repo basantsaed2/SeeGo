@@ -52,6 +52,7 @@ import ProfileSinglePage from "./Pages/Profile/ProfileSinglePage";
 import EPool from "./Pages/Entrance/EPool";
 import EBeach from "./Pages/Entrance/EBeach";
 import EGate from "./Pages/Entrance/EGate";
+import TotalEntrance from "./Pages/TotalEntrance/TotalEntrance";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -270,6 +271,9 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <EGate /> },
         ],
+      },
+            {
+        path:"total-entrance",element:<TotalEntrance/>
       },
       {
         path: "*",

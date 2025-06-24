@@ -19,19 +19,25 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
         },
     });
 
-    useEffect(() => {
-        if (isEdit && initialData) {
-            setFormData({
-                en: {
-                    name: initialData.name || "",
-                    from: initialData.from || "",
-                    to: initialData.to || "",
-                    status: initialData.status === "Active" ? 1 : 0,
-                    image: initialData.image || null,
-                },
-            });
-        }
-    }, [initialData, isEdit]);
+useEffect(() => {
+  if (isEdit && initialData) {
+    console.log("InitialData.gallery:", initialData?.gallery); // ← هنا
+
+    setFormData(prev => ({
+      ...prev,
+      en: {
+        name: initialData.name || "",
+        from: initialData.from || "",
+        to: initialData.to || "",
+        status: initialData.status === "Active" ? 1 : 0,
+        image: initialData.gallery?.[0] || null, // ← الصورة نفسها
+      },
+      ar: {
+        nameAr: initialData.ar_name || "",
+      },
+    }));
+  }
+}, [initialData, isEdit]);
 
     const handleFieldChange = (lang, name, value) => {
         setFormData(prev => ({
@@ -43,19 +49,42 @@ export const usePoolsForm = (apiUrl, isEdit = false, initialData = null) => {
         }));
     };
 
-    const prepareFormData = () => {
-        const body = new FormData();
-        body.append("name", formData.en.name);
-        // body.append("ar_name", formData.ar.nameAr);
-        body.append("from", formData.en.from);
-        body.append("to", formData.en.to);
-        body.append("status", formData.en.status.toString());
-        if (formData.en.image && formData.en.image !== initialData?.image) {
-            body.append("images[]", formData.en.image);
-        }
+const prepareFormData = () => {
+  const body = new FormData();
 
-        return body;
-    };
+  body.append("name", formData.en.name);
+  body.append("ar_name", formData.ar.nameAr);
+  body.append("from", formData.en.from);
+  body.append("to", formData.en.to);
+  body.append("status", formData.en.status.toString());
+
+if (isEdit) {
+  const imageId = initialData?.gallery?.[0]?.id;
+
+  // فقط أرسل image إذا المستخدم اختار صورة جديدة
+  if (formData.en.image instanceof File) {
+    //body.append("image", formData.en.image);
+    // ممكن تضيفي image_id اختياريًا لو الـ backend بيحتاجه حتى مع الصورة الجديدة
+    if (imageId) {
+      body.append("image_id", imageId.toString());
+    }
+  } else if (imageId) {
+    // لو مافيش صورة جديدة، أرسل image_id فقط
+    body.append("image_id", imageId.toString());
+  }
+}
+
+
+
+
+
+  if (!isEdit && formData.en.image instanceof File) {
+    body.append("images[]", formData.en.image); // ← إضافة جديدة
+  }
+console.log("image_id being sent:", initialData?.gallery?.[0]?.id);
+
+  return body;
+};
 
     const fields = {
         en: [

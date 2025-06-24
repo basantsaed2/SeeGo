@@ -169,9 +169,12 @@ const getButtonStyle = (subscription) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {packages.map((subscription) => (
           <Card key={subscription.id}
-            className={`bg-white rounded-xl shadow-lg overflow-hidden !border-none h-full flex flex-col justify-between min-h-[340px] ${
-              String(currentPackageId) === String(subscription.id)
-            }`}
+className={`bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col justify-between min-h-[340px] 
+  ${String(currentPackageId) === String(subscription.id) 
+    ? 'border-4 border-green-600' 
+    : '!border-none'}
+`}
+
           >
             <CardHeader
               className="!p-4 flex justify-between items-center"

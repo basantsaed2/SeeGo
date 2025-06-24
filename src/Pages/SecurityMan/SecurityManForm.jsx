@@ -20,7 +20,7 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
     });
     const { t } = useTranslation();
 
-    const { refetch: refetchList, loading: loadingList, data: listData } = useGet({ url: `${apiUrl}/security` });
+    const { refetch: refetchList,  data: listData } = useGet({ url: `${apiUrl}/security` });
 
     const [pools, setPools] = useState([]);
     const [beaches, setBeaches] = useState([]);

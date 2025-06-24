@@ -32,12 +32,12 @@ export const usePost = ({ url, login = false, type = false }) => {
               } 
              catch (error) {
                      console.error('Error post JSON:', error);
-                   
+                   setResponse(error.response); 
                      // Check if the error response contains 'errors' or just a message
                      if (error?.response?.data?.errors) {
                        // Check if errors are an object (field-based errors)
                        if (typeof error.response.data.errors === 'object') {
-                         Object.entries(error.response.data.errors).forEach(([field, messages]) => {
+                         Object.entries(error.response.data.errors).forEach(([ messages]) => {
                            // If messages is an array, loop through them
                            if (Array.isArray(messages)) {
                              messages.forEach(message => {
