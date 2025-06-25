@@ -24,7 +24,7 @@ export default function PoolsAdd() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const body = prepareFormData();
-        postData(body, t("Pooladdedsuccessfully"));
+        postData(body, t("Pool added successfully"));
     };
 
     useEffect(() => {

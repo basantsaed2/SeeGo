@@ -1,21 +1,19 @@
-import {useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { usePost } from "@/Hooks/UsePost";
-import { useNavigate } from "react-router-dom";
 import { SecurityManFormFields, useSecurityManForm } from "./SecurityManForm";
 import TitleSection from "@/components/TitleSection";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer  } from "react-toastify";
 import { useTranslation } from "react-i18next";
 
 export default function SecurityManAdd() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/security/add` });
+  const { postData, loadingPost } = usePost({ url: `${apiUrl}/security/add` });
   const isLoading = useSelector((state) => state.loader.isLoading);
-  const navigate = useNavigate();
+  
   const { t } = useTranslation();
 
   const {
@@ -31,7 +29,7 @@ export default function SecurityManAdd() {
     postData(body, t("Gateaddedsuccessfully"));
   };
 
-useEffect(() => {
+/*useEffect(() => {
   console.log("🧪 useEffect triggered", response);
 
   if (!response || loadingPost) return;
@@ -44,6 +42,7 @@ useEffect(() => {
 
   // إذا فيه message تحتوي على subscribe → روح للباكدج
   if (typeof message === "string" && message.includes("subscribe")) {
+    toast.error(t("subscribeSuccess"));
     console.log("✅ Navigating to /packages_list");
     navigate("/packages_list");
   }
@@ -62,7 +61,9 @@ useEffect(() => {
     console.log("🔁 Navigating back");
     navigate(-1);
   }
-}, [response, loadingPost, navigate]);
+}, [response, loadingPost, navigate]);*/
+
+
 
 
 

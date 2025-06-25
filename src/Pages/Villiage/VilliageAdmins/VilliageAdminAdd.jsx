@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToastContainer } from "react-toastify";
@@ -6,19 +5,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
 import FullPageLoader from "@/components/Loading";
 import { usePost } from "@/Hooks/UsePost";
-import { useNavigate } from "react-router-dom";
 import { useVillageAdminForm, VillageAdminFields } from "./VilliageAdminForm";
 import TitleSection from "@/components/TitleSection";
 import { useTranslation } from "react-i18next";
 
 export default function VillageAdminAdd() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const { postData, loadingPost, response } = usePost({
+  const { postData, loadingPost } = usePost({
     url: `${apiUrl}/admin_village/add`,
   });
 
   const isLoading = useSelector((state) => state.loader.isLoading);
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const {
@@ -35,40 +32,7 @@ export default function VillageAdminAdd() {
     postData(body, t("Adminaddedsuccessfully"));
   };
 
-  useEffect(() => {
-    if (!response || loadingPost) return;
 
-    const { message, errors } = response.data || {};
-    console.log("📦 Full response data:", response.data);
-
-    const hasSubscribe = (val) =>
-      typeof val === "string" && val.toLowerCase().includes("subscribe");
-
-    if (hasSubscribe(message)) {
-      console.log("✅ Navigating to /packages_list");
-      navigate("/packages_list");
-      return;
-    }
-
-    if (hasSubscribe(errors)) {
-      console.log("✅ Navigating to /packages_list from string error");
-      navigate("/packages_list");
-      return;
-    }
-
-    if (typeof errors === "object") {
-      const flatErrors = Object.values(errors).flat();
-      const found = flatErrors.some((msg) => hasSubscribe(msg));
-      if (found) {
-        console.log("✅ Navigating to /packages_list from object errors");
-        navigate("/packages_list");
-        return;
-      }
-    }
-
-    console.log("🔁 Navigating back");
-    navigate(-1);
-  }, [response, loadingPost, navigate]);
 
   return (
     <>
