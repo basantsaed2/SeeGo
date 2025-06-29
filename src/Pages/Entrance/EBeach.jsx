@@ -45,19 +45,12 @@ const EBeach = () => {
   const columns = [
     {
       key: "name",
-      label: t("VisitorName") || "Visitor Name",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>{row.name.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          {row.name}
-        </div>
-      ),
+      label: t("Visitor Name") || "Visitor Name",
+
     },
-    { key: "phone", label: t("VisitorPhone") || "Phone" },
-    { key: "email", label: t("VisitorEmail") || "Email" },
-    { key: "beach", label: t("BeachName") || "Beach" },
+    { key: "phone", label: t("Visitor Phone") || "Phone" },
+    { key: "email", label: t("Visitor Email") || "Email" },
+    { key: "beach", label: t("Beach Name") || "Beach" },
     { key: "time", label: t("Time") || "Time" },
   ];
 

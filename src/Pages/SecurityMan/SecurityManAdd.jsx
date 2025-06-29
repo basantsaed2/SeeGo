@@ -26,7 +26,7 @@ export default function SecurityManAdd() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, t("Gateaddedsuccessfully"));
+    postData(body, t("Security man added successfully"));
   };
 
 /*useEffect(() => {

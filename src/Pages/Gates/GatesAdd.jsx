@@ -1,5 +1,5 @@
 
-import { useState,useEffect } from "react";
+import {useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,7 +28,7 @@ export default function GatesAdd() {
   const handleSubmit = async (e) => {  
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, t("Gateaddedsuccessfully"));
+    postData(body, t("Gate added successfully"));
   }; 
   
   useEffect(() => {

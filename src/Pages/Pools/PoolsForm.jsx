@@ -63,7 +63,7 @@ if (isEdit) {
 
   // فقط أرسل image إذا المستخدم اختار صورة جديدة
   if (formData.en.image instanceof File) {
-    //body.append("image", formData.en.image);
+    body.append("image", formData.en.image);
     // ممكن تضيفي image_id اختياريًا لو الـ backend بيحتاجه حتى مع الصورة الجديدة
     if (imageId) {
       body.append("image_id", imageId.toString());
@@ -146,7 +146,7 @@ export const PoolsFields = ({ fields, formData, handleFieldChange, loading }) =>
           const { t } = useTranslation();
 
     if (loading) {
-        return <div>{t("Loadingformdata")}</div>;
+        return <div>{t("Loading form data")}</div>;
     }
 
     const fieldsArray = Array.isArray(fields) ? fields : Object.values(fields).flat();

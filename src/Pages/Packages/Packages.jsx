@@ -14,7 +14,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { toast, ToastContainer } from 'react-toastify';
 import FooterInvoiceImage from "@/assets/FooterInvoice.png";
-import { useSelector } from 'react-redux';
 import { usePost } from '@/Hooks/UsePost';
 import { useGet } from '@/Hooks/UseGet';
 import 'react-toastify/dist/ReactToastify.css';
@@ -211,7 +210,6 @@ className={`bg-white rounded-xl shadow-lg overflow-hidden h-full flex flex-col j
                 {subscription.price} EGP
               </p>
               <div className="!mt-3 space-y-2">
-                <p className="text-sm text-gray-700"><span className="font-medium">{t("Service")}</span> {subscription.serviceName}</p>
                 {subscription.type === 'village' && (
                   <>
                     <p className="text-sm text-gray-700"><span className="font-medium">{t("AdminNumber")}</span> {subscription.admin_num}</p>

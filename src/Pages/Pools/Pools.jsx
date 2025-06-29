@@ -91,7 +91,7 @@ const Pools = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     const body = prepareFormData();
-    postData(body, t("Poolupdatedsuccessfull!"));
+    postData(body, t("Pool updated successfully!"));
   };
 
   const handleDeleteConfirm = async () => {

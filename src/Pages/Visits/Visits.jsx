@@ -47,14 +47,7 @@ const Visits = () => {
     {
       key: "name",
       label: "Visitor Name",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>{row.name.charAt(0)}</AvatarFallback>
-          </Avatar>
-          {row.name}
-        </div>
-      ),
+
     },
     { key: "phone", label: t("VisitorPhone") },
     { key: "user_type", label: t("VisitorType") },
