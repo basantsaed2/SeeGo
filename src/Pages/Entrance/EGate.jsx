@@ -63,18 +63,28 @@ const Egate = () => {
   if (isLoading || loadingVisit) {
     return <FullPageLoader />;
   }
+const gateOptions = Array.from(
+  new Set(visits.map((v) => v.gate).filter((g) => g && g !== "—"))
+);
+
 
   return (
     <div className="p-4">
-      <DataTable
-        data={visits}
-        columns={columns}
-        showActionColumns={false}
-        showAddButton={false}
-        dateRangeFilter={true}
-        dateRangeKey="date"
-        onDateRangeChange={handleDateRangeChange}
-      />
+<DataTable
+  data={visits}
+  columns={columns}
+  showActionColumns={false}
+  showAddButton={false}
+  dateRangeFilter={true}
+  dateRangeKey="date"
+  onDateRangeChange={handleDateRangeChange}
+  filterByKey="gate"
+  filterOptions={gateOptions}
+  filterLabelsText={{
+    all: t("AllGates") || "All Gates",
+  }}
+/>
+
     </div>
   );
 };

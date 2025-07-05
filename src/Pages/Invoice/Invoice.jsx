@@ -82,11 +82,11 @@ const dir=i18n.language==="ar"?"rtl":"ltr"
     );
   }
 
-  const invoiceDate = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+const invoiceDate = new Date().toLocaleDateString(i18n.language, {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 
   const parsedRenewalDate = new Date(village.to);
 

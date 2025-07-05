@@ -112,7 +112,16 @@ const Services = () => {
                 showActionColumns={false}
                 // --- Filter Props ---
                 filterByKey="type" // This targets the 'type' key in your data
-                filterOptions={serviceTypeOptions} // Dynamic options from unique service types
+filterOptions={[
+  {
+    key: "type",
+    label: t("ServiceType"),
+    options: serviceTypeOptions.map((type) => ({
+      value: type,
+      label: serviceTypeLabels[type],
+    })),
+  },
+]}
                 filterLabelsText={serviceTypeLabels} // Translated labels for options
                 showFilter={true} // Crucial: Make sure the filter is visible
                 // Optional: If you want to customize status badge text

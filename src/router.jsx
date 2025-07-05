@@ -53,6 +53,7 @@ import EPool from "./Pages/Entrance/EPool";
 import EBeach from "./Pages/Entrance/EBeach";
 import EGate from "./Pages/Entrance/EGate";
 import TotalEntrance from "./Pages/TotalEntrance/TotalEntrance";
+import LandingPage from "./Pages/LandingPage/LandingPage";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -67,23 +68,29 @@ const router = createBrowserRouter([
           </ProtAuth>
         ),
       },
+    ],
+  },
        {
         path: "packages",
         children: [
           { index: true, element: <Packages /> },
         ],
       },
-    ],
+  {
+    path: "village/:id",
+    element: <LandingPage />,
   },
-
   // ✅ الصفحات المحمية داخل MainLayout
   {
+    
     element: (
       <SidebarProvider>
         <MainLayout />
       </SidebarProvider>
     ),
+    
     children: [
+
       {
         path: "/",
         element: (
@@ -275,6 +282,7 @@ const router = createBrowserRouter([
             {
         path:"total-entrance",element:<TotalEntrance/>
       },
+
       {
         path: "*",
         element: <NotFound />,

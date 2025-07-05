@@ -119,7 +119,16 @@ const MaintenanceType = () => {
         onToggleStatus={handleToggleStatus}
         // --- NEW PROPS FOR STATUS FILTER ---
         filterByKey="statusText" // Filter by the 'statusText' key, which holds "active" or "inactive"
-        filterOptions={statusFilterOptions}
+filterOptions={[
+  {
+    key: "statusText",
+    label: t("Status"),
+    options: statusFilterOptions.map((val) => ({
+      value: val,
+      label: statusFilterLabels[val],
+    })),
+  },
+]}
         filterLabelsText={statusFilterLabels}
         showFilter={true} // Ensure the filter section is shown
         // Custom labels for the switch (optional, if you want different text than the badge)

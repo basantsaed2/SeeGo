@@ -67,14 +67,17 @@ export default function DataTable({
   dateRangeKey = 'created_at',
   onDateRangeChange,
   // *** NEW PROPS FOR GENERIC FILTERING ***
-  filterByKey,       // The key in the data to filter by (e.g., "status", "parent")
   filterOptions = [], // Array of options for the filter dropdown
-  filterLabelsText = {}, // Object for display labels of filter options
 }) {
   const [searchValue, setSearchValue] = useState("");
   // Initialize filterValue with "all" if filterOptions is empty, otherwise the first option
-  const [filterValue, setFilterValue] = useState(filterOptions[0] || "all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const [activeFilters, setActiveFilters] = useState(() => {
+  const initialFilters = {};
+  filterOptions.forEach((group) => {
+    initialFilters[group.key] = "all";
+  });
+  return initialFilters;
+});  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -93,59 +96,80 @@ export default function DataTable({
       key: 'selection'
     }
   ]);
-
-  const filteredData = useMemo(() => {
-    let result = data.filter((row) => {
-      const matchesSearch = columns.some(col => {
-        const cellValue = row[col.key];
-        return (typeof cellValue === 'string' || typeof cellValue === 'number') &&
-          String(cellValue).toLowerCase().includes(searchValue.toLowerCase());
-      });
-
-      // *** MODIFIED FILTER LOGIC TO USE filterByKey ***
-      const matchesFilter =
-        !filterByKey || // If no filterKey is provided, this part is always true
-        filterValue === "all" ||
-        String(row[filterByKey])?.toLowerCase() === String(filterValue).toLowerCase();
-
-
-      const finalMatchesSearch = searchValue === "" ? true : matchesSearch;
-
-      return finalMatchesSearch && matchesFilter;
+const getNestedValue = (obj, path) => {
+  return path
+    .split(".")
+    .reduce((acc, part) => (acc ? acc[part] : undefined), obj);
+};
+const filteredData = useMemo(() => {
+  let result = data.filter((row) => {
+    const matchesSearch = columns.some(col => {
+      const cellValue = row[col.key];
+      return (typeof cellValue === 'string' || typeof cellValue === 'number') &&
+        String(cellValue).toLowerCase().includes(searchValue.toLowerCase());
     });
 
-    if (dateRangeFilter) {
+    const finalMatchesSearch = searchValue === "" ? true : matchesSearch;
+    return finalMatchesSearch;
+  });
+
+  // تطبيق فلاتر متعددة
+  Object.entries(activeFilters).forEach(([filterKey, filterValue]) => {
+    if (filterValue !== "all") {
       result = result.filter((row) => {
-        if (!row[dateRangeKey]) return false;
+        const rowValue = getNestedValue(row, filterKey);
+        const comparableRowValue =
+          rowValue !== null && rowValue !== undefined
+            ? String(rowValue).toLowerCase()
+            : "";
+        const comparableFilterValue = String(filterValue).toLowerCase();
 
-        try {
-          const rowDate = new Date(row[dateRangeKey]);
-          if (isNaN(rowDate.getTime())) return false;
-
-          const startDate = dateRange[0].startDate;
-          const endDate = new Date(dateRange[0].endDate);
-          endDate.setHours(23, 59, 59, 999);
-
-          return rowDate >= startDate && rowDate <= endDate;
-        } catch (e) {
-          console.error("Error parsing date for filter:", row[dateRangeKey], e);
-          return false;
-        }
+        return comparableRowValue === comparableFilterValue;
       });
     }
+  });
 
-    return result;
-  }, [data, searchValue, filterValue, dateRange, dateRangeFilter, dateRangeKey, columns, filterByKey]); // Added filterByKey to dependencies
+  // تطبيق فلتر التاريخ (إذا كان مفعل)
+  if (dateRangeFilter) {
+    result = result.filter((row) => {
+      if (!row[dateRangeKey]) return false;
 
-  useEffect(() => {
-    if (dateRangeFilter && onDateRangeChange) {
-      onDateRangeChange({
-        startDate: dateRange[0].startDate,
-        endDate: dateRange[0].endDate,
-      });
-    }
-  }, [dateRange, dateRangeFilter, onDateRangeChange]);
+      try {
+        const rowDate = new Date(row[dateRangeKey]);
+        if (isNaN(rowDate.getTime())) return false;
 
+        const startDate = dateRange[0].startDate;
+        const endDate = new Date(dateRange[0].endDate);
+        endDate.setHours(23, 59, 59, 999);
+
+        return rowDate >= startDate && rowDate <= endDate;
+      } catch (e) {
+        console.error("Error parsing date for filter:", row[dateRangeKey], e);
+        return false;
+      }
+    });
+  }
+
+  return result;
+}, [data, searchValue, activeFilters, dateRange, dateRangeFilter, dateRangeKey, columns]);
+   // Added filterByKey to dependencies
+
+// الخطوة 4: إضافة handler للفلاتر
+const handleAccordionFilterChange = (filterKey, value) => {
+  setActiveFilters((prev) => ({
+    ...prev,
+    [filterKey]: value,
+  }));
+  setCurrentPage(1); // Reset to page 1 when filter changes
+};
+useEffect(() => {
+  if (dateRangeFilter && onDateRangeChange) {
+    onDateRangeChange({
+      startDate: dateRange[0].startDate,
+      endDate: dateRange[0].endDate,
+    });
+  }
+}, [dateRange, dateRangeFilter, onDateRangeChange]);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -435,21 +459,35 @@ export default function DataTable({
             )}
 
             {/* *** MODIFIED FILTER DROPDOWN *** */}
-            {showFilter && filterByKey && filterOptions.length > 0 && ( // Only show if filterByKey and options are provided
-              <Select value={filterValue} onValueChange={setFilterValue}>
-                <SelectTrigger className="w-[120px] border-bg-primary focus:ring-bg-primary rounded-[10px] !px-2">
-                  <SelectValue placeholder={t("Filterby")} />
-                </SelectTrigger>
-                <SelectContent className="bg-white border-bg-primary rounded-md shadow-lg !p-3">
-                  {/* Render SelectItems based on the new filterOptions prop */}
-                  {filterOptions.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {filterLabelsText[option] || t(option.charAt(0).toUpperCase() + option.slice(1))}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+{showFilter && filterOptions.length > 0 && (
+  <div className="flex gap-3 flex-wrap">
+    {filterOptions.map((group) => (
+      <div key={group.key} className="w-[150px]">
+        <Select
+          value={activeFilters[group.key]}
+          onValueChange={(val) =>
+            handleAccordionFilterChange(group.key, val)
+          }
+        >
+          <SelectTrigger className="text-bg-primary w-full !p-4 border border-bg-primary focus:outline-none focus:ring-2 focus:ring-bg-primary rounded-[10px]">
+            <SelectValue placeholder={group.label} />
+          </SelectTrigger>
+          <SelectContent className="bg-white border !p-3 border-bg-primary rounded-[10px] text-bg-primary">
+            {group.options.map((option) => (
+              <SelectItem
+                key={option.value}
+                className="text-bg-primary"
+                value={option.value}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    ))}
+  </div>
+)}
 
             {showAddButton && (
               <Button

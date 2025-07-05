@@ -124,7 +124,16 @@ const Owners = () => {
       setOwners(formatted);
 
       // Convert Set to array for filter options, add 'all'
-      setOwnerTypes(["all", ...Array.from(uniqueOwnerTypes)]);
+setOwnerTypes([
+  {
+    key: "parent",
+    label: t("OwnerType"), // أو "Owner Type"
+    options: ["all", ...Array.from(uniqueOwnerTypes)].map((type) => ({
+      value: type,
+      label: type === "all" ? t("AllOwnerTypes") : type,
+    }))
+  }
+]);
     }
   }, [OwnerData, t]); // Add t to dependency array for translation in useEffect
 
@@ -145,20 +154,15 @@ const Owners = () => {
   return (
     <div className="p-4">
       <ToastContainer />
-      <DataTable
-        data={owners}
-        columns={columns}
-        showAddButton={false}
-        showActionColumns={false}
-        pageDetailsRoute={true}
-        // *** IMPORTANT CHANGES HERE ***
-        // 1. Specify the key to filter by:
-        filterByKey="parent"
-        filterOptions={ownerTypes}
-        filterLabelsText={{
-          all: t("AllOwnerTypes"), 
-        }}
-      />
+<DataTable
+  data={owners}
+  columns={columns}
+  showAddButton={false}
+  showActionColumns={false}
+  pageDetailsRoute={true}
+  filterOptions={ownerTypes}
+/>
+
     </div>
   );
 };

@@ -126,13 +126,13 @@ export function AppSidebar() {
         {
           label: t("Entrance Beach"),
           to: "/entrance_beach",
-          icon: <ScrollText size={20} />,
-        },
-                {
-          label: t("Entrance Gate"),
-          to: "/entrance_gate",
-          icon: <ScrollText size={20} />,
-        },
+          icon: <ScrollText size={20} />,},
+        // },
+        //         {
+        //   label: t("Entrance Gate"),
+        //   to: "/entrance_gate",
+        //   icon: <ScrollText size={20} />,
+        // },
       ],
     },
     { label: t("Images"), to: "/images", icon: <ScrollText size={20} /> },

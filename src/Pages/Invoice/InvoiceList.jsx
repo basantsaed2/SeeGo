@@ -79,24 +79,25 @@ const InvoiceList = () => {
 
     return (
         <div className="p-4">
-            <DataTable
-                data={invoiceData}
-                columns={columns}
-                showAddButton={false}
-                showActionColumns={false}
-                // --- CHANGES START HERE ---
-                // Specify the key in your data that you want to filter by
-                filterByKey="status"
-                // Provide the options for the filter dropdown
-                filterOptions={["all", "paid", "unpaid"]}
-                // Provide the display labels for the filter options
-                filterLabelsText={{
-                    all: t("All"), // Make sure to translate "All" if you want it localized
-                    paid: t("Paid"),
-                    unpaid: t("Unpaid"),
-                }}
-                // --- CHANGES END HERE ---
-            />
+<DataTable
+  data={invoiceData || []}
+  columns={columns}
+  showAddButton={false}
+  showActionColumns={false}
+  filterOptions={[
+    {
+      key: "status",
+      label: t("Status"),
+      options: [
+        { value: "all", label: t("All") },
+        { value: "paid", label: t("Paid") },
+        { value: "unpaid", label: t("Unpaid") },
+      ],
+    },
+  ]}
+/>
+
+
         </div>
     );
 };
