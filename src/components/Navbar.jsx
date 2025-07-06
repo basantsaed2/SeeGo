@@ -21,7 +21,16 @@ import axios from "axios"; // For making the API request
 import { toast } from "react-toastify"; // Optional: for notifications
 
 export default function Navbar() {
-  const userData = JSON.parse(localStorage.getItem("user"));
+let userData = null;
+const userString = localStorage.getItem("user");
+
+if (userString && userString !== "undefined") {
+  try {
+    userData = JSON.parse(userString);
+  } catch (error) {
+    console.error("Error parsing user from localStorage:", error);
+  }
+}
   const navigate = useNavigate();
   const location = useLocation();
   const userName = userData?.village?.name;

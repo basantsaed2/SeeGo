@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
 
 const Login = () => {
-  const { postData, loadingPost, response } = usePost({ url:`https://bcknd.sea-go.org/api/village/login` });
+  const { postData, loadingPost, response } = usePost({ url: `https://bcknd.sea-go.org/api/village/login` });
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
@@ -38,11 +38,12 @@ const Login = () => {
     postData(body, "Login successful!");
   };
 
-    useEffect(() => {
-    if (!loadingPost && response) {
-      dispatch(setUser(response?.data));
-      localStorage.setItem("user", JSON.stringify(response?.data));
-localStorage.setItem("village_id", response?.data?.village?.village?.id);
+  useEffect(() => {
+    if (!loadingPost && response?.status === 200) {
+      console.log("response",response)
+      dispatch(setUser(response?.data?.village));
+      localStorage.setItem("user", JSON.stringify(response?.data?.village));
+      localStorage.setItem("village_id", response?.data?.village?.village?.id);
       localStorage.setItem("token", response?.data.token);
       const redirectTo = new URLSearchParams(location.search).get("redirect");
       if (response?.data?.village?.village?.package_id === null) {

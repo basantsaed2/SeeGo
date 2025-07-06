@@ -1,8 +1,20 @@
 // src/redux/slices/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
+let storedUser = null;
+const userString = localStorage.getItem("user");
+
+if (userString && userString !== "undefined") {
+  try {
+    storedUser = JSON.parse(userString);
+  } catch (error) {
+    console.error("Failed to parse user JSON:", error);
+  }
+}
+
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user: storedUser || null,
+  roles: storedUser?.roles || {},
 };
 
 const authSlice = createSlice({

@@ -58,7 +58,7 @@ const EBeach = () => {
     { key: "user_type", label: t("User Type") },
     {key:"beach",label:t("Beach")},
     { key: "unit", label: t("Units") },
-    // { key: "unit_type", label: t("Unit Type") },
+     { key: "unit_type", label: t("Unit Type") },
     { key: "time", label: t("Time") },
   ];
 
