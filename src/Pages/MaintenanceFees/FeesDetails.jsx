@@ -154,29 +154,41 @@ const FeesDetails = () => {
   ];
 
   // --- NEW LOGIC FOR UNIT TYPE FILTER ---
-  const unitTypeOptions = useMemo(() => {
-    const types = new Set();
-    types.add("all"); // Always include an "all" option
+const unitTypeOptions = useMemo(() => {
+  const typesSet = new Set();
+  maintenanceFees.forEach((fee) => {
+    if (fee.unit_type) {
+      typesSet.add(fee.unit_type);
+    }
+  });
 
-    maintenanceFees.forEach(fee => {
-      if (fee.unit_type) {
-        types.add(fee.unit_type.toLowerCase()); // Store in lowercase for consistent filtering
-      }
-    });
-    return Array.from(types);
-  }, [maintenanceFees]);
+  const allOption = {
+    key: "unit_type",
+    label: t("UnitType"),
+    options: [
+      { value: "all", label: t("AllUnitTypes") },
+      ...Array.from(typesSet).map((type) => ({
+        value: type,
+        label: type,
+      })),
+    ],
+  };
 
-  const unitTypeLabels = useMemo(() => {
-    const labels = {
-      all: t("All"), // Translate "All"
-    };
-    unitTypeOptions.forEach(type => {
-      if (type !== "all") {
-        labels[type] = t(type.charAt(0).toUpperCase() + type.slice(1)); // Capitalize and translate, e.g., "apartment" -> "Apartment"
-      }
-    });
-    return labels;
-  }, [unitTypeOptions, t]); // Depend on unitTypeOptions and t for re-calculation
+  return [allOption];
+}, [maintenanceFees, t]);
+
+
+  // const unitTypeLabels = useMemo(() => {
+  //   const labels = {
+  //     all: t("All"), // Translate "All"
+  //   };
+  //   unitTypeOptions.forEach(type => {
+  //     if (type !== "all") {
+  //       labels[type] = t(type.charAt(0).toUpperCase() + type.slice(1)); // Capitalize and translate, e.g., "apartment" -> "Apartment"
+  //     }
+  //   });
+  //   return labels;
+  // }, [unitTypeOptions, t]); // Depend on unitTypeOptions and t for re-calculation
 
 
   if (isLoading || loadingMaintenanceFees) {
@@ -282,15 +294,11 @@ const FeesDetails = () => {
         data={maintenanceFees}
         columns={columns}
         showAddButton={false}
-        showActionColumns={false} // Keep this false if you're handling action buttons within columns
-        // actionColumns={actionColumns} // Removed this line as the "Add Payment" button is now in `columns` via `render`
-        // --- NEW PROPS FOR UNIT TYPE FILTER ---
-        filterByKey="unit_type"
-        filterOptions={unitTypeOptions}
-        filterLabelsText={unitTypeLabels}
-        // Ensure showFilter is true if you want the filter to appear
+        showActionColumns={false}
+        filterOptions={unitTypeOptions} // مصفوفة تحتوي على { key, label, options }
         showFilter={true}
       />
+
     </div>
   );
 };

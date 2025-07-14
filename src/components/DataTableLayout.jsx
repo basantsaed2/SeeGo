@@ -68,7 +68,12 @@ export default function DataTable({
   onDateRangeChange,
   // *** NEW PROPS FOR GENERIC FILTERING ***
   filterOptions = [], // Array of options for the filter dropdown
-}) {
+})
+{
+  if (!Array.isArray(filterOptions)) {
+  filterOptions = [];
+}
+
   const [searchValue, setSearchValue] = useState("");
   // Initialize filterValue with "all" if filterOptions is empty, otherwise the first option
 const [activeFilters, setActiveFilters] = useState(() => {
@@ -459,7 +464,7 @@ useEffect(() => {
             )}
 
             {/* *** MODIFIED FILTER DROPDOWN *** */}
-{showFilter && filterOptions.length > 0 && (
+{Array.isArray(filterOptions) && filterOptions.length > 0 && showFilter && (
   <div className="flex gap-3 flex-wrap">
     {filterOptions.map((group) => (
       <div key={group.key} className="w-[150px]">
