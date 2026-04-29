@@ -23,7 +23,7 @@ const SecurityMan = () => {
   const [selectedRow, setselectedRow] = useState(null);
   const [rowEdit, setRowEdit] = useState(null);
   const { changeState } = useChangeState();
-  const { deleteData, loadingDelete } = useDelete();
+  const { deleteData, loadingDelete,isDeleting } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { t } = useTranslation();
@@ -200,6 +200,7 @@ const SecurityMan = () => {
           <DeleteDialog
             open={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}
+            isDeleting={isDeleting}
             onDelete={handleDeleteConfirm}
             name={selectedRow.name}
             isLoading={loadingDelete}

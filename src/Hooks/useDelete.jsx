@@ -1,4 +1,5 @@
 import axios from "axios";
+import { set } from "date-fns";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
@@ -6,9 +7,11 @@ export const useDelete = () => {
   const { user } = useSelector((state) => state.auth); // Get user from Redux store
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [responseDelete, setResponseDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const deleteData = async (url, name) => {
     setLoadingDelete(true);
+    setIsDeleting(true);
     try {
       const config = {
         headers: {
@@ -28,9 +31,10 @@ export const useDelete = () => {
       console.error('Error Delete:', error);
       return false; // Return false on error
     } finally {
+      setIsDeleting(false);
       setLoadingDelete(false);
     }
   };
 
-  return { deleteData, loadingDelete, responseDelete };
+  return { deleteData, loadingDelete, responseDelete, isDeleting };
 };

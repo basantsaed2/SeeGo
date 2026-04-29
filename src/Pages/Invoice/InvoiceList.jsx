@@ -47,7 +47,7 @@ const InvoiceList = () => {
         { key: "amount", label: t("Total") },
         {
             key: "view",
-            label: t("ViewInvoice"),
+            label: t("View Invoice"),
             render: (row) => (
                 <Link
                     to={`invoice`}

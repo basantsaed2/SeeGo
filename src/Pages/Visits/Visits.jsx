@@ -51,9 +51,9 @@ const Visits = () => {
   }, [visitData]);
 
   const columns = [
-    { key: "name", label: "User Name" },
+    { key: "name", label: t("User Name") },
     { key: "phone", label: t("User Phone") },
-    { key: "entrance_type", label: t("Entrance Type") },
+    { key: "entrance_type", label: <div className="-translate-x-5">{t("Entrance Type")}</div> },
     { key: "user_type", label: t("User Type") },
     { key: "gate", label: t("Gate") },
     { key: "unit", label: t("Units") },

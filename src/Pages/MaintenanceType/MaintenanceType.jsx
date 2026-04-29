@@ -17,7 +17,7 @@ const MaintenanceType = () => {
   const isLoading = useSelector((state) => state.loader.isLoading);
   const [maintenanceTypes, setMaintenanceTypes] = useState([]); // Renamed for clarity
   const [selectedRow, setselectedRow] = useState(null);
-  const { deleteData, loadingDelete } = useDelete(); // responseDelete is not used
+  const { deleteData, loadingDelete , isDeleting} = useDelete(); // responseDelete is not used
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { changeState, loadingChange } = useChangeState();
   const { t } = useTranslation();
@@ -142,6 +142,7 @@ filterOptions={[
             open={isDeleteOpen}
             onOpenChange={setIsDeleteOpen}
             onDelete={handleDeleteConfirm}
+            isDeleting={isDeleting}
             name={selectedRow.name}
             isLoading={loadingDelete}
           />

@@ -1,8 +1,15 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageContext } from "./../context/LanguageContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Bell, Wrench, AlertTriangle, Globe, ArrowLeft } from "lucide-react";
+import {
+  LogOut,
+  Bell,
+  Wrench,
+  AlertTriangle,
+  Globe,
+  ArrowLeft,
+} from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
@@ -21,26 +28,32 @@ import axios from "axios"; // For making the API request
 import { toast } from "react-toastify"; // Optional: for notifications
 
 export default function Navbar() {
-let userData = null;
-const userString = localStorage.getItem("user");
-
-if (userString && userString !== "undefined") {
-  try {
-    userData = JSON.parse(userString);
-  } catch (error) {
-    console.error("Error parsing user from localStorage:", error);
+  let userData = null;
+  const userString = localStorage.getItem("user");
+  const [seenNotifications, setSeenNotifications] = useState(0);
+  if (userString && userString !== "undefined") {
+    try {
+      userData = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user from localStorage:", error);
+    }
   }
-}
   const navigate = useNavigate();
   const location = useLocation();
   const userName = userData?.village?.name;
   const userInitials = userName
-    ? userName.split(" ").slice(0, 2).map((word) => word[0]).join("")
+    ? userName
+        .split(" ")
+        .slice(0, 2)
+        .map((word) => word[0])
+        .join("")
     : "AD";
   const { t, i18n } = useTranslation();
   const { changeLanguage } = useContext(LanguageContext);
 
-  const { totalMaintenance, totalProblems } = useSelector((state) => state.notifications);
+  const { totalMaintenance, totalProblems } = useSelector(
+    (state) => state.notifications,
+  );
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { data: notificationData, loading: notificationLoading } = useGet({
@@ -50,29 +63,39 @@ if (userString && userString !== "undefined") {
 
   const newMaintenanceCount = Math.max(
     0,
-    (notificationData?.new_maintenance || 0) - (notificationData?.maintenance_notification || 0)
+    (notificationData?.new_maintenance || 0) -
+      (notificationData?.maintenance_notification || 0),
   );
   const newProblemCount = Math.max(
     0,
-    (notificationData?.new_problem_report || 0) - (notificationData?.problem_report_notification || 0)
+    (notificationData?.new_problem_report || 0) -
+      (notificationData?.problem_report_notification || 0),
   );
-  const totalNotifications = newMaintenanceCount + newProblemCount;
-
-
+  const totalNotifications = Math.max(
+    0,
+    newMaintenanceCount + newProblemCount - seenNotifications,
+  );
+  useEffect(() => {
+    const saved = localStorage.getItem("seenNotifications");
+    if (saved) {
+      setSeenNotifications(Number(saved));
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("seenNotifications", seenNotifications);
+  }, [seenNotifications]);
   const handleLogout = async () => {
     try {
       // Make a DELETE request to the logout endpoint
-      const response = await axios.get(
-        "https://bcknd.sea-go.org/api/logout",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust token key as needed
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.get("https://bcknd.sea-go.org/api/logout", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Adjust token key as needed
+          "Content-Type": "application/json",
+        },
+      });
       // Check if the logout was successful
-      if (response.status === 200 || response.status === 204) { // 204 No Content is common for DELETE
+      if (response.status === 200 || response.status === 204) {
+        // 204 No Content is common for DELETE
         // Clear authentication data
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -91,8 +114,9 @@ if (userString && userString !== "undefined") {
       // Handle errors (e.g., network issues, unauthorized)
       console.error("Logout error:", error);
       toast.error(
-        error.response?.data?.message || t("An error occurred during logout") ||
-        "Failed to logout"
+        error.response?.data?.message ||
+          t("An error occurred during logout") ||
+          "Failed to logout",
       );
       // Optionally clear local data and redirect on error
       localStorage.removeItem("user");
@@ -141,7 +165,9 @@ if (userString && userString !== "undefined") {
             <Avatar className="w-10 h-10 bg-teal-100 text-teal-700 font-bold">
               <AvatarFallback>{userInitials}</AvatarFallback>
             </Avatar>
-            <span>{t("Hello")} {userName || "Admin"}</span>
+            <span>
+              {t("Hello")} {userName || "Admin"}
+            </span>
           </Button>
         </div>
 
@@ -151,17 +177,24 @@ if (userString && userString !== "undefined") {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
+                onClick={() =>
+                  setSeenNotifications(newMaintenanceCount + newProblemCount)
+                }
                 variant="ghost"
                 className="!p-2 rounded-full hover:bg-teal-50 focus:ring-2 focus:ring-teal-200"
                 aria-label={t("change_language")}
               >
                 <Globe className="w-5 h-5 text-teal-600" />
                 <span className="ml-2 text-teal-700 font-medium hidden sm:inline">
-                  {languages.find((lang) => lang.code === i18n.language)?.label || "Language"}
+                  {languages.find((lang) => lang.code === i18n.language)
+                    ?.label || "Language"}
                 </span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-white shadow-lg rounded-lg border border-gray-100 !p-2">
+            <DropdownMenuContent
+              align="end"
+              className="w-48 bg-white shadow-lg rounded-lg border border-gray-100 !p-2"
+            >
               <DropdownMenuLabel className="text-base font-semibold text-teal-700 !px--3 !py--1.5">
                 {t("select_language")}
               </DropdownMenuLabel>
@@ -170,10 +203,11 @@ if (userString && userString !== "undefined") {
                 <DropdownMenuItem
                   key={lang.code}
                   onClick={() => changeLanguage(lang.code)}
-                  className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${i18n.language === lang.code
-                    ? "bg-teal-100 text-teal-800 font-semibold"
-                    : "hover:bg-teal-50 focus:bg-teal-50"
-                    }`}
+                  className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${
+                    i18n.language === lang.code
+                      ? "bg-teal-100 text-teal-800 font-semibold"
+                      : "hover:bg-teal-50 focus:bg-teal-50"
+                  }`}
                   aria-selected={i18n.language === lang.code}
                 >
                   <span className="text-lg">{lang.flag}</span>
@@ -186,7 +220,12 @@ if (userString && userString !== "undefined") {
                       viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   )}
                 </DropdownMenuItem>
@@ -200,13 +239,15 @@ if (userString && userString !== "undefined") {
               <Button
                 variant="ghost"
                 className="relative !p-2 rounded-full hover:bg-teal-50 focus:ring-2 focus:ring-teal-200"
-                aria-label={totalNotifications > 0 ? `${totalNotifications} new notifications` : "No new notifications"}
+                aria-label={
+                  totalNotifications > 0
+                    ? `${totalNotifications} new notifications`
+                    : "No new notifications"
+                }
               >
                 <Bell className="w-5 h-5 text-teal-600" />
                 {totalNotifications > 0 && !notificationLoading && (
-                  <Badge
-                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full !px-2 !py-0.5 text-xs font-medium transition-transform duration-200 ease-in-out transform hover:scale-110"
-                  >
+                  <Badge className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full !px-2 !py-0.5 text-xs font-medium transition-transform duration-200 ease-in-out transform hover:scale-110">
                     {totalNotifications}
                   </Badge>
                 )}
@@ -221,7 +262,10 @@ if (userString && userString !== "undefined") {
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-gray-200" />
               {totalNotifications === 0 && !notificationLoading ? (
-                <DropdownMenuItem className="!px-4 !py-3 text-gray-500 italic cursor-default" disabled>
+                <DropdownMenuItem
+                  className="!px-4 !py-3 text-gray-500 italic cursor-default"
+                  disabled
+                >
                   {t("no_new_notifications")}
                 </DropdownMenuItem>
               ) : (
@@ -231,7 +275,9 @@ if (userString && userString !== "undefined") {
                     className="flex items-center gap-3 !px-4 !py-3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
                   >
                     <Wrench className="w-5 h-5 text-teal-600" />
-                    <span className="flex-1 text-gray-800">{t("new_maintenance_requests")}</span>
+                    <span className="flex-1 text-gray-800">
+                      {t("new_maintenance_requests")}
+                    </span>
                     <Badge
                       variant="secondary"
                       className="bg-teal-100 text-teal-700 !px-2 !py-0.5 rounded-full"
@@ -244,7 +290,9 @@ if (userString && userString !== "undefined") {
                     className="flex items-center gap-3 !px-4 !py-3 rounded-md hover:bg-teal-50 focus:bg-teal-50 cursor-pointer transition-colors duration-150"
                   >
                     <AlertTriangle className="w-5 h-5 text-orange-600" />
-                    <span className="flex-1 text-gray-800">{t("new_problem_reports")}</span>
+                    <span className="flex-1 text-gray-800">
+                      {t("new_problem_reports")}
+                    </span>
                     <Badge
                       variant="secondary"
                       className="bg-orange-100 text-orange-700 !px-2 !!py-0.5 rounded-full"

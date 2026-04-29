@@ -27,7 +27,7 @@ const VisitorLimit = () => {
     const { refetch: refetchVisitorLimit, loading: loadingVisitorLimitData, data: VisitorLimitData } = useGet({
         url: `${apiUrl}/visitor_limit`,
     });
-    const { postData: updateVisitorLimit, loading: loadingVisitorLimit, response:VisitorLimitResponse } = usePost({url: `${apiUrl}/visitor_limit/update`,});
+    const { postData: updateVisitorLimit, loadingPost: loadingVisitorLimit, response:VisitorLimitResponse } = usePost({url: `${apiUrl}/visitor_limit/update`,});
 
     useEffect(() => {
         refetchVisitorLimit();
@@ -114,9 +114,9 @@ const VisitorLimit = () => {
                 
                 <div className="!mt-6 flex justify-end">
                     <button
+                        disabled={loadingVisitorLimit}
                         onClick={handleSave}
                         className="bg-bg-primary hover:bg-white hover:text-bg-primary cursor-pointer text-white font-medium !py-2 !px-6 rounded-lg"
-                        disabled={loadingVisitorLimit}
                     >
                         {loadingVisitorLimit ? t("Saving") : t("SaveChanges")}
                     </button>

@@ -8,6 +8,7 @@ export const usePost = ({ url, login = false, type = false }) => {
   const { user } = useSelector((state) => state.auth); // Get user from Redux store
   const [loadingPost, setLoadingPost] = useState(false);
   const [response, setResponse] = useState(null);
+  
 const navigate = useNavigate();
   const postData = async (data, name) => {
     setLoadingPost(true);

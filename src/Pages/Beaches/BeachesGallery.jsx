@@ -23,6 +23,7 @@ const BeachesGallery = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [isModelOpen, setIsModelOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    
     const itemsPerPage = 12;
           const { t } = useTranslation();
 
@@ -34,7 +35,7 @@ const BeachesGallery = () => {
     const { postData, loadingPost, response, error: postError } = usePost({
         url: `${apiUrl}/beach/add_gallery/${id}`,
     });
-    const { deleteData, loadingDelete } = useDelete();
+    const { deleteData, loadingDelete, isDeleting } = useDelete();
 
     useEffect(() => {
         refetchBeach();
@@ -262,6 +263,7 @@ const BeachesGallery = () => {
                 <DeleteDialog
                     open={isDeleteOpen}
                     onOpenChange={setIsDeleteOpen}
+                    isDeleting={isDeleting}
                     onDelete={handleDeleteConfirm}
                     name={selectedRow?.name || "of this image"}
                     isLoading={loadingDelete}

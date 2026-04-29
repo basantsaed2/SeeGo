@@ -21,7 +21,7 @@ const Appartments = () => {
     const [Appartments, setAppartments] = useState([]);
     const [selectedRow, setselectedRow] = useState(null);
     const [rowEdit, setRowEdit] = useState(null);
-    const { deleteData, loadingDelete } = useDelete();
+    const { deleteData, loadingDelete ,isDeleting} = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
@@ -87,6 +87,7 @@ const Appartments = () => {
     };
 
     const handleDeleteConfirm = async () => {
+        
         const success = await deleteData(`${apiUrl}/appartment/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
 
         if (success) {
@@ -162,6 +163,7 @@ const Appartments = () => {
                     <DeleteDialog
                         open={isDeleteOpen}
                         onOpenChange={setIsDeleteOpen}
+                        isDeleting={isDeleting}
                         onDelete={handleDeleteConfirm}
                         name={selectedRow.name}
                         isLoading={loadingDelete}

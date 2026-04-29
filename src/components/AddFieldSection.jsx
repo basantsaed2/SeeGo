@@ -95,6 +95,7 @@ case "file":
       <Input
         id={field.name}
         type="file"
+        accept={field.accept || "image/*"}
         multiple={field.multiple}
         onChange={(e) =>
           handleChange(

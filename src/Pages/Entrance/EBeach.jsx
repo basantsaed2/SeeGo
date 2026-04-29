@@ -51,7 +51,7 @@ const EBeach = () => {
   const columns = [
     {
       key: "name",
-      label: "User Name",
+      label: t("User Name"),
     },
     { key: "phone", label: t("User Phone") },
     // {key:"entrance_type",label:t("Entrance Type")},

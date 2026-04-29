@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import image from "../../assets/Login.png";
 import "react-toastify/dist/ReactToastify.css";
 import { usePost } from "@/Hooks/UsePost";
+import { is } from "date-fns/locale";
 
 const Login = () => {
   const { postData, loadingPost, response } = usePost({ url: `https://bcknd.sea-go.org/api/village/login` });
@@ -79,11 +80,12 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <Button
+              <Button 
+              disabled={loadingPost}
                 className="w-full xl:w-[70%] rounded-[10px] bg-bg-primary cursor-pointer hover:bg-teal-600 text-white"
                 type="submit"
               >
-                Login
+                {loadingPost ? "Logging In..." : "Log In"}
               </Button>
             </form>
           </CardContent>

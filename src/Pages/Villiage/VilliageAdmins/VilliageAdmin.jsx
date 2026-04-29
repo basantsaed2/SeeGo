@@ -22,7 +22,7 @@ const VillageAdmin = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [rowEdit, setRowEdit] = useState(null);
     const { changeState, loadingChange } = useChangeState();
-    const { deleteData, loadingDelete } = useDelete();
+    const { deleteData, loadingDelete,isDeleting } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
@@ -175,6 +175,7 @@ const VillageAdmin = () => {
                     </EditDialog>
                     <DeleteDialog
                         open={isDeleteOpen}
+                        isDeleting={isDeleting}
                         onOpenChange={setIsDeleteOpen}
                         onDelete={handleDeleteConfirm}
                         name={selectedRow.name}

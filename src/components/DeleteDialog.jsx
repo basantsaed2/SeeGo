@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 
 export default function DeleteDialog({   open,
-  onOpenChange, onDelete, name }) {
+  onOpenChange, onDelete, name,isDeleting }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white !p-10 rounded-lg shadow-md max-w-md">
@@ -25,10 +25,11 @@ export default function DeleteDialog({   open,
             Cancel
           </Button>
           <Button
+          disabled={isDeleting}
             onClick={onDelete}
             className="bg-red-600 text-white hover:bg-red-700 rounded-[10px] !p-3"
           >
-            Delete
+            {isDeleting ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -17,7 +17,7 @@ const ServicesType = () => {
   const [Services, setServices] = useState([]);
   const [selectedRow, setselectedRow] = useState(null);
   const [rowEdit, setRowEdit] = useState(null);
-  const { deleteData, loadingDelete, responseDelete } = useDelete();
+  const { deleteData, loadingDelete, responseDelete , isDeleting } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -103,6 +103,7 @@ const ServicesType = () => {
         <>
           <DeleteDialog
             open={isDeleteOpen}
+            isDeleting={isDeleting}
             onOpenChange={setIsDeleteOpen}
             onDelete={handleDeleteConfirm}
             name={selectedRow.name}
