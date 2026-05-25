@@ -412,12 +412,17 @@ useEffect(() => {
       <div className="w-full !p-3 !space-y-6">
         <div className="flex justify-between !mb-6 items-center flex-wrap gap-4">
 
-          <Input
-            placeholder={t("Search...")}
-            className="w-full md:!ms-3 sm:!ms-0 !p-2 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
+          <div className="flex items-center gap-3 flex-wrap">
+            <Input
+              placeholder={t("Search...")}
+              className="w-full md:!ms-3 sm:!ms-0 !p-2 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+            <span className="text-sm text-gray-500 whitespace-nowrap">
+              {t("Total")}: <span className="font-semibold text-bg-primary">{filteredData.length}</span>
+            </span>
+          </div>
 
           <div className="flex items-center gap-3 flex-wrap">
 
@@ -518,6 +523,9 @@ useEffect(() => {
           <Table className="!min-w-[600px] table-fixed">
             <TableHeader>
               <TableRow>
+                <TableHead className="text-bg-primary font-semibold w-[50px]">
+                  #
+                </TableHead>
                 {columns.map((col, index) => (
                   <TableHead
                     key={index}
@@ -542,6 +550,9 @@ useEffect(() => {
               {paginatedData.length > 0 ? (
                 paginatedData.map((row, index) => (
                   <TableRow key={index}>
+                    <TableCell className="text-sm !py-3 !px-1 w-[50px] text-gray-500 font-medium">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </TableCell>
                     {columns.map((col, idx) => (
                       <TableCell
                         key={idx}
@@ -606,6 +617,7 @@ useEffect(() => {
                   <TableCell
                     colSpan={
                       columns.length +
+                      1 + // # column
                       (detailsData ? 1 : 0) +
                       (pageDetailsRoute ? 1 : 0) +
                       (showActionColumns ? 1 : 0)
