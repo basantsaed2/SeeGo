@@ -77,6 +77,11 @@ export function AppSidebar() {
           icon: <FaUserShield size={20} />,
         },
         { label: t("Admins"), to: "/admins", icon: <UserCog size={20} /> },
+        { label: t("loginRequest"), to: "/login-requests", icon: <UserCog size={20} /> },
+        { label: t("codeRequest"), to: "/pending-requests", icon: <UserCog size={20} /> },
+
+
+
       ],
     },
     { label: t("NewsFeed"), to: "/posts", icon: <Newspaper size={20} /> },
@@ -126,7 +131,8 @@ export function AppSidebar() {
         {
           label: t("Entrance Beach"),
           to: "/entrance_beach",
-          icon: <ScrollText size={20} />,},
+          icon: <ScrollText size={20} />,
+        },
         // },
         //         {
         //   label: t("Entrance Gate"),
@@ -272,10 +278,9 @@ export function AppSidebar() {
                           isActive={isActive}
                           className={`flex justify-between items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-lg font-medium
                             ${isSidebarOpen ? "rounded-full" : ""}
-                            ${
-                              isActive
-                                ? "bg-white text-bg-primary shadow-md"
-                                : "hover:bg-white hover:text-bg-primary"
+                            ${isActive
+                              ? "bg-white text-bg-primary shadow-md"
+                              : "hover:bg-white hover:text-bg-primary"
                             }`}
                         >
                           <div className="flex items-center gap-3">
@@ -290,10 +295,9 @@ export function AppSidebar() {
                         isActive={isActive}
                         className={`flex justify-between items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-lg font-medium
                           ${isSidebarOpen ? "rounded-full" : ""}
-                          ${
-                            isActive
-                              ? "bg-white text-bg-primary shadow-md"
-                              : "hover:bg-white hover:text-bg-primary"
+                          ${isActive
+                            ? "bg-white text-bg-primary shadow-md"
+                            : "hover:bg-white hover:text-bg-primary"
                           }`}
                       >
                         <div className="flex items-center gap-3">
@@ -324,10 +328,9 @@ export function AppSidebar() {
                                 isActive={isSubActive}
                                 className={`flex justify-start items-center gap-3 !px-4 !py-2 text-white transition-all duration-200 text-base
                                   ${isSidebarOpen ? "rounded-full" : ""}
-                                  ${
-                                    isSubActive
-                                      ? "bg-white text-bg-primary shadow-md"
-                                      : "hover:bg-white hover:text-bg-primary"
+                                  ${isSubActive
+                                    ? "bg-white text-bg-primary shadow-md"
+                                    : "hover:bg-white hover:text-bg-primary"
                                   }`}
                               >
                                 {subItem.icon}

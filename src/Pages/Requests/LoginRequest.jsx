@@ -5,15 +5,15 @@ import { useGet } from "@/Hooks/UseGet";
 import { useChangeState } from "@/Hooks/useChangeState"; 
 import { useTranslation } from "react-i18next";
 import FullPageLoader from "@/components/Loading";
-import { Clock, Check, X } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Check, X } from "lucide-react";
 
-const PendingRequest = () => {
+const LoginRequest = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const { t } = useTranslation();
     const [requests, setRequests] = useState([]);
 
-    // 1. جلب البيانات من السيرفر باستخدام الـ Endpoint الصحيحة لـ code_request
-    const { refetch, loading, data: requestData } = useGet({ url: `${apiUrl}/code_request` });
+    // 1. جلب البيانات من السيرفر
+    const { refetch, loading, data: requestData } = useGet({ url: `${apiUrl}/login_request` });
     
     // 2. هوك لتغيير الحالة (Approve / Reject)
     const { changeState, loadingChange } = useChangeState();
@@ -24,8 +24,8 @@ const PendingRequest = () => {
 
     useEffect(() => {
         if (requestData) {
-            // الوصول للمصفوفة الصحيحة داخل code_requests.data بناءً على الـ JSON المرفق
-            const rawList = requestData?.code_requests?.data || requestData?.data || [];
+            // التعديل هنا: الوصول للمصفوفة الصحيحة داخل login_requests.data بناءً على الـ JSON
+            const rawList = requestData?.login_requests?.data || requestData?.data || [];
             if (Array.isArray(rawList)) {
                 setRequests(rawList);
             }
@@ -34,9 +34,11 @@ const PendingRequest = () => {
 
     // 3. دالة إرسال التحديث للسيرفر عند الضغط على الأزرار
     const handleStatusChange = async (id, newStatus) => {
-        const url = `${apiUrl}/code_request/status/${id}?status=${newStatus}`;
+        // بناءً على الـ Endpoint المستهدفة مع تمرير الـ status كـ Query Parameter أو Body حسب تصميم الباكيند
+        const url = `${apiUrl}/login_request/status/${id}?status=${newStatus}`;
         const toastMessage = newStatus === "approve" ? t("RequestApproved") : t("RequestRejected");
         
+        // إرسال طلب الـ PUT وتمرير الـ status أيضاً داخل الـ body لضمان الأمان
         const success = await changeState(url, toastMessage, { status: newStatus });
         
         if (success) {
@@ -44,7 +46,7 @@ const PendingRequest = () => {
         }
     };
 
-    // 4. إعداد أعمدة الجدول المتوافقة تماماً مع الـ JSON المرفق (code_requests)
+    // 4. إعداد أعمدة الجدول المتوافقة تماماً مع الـ JSON المرفق
     const columns = [
         { 
             key: "id", 
@@ -56,30 +58,21 @@ const PendingRequest = () => {
             render: (row) => row.user_name || "—"
         },
         { 
-            key: "user_phone", 
-            label: t("Phone"), 
-            render: (row) => row.user_phone || "—" 
-        },
-        { 
             key: "user_email", 
             label: t("Email"), 
             render: (row) => row.user_email || "—" 
         },
         { 
-            key: "appartment_unit", 
-            label: t("Unit"), 
-            render: (row) => row.appartment_unit || "—" 
+            key: "user_phone", 
+            label: t("Phone"), 
+            render: (row) => row.user_phone || "—" 
         },
         { 
-            key: "code", 
-            label: t("Requested Code"), 
-            render: (row) => (
-                <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded font-mono text-xs font-semibold">
-                    {row.code || "—"}
-                </span>
-            )
+            key: "ip_address", 
+            label: t("IP Address"), 
+            render: (row) => row.ip_address || "—" 
         },
-        // عمود الإجراءات (Approve / Reject)
+        // إضافة عمود الـ Actions ليحتوي على أزرار الـ Approve والـ Reject مباشرة
         {
             key: "actions",
             label: t("Actions"),
@@ -115,7 +108,7 @@ const PendingRequest = () => {
         <div className="p-4">
             <div className="flex items-center gap-2 mb-6">
                 <Clock className="w-6 h-6 text-bg-primary" />
-                <h1 className="text-xl font-semibold text-gray-800">{t("codeRequests")}</h1>
+                <h1 className="text-xl font-semibold text-gray-800">{t("LoginRequests")}</h1>
             </div>
 
             <DataTable
@@ -124,15 +117,13 @@ const PendingRequest = () => {
                 showFilter={false}
                 showSearch={true}
                 showAddButton={false}
-                showActionColumns={false} // تم تركها كما في كودك الأساسي لمنع التضارب
-                showActions={false}       // لتعطيل الأزرار التلقائية الافتراضية للـ Layout
-                showDeleteButton={false} 
+                showActionColumns={false}
+                showDeleteButton={false} // إخفاء زر الحذف الافتراضي لأننا أضفنا أكشنز مخصصة
                 pageDetailsRoute={false}
-                // تحديث مفاتيح البحث لتشمل الكود واسم الوحدة بجانب اسم المستخدم
-                searchKeys={["user_name", "user_email", "code", "appartment_unit"]} 
+                searchKeys={["user_name", "user_email"]} // مفاتيح البحث المتوافقة مع الكود والـ JSON
             />
         </div>
     );
 };
 
-export default PendingRequest;
+export default LoginRequest;

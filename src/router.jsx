@@ -56,6 +56,7 @@ import TotalEntrance from "./Pages/TotalEntrance/TotalEntrance";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import PendingRequest from "./Pages/PendingRequest/PendingRequest";
 import OnlineUsers from "./Pages/Profile/OnlineUsers";
+import LoginRequest from "./Pages/Requests/LoginRequest";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -295,6 +296,10 @@ const router = createBrowserRouter([
       {
         path: "pending-requests",
         element: <PendingRequest />,
+      },
+            {
+        path: "login-requests",
+        element: <LoginRequest />,
       },
 
       {
