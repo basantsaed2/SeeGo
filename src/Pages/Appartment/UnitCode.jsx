@@ -33,16 +33,25 @@ export default function UnitCode() {
       const { t } = useTranslation();
 
 useEffect(() => {
-    // Add optional chaining to safely check for .data
-    if (AppartmentData && AppartmentData.appartments && Array.isArray(AppartmentData.appartments.data)) {
-      setAppartments(
-        AppartmentData.appartments.data.map((appartment) => ({
-          label: appartment.unit,
-          value: appartment.id.toString(),
-        }))
-      );
-    }
-  }, [AppartmentData]);
+  // Check if AppartmentData exists and contains the appartments object directly,
+  // or if the data array is directly inside AppartmentData.appartments
+  if (AppartmentData && AppartmentData.appartments && Array.isArray(AppartmentData.appartments.data)) {
+    setAppartments(
+      AppartmentData.appartments.data.map((appartment) => ({
+        label: appartment.unit,
+        value: appartment.id.toString(),
+      }))
+    );
+  } else if (AppartmentData && Array.isArray(AppartmentData.data)) {
+    // Fallback if AppartmentData itself represents the object in your logs
+    setAppartments(
+      AppartmentData.data.map((appartment) => ({
+        label: appartment.unit,
+        value: appartment.id.toString(),
+      }))
+    );
+  }
+}, [AppartmentData]);
 
   useEffect(() => {
     if (formData.en.type !== "renter") {
