@@ -32,14 +32,11 @@ export default function UnitCode() {
   });
       const { t } = useTranslation();
 
-  useEffect(() => {
-    refetchAppartment();
-  }, [refetchAppartment]);
-
-  useEffect(() => {
-    if (AppartmentData && AppartmentData.appartments) {
+useEffect(() => {
+    // Add optional chaining to safely check for .data
+    if (AppartmentData && AppartmentData.appartments && Array.isArray(AppartmentData.appartments.data)) {
       setAppartments(
-        AppartmentData.appartments.map((appartment) => ({
+        AppartmentData.appartments.data.map((appartment) => ({
           label: appartment.unit,
           value: appartment.id.toString(),
         }))
