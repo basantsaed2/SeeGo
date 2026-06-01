@@ -18,10 +18,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-
-export function Combobox({ value, onValueChange, options, placeholder, className }) {
+export function Combobox({ 
+  value, 
+  onValueChange, 
+  options, 
+  placeholder, 
+  className,
+  // 1. استقبال الخصائص الجديدة للبحث من الباك إند
+  onSearchChange, 
+  searchValue 
+}) {
   const [open, setOpen] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [localSearchTerm, setLocalSearchTerm] = React.useState("");
   const triggerRef = React.useRef(null);
   const [contentWidth, setContentWidth] = React.useState("200px");
 
@@ -29,9 +37,16 @@ export function Combobox({ value, onValueChange, options, placeholder, className
   const selectedOption = options.find((option) => option.value === stringValue);
   const displayText = selectedOption ? selectedOption.label : placeholder;
 
-  const filteredOptions = options.filter(option =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // تحديد هل القيمة والتحكم خارجي (باك إند) أم محلي (فرونت إند)
+  const isServerSide = typeof onSearchChange === "function";
+  const currentSearchValue = isServerSide ? (searchValue || "") : localSearchTerm;
+
+  // 2. إذا كان السيرش من الباك إند، لا نفلتر الخيارات محلياً لأن الباك إند يرسلها مفلترة جاهزة
+  const filteredOptions = isServerSide 
+    ? options 
+    : options.filter(option =>
+        option.label.toLowerCase().includes(localSearchTerm.toLowerCase())
+      );
 
   React.useEffect(() => {
     if (triggerRef.current) {
@@ -43,7 +58,19 @@ export function Combobox({ value, onValueChange, options, placeholder, className
   const handleValueChange = (newValue) => {
     onValueChange(newValue);
     setOpen(false);
-    setSearchTerm("");
+    if (isServerSide) {
+      onSearchChange(""); // تصفير السيرش الخارجي عند الاختيار
+    } else {
+      setLocalSearchTerm("");
+    }
+  };
+
+  const handleSearchChange = (text) => {
+    if (isServerSide) {
+      onSearchChange(text); // إرسال النص فوراً لمكون UnitCode لتحديث الـ API
+    } else {
+      setLocalSearchTerm(text);
+    }
   };
 
   return (
@@ -70,18 +97,19 @@ export function Combobox({ value, onValueChange, options, placeholder, className
         onCloseAutoFocus={(e) => e.preventDefault()}
         onInteractOutside={(e) => {
           const isComboboxElement = e.target.closest('[role="combobox"]') || 
-                                  e.target.closest('[role="listbox"]');
+                                    e.target.closest('[role="listbox"]');
           if (isComboboxElement) {
             e.preventDefault();
           }
         }}
       >
-        <Command shouldFilter={false}>
+        {/* تعطيل الفلترة الداخلية التلقائية لمكتبة Command إذا كان البحث من السيرفر */}
+        <Command shouldFilter={!isServerSide}>
           <CommandInput
             placeholder={`Search ${placeholder.toLowerCase()}...`}
             className="h-9"
-            value={searchTerm}
-            onValueChange={setSearchTerm}
+            value={currentSearchValue}
+            onValueChange={handleSearchChange}
           />
           <CommandList>
             <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
@@ -90,9 +118,8 @@ export function Combobox({ value, onValueChange, options, placeholder, className
                 <CommandItem
                   key={option.value}
                   value={option.value}
-                    className="!px-4 !py-2 cursor-pointer hover:bg-gray-100"
+                  className="!px-4 !py-2 cursor-pointer hover:bg-gray-100"
                   onSelect={() => {
-                    // Removed event parameter since CommandItem doesn't pass it
                     handleValueChange(option.value);
                   }}
                 >
@@ -138,12 +165,11 @@ export function ComboboxMultiSelect({ value, onValueChange, options, placeholder
       ? selectedValues.filter((val) => val !== currentValue)
       : [...selectedValues, currentValue];
     onValueChange(newValues);
-    // Don't close the popover here to allow multiple selections
-    setSearchTerm(""); // Clear search term on selection
+    setSearchTerm(""); 
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal> {/* Add modal prop */}
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -170,7 +196,7 @@ export function ComboboxMultiSelect({ value, onValueChange, options, placeholder
         onCloseAutoFocus={(e) => e.preventDefault()}
         onInteractOutside={(e) => {
           const isComboboxElement = e.target.closest('[role="combobox"]') || 
-                                  e.target.closest('[role="listbox"]');
+                                    e.target.closest('[role="listbox"]');
           if (isComboboxElement) {
             e.preventDefault();
           }

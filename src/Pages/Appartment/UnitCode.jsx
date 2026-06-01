@@ -13,8 +13,18 @@ import { useTranslation } from "react-i18next";
 
 export default function UnitCode() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  
+  // التحكم في كلمة البحث المرسلة للباك إند
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/appartment/create_code` });
-  const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
+  
+  // جلب البيانات بناءً على السيرش القادم من الباك إند
+  const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ 
+    url: `${apiUrl}/appartment?search=${debouncedSearch}` 
+  });
+  
   const [appartments, setAppartments] = useState([]);
   const [generatedCode, setGeneratedCode] = useState("");
   const isLoading = useSelector((state) => state.loader.isLoading);
@@ -30,40 +40,40 @@ export default function UnitCode() {
       image: null,
     },
   });
-      const { t } = useTranslation();
+  const { t } = useTranslation();
 
-useEffect(() => {
-  // Check if AppartmentData exists and contains the appartments object directly,
-  // or if the data array is directly inside AppartmentData.appartments
-  if (AppartmentData && AppartmentData.appartments && Array.isArray(AppartmentData.appartments.data)) {
-    setAppartments(
-      AppartmentData.appartments.data.map((appartment) => ({
-        label: appartment.unit,
-        value: appartment.id.toString(),
-      }))
-    );
-  } else if (AppartmentData && Array.isArray(AppartmentData.data)) {
-    // Fallback if AppartmentData itself represents the object in your logs
-    setAppartments(
-      AppartmentData.data.map((appartment) => ({
-        label: appartment.unit,
-        value: appartment.id.toString(),
-      }))
-    );
-  }
-}, [AppartmentData]);
+  // عمل Debounce لتجنب إرسال طلبات مكثفة للـ API
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (AppartmentData && AppartmentData.appartments && Array.isArray(AppartmentData.appartments.data)) {
+      setAppartments(
+        AppartmentData.appartments.data.map((appartment) => ({
+          label: appartment.unit,
+          value: appartment.id.toString(),
+        }))
+      );
+    } else if (AppartmentData && Array.isArray(AppartmentData.data)) {
+      setAppartments(
+        AppartmentData.data.map((appartment) => ({
+          label: appartment.unit,
+          value: appartment.id.toString(),
+        }))
+      );
+    }
+  }, [AppartmentData]);
 
   useEffect(() => {
     if (formData.en.type !== "renter") {
       setFormData(prev => ({
         ...prev,
-        en: {
-          ...prev.en,
-          people: "",
-          from: "",
-          to: "",
-          image: null,
-        },
+        en: { ...prev.en, people: "", from: "", to: "", image: null },
       }));
     }
   }, [formData.en.type]);
@@ -74,7 +84,6 @@ useEffect(() => {
         setGeneratedCode(response.data.success.toString());
       } else {
         toast.error(t("FailedtogeneratecodePleasetryagain."), { position: "bottom-center" });
-        console.error("Unexpected response format:", response);
       }
     }
   }, [response, loadingPost, navigate]);
@@ -111,9 +120,7 @@ useEffect(() => {
     if (formData.en.type === "renter") {
       body.append("from", formatDate(formData.en.from));
       body.append("to", formatDate(formData.en.to));
-      if (formData.en.image) {
-        body.append("image", formData.en.image);
-      }
+      if (formData.en.image) body.append("image", formData.en.image);
     }
 
     postData(body, t("Appartmentaddedsuccessfully!"));
@@ -122,21 +129,17 @@ useEffect(() => {
   const copyCodeToClipboard = () => {
     if (generatedCode) {
       navigator.clipboard.writeText(generatedCode)
-        .then(() => {
-          toast.success(t("Codecopiedtoclipboard"), { position: "bottom-center" });
-        })
-        .catch(err => {
-          console.error("Failed to copy text: ", err);
-          toast.error(t("Failedtocopycode"), { position: "bottom-center" });
-        });
+        .then(() => toast.success(t("Codecopiedtoclipboard"), { position: "bottom-center" }))
+        .catch(() => toast.error(t("Failedtocopycode"), { position: "bottom-center" }));
     }
   };
 
+  // تعريف الحقول بدون حقل البحث النصي المنفصل
   const fields = [
     {
       type: "select",
       placeholder: t("Type"),
-      name: t("type"),
+      name: "type",
       required: true,
       options: [
         { value: "owner", label: t("Owner") },
@@ -146,9 +149,12 @@ useEffect(() => {
     {
       type: "select",
       placeholder: t("Appartment"),
-      name: t("appartment"),
+      name: "appartment",
       options: appartments,
-      value: formData.en.appartment
+      value: formData.en.appartment,
+      // نمرر دالة التغيير الخاصة بالسيرش لكي يلقطها الـ Combobox من الداخل
+      onSearchChange: (val) => setSearchTerm(val), 
+      searchValue: searchTerm
     },
     {
       type: "input",
@@ -158,30 +164,15 @@ useEffect(() => {
       required: true
     },
     ...(formData.en.type === "renter" ? [
-      {
-        type: "input", inputType: "date",
-        name: t("from"),
-        placeholder: t("From"),
-        value: formData.en.from,
-      },
-      {
-        type: "input", inputType: "date",
-        name: t("to"),
-        placeholder: t("To"),
-        value: formData.en.to,
-      },
-      {
-        type: "file",
-        placeholder: t("AppartmentImage"),
-        name: t("image"),
-        accept: "image/*"
-      },
+      { type: "input", inputType: "date", name: "from", placeholder: t("From"), value: formData.en.from },
+      { type: "input", inputType: "date", name: "to", placeholder: t("To"), value: formData.en.to },
+      { type: "file", placeholder: t("AppartmentImage"), name: "image", accept: "image/*" },
     ] : [])
   ];
 
   return (
-    <div className="w-full flex flex-col  gap-5 p-6 relative">
-      {isLoading && <FullPageLoader />}
+    <div className="w-full flex flex-col gap-5 p-6 relative">
+      {(isLoading || loadingAppartment) && <FullPageLoader />}
       <ToastContainer />
       <h2 className="text-bg-primary text-center text-2xl font-semibold">
         <TitleSection text={"Create Code"} />
@@ -195,7 +186,7 @@ useEffect(() => {
             values={formData.en}
             onChange={handleFieldChange}
           />
-          <div className="">
+          <div>
             <Button
               onClick={handleSubmit}
               className="bg-bg-primary !mb-10 !ms-3 cursor-pointer hover:bg-teal-600 !px-5 !py-6 text-white w-[30%] rounded-[15px] transition-all duration-200"
@@ -207,36 +198,15 @@ useEffect(() => {
         </>
       ) : (
         <div className="!my-8 w-full !p-6 border border-gray-200 rounded-2xl bg-gradient-to-b from-gray-50 to-white shadow-lg max-w-lg !m-auto flex flex-col items-center transition-all duration-300">
-          <p className="text-xl  font-semibold text-gray-800 !mb-4">{t("YourGeneratedCode")}</p>
+          <p className="text-xl font-semibold text-gray-800 !mb-4">{t("YourGeneratedCode")}</p>
           <div className="relative !mb-3 bg-white !p-3 rounded-xl border border-dashed border-teal-400 text-center font-mono text-lg text-teal-700 w-[90%] break-all shadow-sm hover:shadow-md transition-shadow duration-200">
             {generatedCode}
-
           </div>
           <div className="!mt-6 flex gap-4">
-            <Button
-              onClick={copyCodeToClipboard}
-              className="bg-teal-600 hover:bg-teal-700 text-white !px-6 !py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
+            <Button onClick={copyCodeToClipboard} className="bg-teal-600 hover:bg-teal-700 text-white !px-6 !py-3 rounded-lg font-medium transition-all duration-200 flex items-center gap-2">
               {t("CopyCode")}
             </Button>
-            <Button
-              onClick={() => navigate(-1)}
-              className="bg-gray-600 hover:bg-gray-700 text-white !px-6 !py-3 rounded-lg font-medium transition-all duration-200"
-            >
+            <Button onClick={() => navigate(-1)} className="bg-gray-600 hover:bg-gray-700 text-white !px-6 !py-3 rounded-lg font-medium transition-all duration-200">
               {t("GoBack")}
             </Button>
           </div>

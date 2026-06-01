@@ -121,21 +121,23 @@ case "file":
                       />
                     );
 
-                  case "select":
-                    return (
-                      <Combobox
-                        key={`${field.name}-${values?.[field.name]}`}
- // Add key to force re-render
-                        id={fieldId}
-                        value={values?.[field.name]?.toString() || ""}
-                        onValueChange={(val) => {
-                          handleChange(field.name, val);
-                        }}
-                        options={field.options}
-                        placeholder={field.placeholder}
-                        className={`w-full !p-3 !mb-2 border border-gray-300 rounded-[10px] shadow-sm focus:outline-none focus:ring-2 focus:ring-bg-primary focus:border-bg-primary transition-all ${commonInputClass}`}
-                      />
-                    );
+case "select":
+  return (
+    <Combobox
+      key={`${field.name}-${values?.[field.name]}`}
+      id={fieldId}
+      value={values?.[field.name]?.toString() || ""}
+      onValueChange={(val) => {
+        handleChange(field.name, val);
+      }}
+      // التعديل المضاف هنا لتمرير دالة البحث للـ Combobox الداخلي
+      onSearchChange={field.onSearchChange} 
+      searchValue={field.searchValue}
+      options={field.options}
+      placeholder={field.placeholder}
+      className={`w-full !p-3 !mb-2 border border-gray-300 rounded-[10px] shadow-sm focus:outline-none focus:ring-2 focus:ring-bg-primary focus:border-bg-primary transition-all ${commonInputClass}`}
+    />
+  );
 
                   case "switch":
                     const isChecked = typeof value === 'string'
