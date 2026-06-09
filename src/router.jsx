@@ -54,6 +54,7 @@ import EBeach from "./Pages/Entrance/EBeach";
 import EGate from "./Pages/Entrance/EGate";
 import TotalEntrance from "./Pages/TotalEntrance/TotalEntrance";
 import LandingPage from "./Pages/LandingPage/LandingPage";
+import PendingRequest from "./Pages/PendingRequest/PendingRequest";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -70,25 +71,25 @@ const router = createBrowserRouter([
       },
     ],
   },
-       {
-        path: "packages",
-        children: [
-          { index: true, element: <Packages /> },
-        ],
-      },
+  {
+    path: "packages",
+    children: [
+      { index: true, element: <Packages /> },
+    ],
+  },
   {
     path: "village/:id",
     element: <LandingPage />,
   },
   // ✅ الصفحات المحمية داخل MainLayout
   {
-    
+
     element: (
       <SidebarProvider>
         <MainLayout />
       </SidebarProvider>
     ),
-    
+
     children: [
 
       {
@@ -247,13 +248,13 @@ const router = createBrowserRouter([
         path: "invoice_list",
         children: [
           { index: true, element: <InvoiceList /> },
-          {path: "invoice", element: <InvoiceCard /> },
+          { path: "invoice", element: <InvoiceCard /> },
         ],
       },
       {
-        path:"images",element:<VilliageSinglePage/>
+        path: "images", element: <VilliageSinglePage />
       },
-            {
+      {
         path: "profile",
         element: (
           <ProtectedRoute>
@@ -261,26 +262,30 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-            {
+      {
         path: "entrance_pool",
         children: [
           { index: true, element: <EPool /> },
         ],
       },
-                  {
+      {
         path: "entrance_beach",
         children: [
           { index: true, element: <EBeach /> },
         ],
       },
-                        {
+      {
         path: "entrance_gate",
         children: [
           { index: true, element: <EGate /> },
         ],
       },
-            {
-        path:"total-entrance",element:<TotalEntrance/>
+      {
+        path: "total-entrance", element: <TotalEntrance />
+      },
+      {
+        path: "pending-requests",
+        element: <PendingRequest />,
       },
 
       {

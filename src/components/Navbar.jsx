@@ -2,14 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LanguageContext } from "./../context/LanguageContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  LogOut,
-  Bell,
-  Wrench,
-  AlertTriangle,
-  Globe,
-  ArrowLeft,
-} from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
@@ -25,7 +17,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "./ui/sidebar";
 import axios from "axios"; // For making the API request
-import { toast } from "react-toastify"; // Optional: for notifications
+import { toast } from "react-toastify";
+import { ClipboardList, LogOut, Bell, Wrench, AlertTriangle, Globe, ArrowLeft } from "lucide-react"; // Optional: for notifications
 
 export default function Navbar() {
   let userData = null;
@@ -43,10 +36,10 @@ export default function Navbar() {
   const userName = userData?.village?.name;
   const userInitials = userName
     ? userName
-        .split(" ")
-        .slice(0, 2)
-        .map((word) => word[0])
-        .join("")
+      .split(" ")
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join("")
     : "AD";
   const { t, i18n } = useTranslation();
   const { changeLanguage } = useContext(LanguageContext);
@@ -64,12 +57,12 @@ export default function Navbar() {
   const newMaintenanceCount = Math.max(
     0,
     (notificationData?.new_maintenance || 0) -
-      (notificationData?.maintenance_notification || 0),
+    (notificationData?.maintenance_notification || 0),
   );
   const newProblemCount = Math.max(
     0,
     (notificationData?.new_problem_report || 0) -
-      (notificationData?.problem_report_notification || 0),
+    (notificationData?.problem_report_notification || 0),
   );
   const totalNotifications = Math.max(
     0,
@@ -115,8 +108,8 @@ export default function Navbar() {
       console.error("Logout error:", error);
       toast.error(
         error.response?.data?.message ||
-          t("An error occurred during logout") ||
-          "Failed to logout",
+        t("An error occurred during logout") ||
+        "Failed to logout",
       );
       // Optionally clear local data and redirect on error
       localStorage.removeItem("user");
@@ -169,6 +162,15 @@ export default function Navbar() {
               {t("Hello")} {userName || "Admin"}
             </span>
           </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/pending-requests")} // التوجيه للصفحة الجديدة
+            className="text-teal-700 hover:text-teal-900 hover:bg-teal-50 relative cursor-pointer"
+            title={t("PendingRequests")}
+          >
+            <ClipboardList className="w-5 h-5" />
+          </Button>
         </div>
 
         {/* Right: Icons and Language Switcher */}
@@ -203,11 +205,10 @@ export default function Navbar() {
                 <DropdownMenuItem
                   key={lang.code}
                   onClick={() => changeLanguage(lang.code)}
-                  className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${
-                    i18n.language === lang.code
+                  className={`flex items-center gap-2 !px--3 !py--2 rounded-md cursor-pointer transition-colors duration-150 ${i18n.language === lang.code
                       ? "bg-teal-100 text-teal-800 font-semibold"
                       : "hover:bg-teal-50 focus:bg-teal-50"
-                  }`}
+                    }`}
                   aria-selected={i18n.language === lang.code}
                 >
                   <span className="text-lg">{lang.flag}</span>
