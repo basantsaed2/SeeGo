@@ -14,6 +14,7 @@ import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Switch } from "@/components/ui/switch"; // 🛠️ استيراد الـ Switch للاستخدام في الـ Dialog
 
 const Appartments = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -25,6 +26,24 @@ const Appartments = () => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
+
+    // 🛠️ 1. تعريف الـ State الخاص بحالات الحظر في صفحة التعديل
+    const [banStatuses, setBanStatuses] = useState({
+        all_status: false,
+        entrance_status: false,
+        selling_status: false,
+        rent_status: false,
+        visits_status: false,
+        pool_status: false,
+        beach_status: false,
+        rent_code_status: false,
+        options_status: false,
+    });
+
+    // 🛠️ دالة تحديث السويتشات عند الضغط عليها
+    const handleSwitchChange = (key, value) => {
+        setBanStatuses((prev) => ({ ...prev, [key]: value }));
+    };
 
     const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
     const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/appartment/update/${selectedRow?.id}` });
@@ -45,7 +64,7 @@ const Appartments = () => {
             console.log("Appartment Data:", AppartmentData);
             const formatted = AppartmentData?.appartments?.map((u) => ({
                 id: u.id,
-                name: u.unit || "—", // Keep name as a string
+                name: u.unit || "—", 
                 type: u.type?.name || "—",
                 map: u.location || "—",
             }));
@@ -54,18 +73,34 @@ const Appartments = () => {
         }
     }, [AppartmentData]);
 
-    // Fix the initial data format in handleEdit
+    // 🛠️ 2. تعديل دالة الـ handleEdit لجلب قيم السويتشات الحالية للوحدة المحددة
     const handleEdit = (Appartment) => {
         const fullAppartmentData = AppartmentData?.appartments.find((o) => o.id === Appartment.id);
         setselectedRow(Appartment);
         setIsEditOpen(true);
         setRowEdit({
             name: fullAppartmentData?.unit || "",
-            type: fullAppartmentData?.type?.id?.toString() || "", // Ensure type is a string
-            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "", // Include for consistency
+            type: fullAppartmentData?.type?.id?.toString() || "", 
+            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "", 
             map: fullAppartmentData?.location || "",
         });
+
+        // ملء السويتشات بالقيم المخزنة في قاعدة البيانات مع دعم كافة أنواع التعبيرات الممكنة (1, true, "true")
+        if (fullAppartmentData) {
+            setBanStatuses({
+                all_status: fullAppartmentData.all_status == 1 || fullAppartmentData.all_status === true || fullAppartmentData.all_status === "true",
+                entrance_status: fullAppartmentData.entrance_status == 1 || fullAppartmentData.entrance_status === true || fullAppartmentData.entrance_status === "true",
+                selling_status: fullAppartmentData.selling_status == 1 || fullAppartmentData.selling_status === true || fullAppartmentData.selling_status === "true",
+                rent_status: fullAppartmentData.rent_status == 1 || fullAppartmentData.rent_status === true || fullAppartmentData.rent_status === "true",
+                visits_status: fullAppartmentData.visits_status == 1 || fullAppartmentData.visits_status === true || fullAppartmentData.visits_status === "true",
+                pool_status: fullAppartmentData.pool_status == 1 || fullAppartmentData.pool_status === true || fullAppartmentData.pool_status === "true",
+                beach_status: fullAppartmentData.beach_status == 1 || fullAppartmentData.beach_status === true || fullAppartmentData.beach_status === "true",
+                rent_code_status: fullAppartmentData.rent_code_status == 1 || fullAppartmentData.rent_code_status === true || fullAppartmentData.rent_code_status === "true",
+                options_status: fullAppartmentData.options_status == 1 || fullAppartmentData.options_status === true || fullAppartmentData.options_status === "true",
+            });
+        }
     };
+
     const handleDelete = (Appartment) => {
         setselectedRow(Appartment);
         setIsDeleteOpen(true);
@@ -73,7 +108,7 @@ const Appartments = () => {
 
     useEffect(() => {
         if (!loadingPost && response) {
-            if (response) {
+            if (response.status === 200 || response.status === 201) {
                 setIsEditOpen(false);
                 setselectedRow(null);
                 refetchAppartment();
@@ -81,15 +116,27 @@ const Appartments = () => {
         }
     }, [response, loadingPost]);
 
+    // 🛠️ 3. تعديل دالة الـ handleSave لدمج وإرسال بيانات السويتشات المعدلة كـ "1" أو "0" 
     const handleSave = async () => {
         const body = prepareFormData();
-        postData(body, t("Appartmentupdatedsuccessfully!"))
+        
+        Object.keys(banStatuses).forEach((key) => {
+            const cleanKey = key.trim(); 
+            const stringValue = banStatuses[key] ? "1" : "0"; // تحويل الـ boolean لـ 1 أو 0 لحل مشكلة تحقق السيرفر
+            
+            if (body instanceof FormData) {
+                body.delete(cleanKey); 
+                body.append(cleanKey, stringValue);
+            } else {
+                body[cleanKey] = stringValue;
+            }
+        });
+
+        postData(body, t("Appartmentupdatedsuccessfully!"));
     };
 
     const handleDeleteConfirm = async () => {
-        
         const success = await deleteData(`${apiUrl}/appartment/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
-
         if (success) {
             setIsDeleteOpen(false);
             setAppartments(
@@ -116,9 +163,11 @@ const Appartments = () => {
         { key: "type", label: t("Type") },
         { key: "map", label: t("Location") },
     ];
+
     if (isLoading || loadingPost || loadingAppartment) {
         return <FullPageLoader />;
     }
+
     return (
         <div className="p-4">
             <DataTable
@@ -132,8 +181,8 @@ const Appartments = () => {
                 pageDetailsRoute={false}
                 additionalLink="/units/create_code"
                 additionalLinkLabel={t("CreateCode")}
-
             />
+            
             {selectedRow && (
                 <>
                     <EditDialog
@@ -153,8 +202,24 @@ const Appartments = () => {
                                         fields={fields}
                                         formData={formData}
                                         handleFieldChange={handleFieldChange}
-                                        loading={loadingAppartment} // Use the correct loading state
+                                        loading={loadingAppartment} 
                                     />
+
+                                    {/* 🛠️ 4. حقن وإظهار قسم السويتشات الخاص بالـ BanStatuses أسفل الحقول داخل الـ Modal */}
+                                    <div className="border-t !pt-5 !mt-4">
+                                        <h3 className="text-md font-medium !mb-4 text-gray-700">{t("BanStatuses")}</h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {Object.keys(banStatuses).map((statusKey) => (
+                                                <div key={statusKey} className="flex items-center justify-between !p-3 border rounded-xl bg-gray-50/50 shadow-sm">
+                                                    <span className="text-xs font-medium text-gray-600">{t(statusKey)}</span>
+                                                    <Switch 
+                                                        checked={banStatuses[statusKey]} 
+                                                        onCheckedChange={(checked) => handleSwitchChange(statusKey, checked)} 
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </TabsContent>
                             </Tabs>
                         </div>

@@ -34,43 +34,34 @@ const navigate = useNavigate();
         }
         setResponse(response);
       }
+// ... الكود العلوي للهوك كما هو
+
     } catch (error) {
       console.error("Error post JSON:", error);
       setResponse(error.response);
-      // Check if the error response contains 'errors' or just a message
+      
       if (error?.response?.data?.errors) {
-        // Check if errors are an object (field-based errors)
-        if (
-          error.response.data.errors ===
-          "You don’t have a package, so you should subscribe."
-        ) {
-          toast.error(
-            "You don’t have a package, so you should subscribe."
-          ); // Display the specific error message
-          setTimeout(() => {
-            navigate("/packages_list");
-          }, 2000);
-        } else if (typeof error.response.data.errors === "object") {
-          Object.entries(error.response.data.errors).forEach(([messages]) => {
-            // If messages is an array, loop through them
+        if (error.response.data.errors === "You don’t have a package, so you should subscribe.") {
+          toast.error("You don’t have a package, so you should subscribe."); 
+          setTimeout(() => { navigate("/packages_list"); }, 2000);
+        } 
+        // 🛠️ الإصلاح هنا: إضافة key قبل messages لاستلام القيم بشكل صحيح
+        else if (typeof error.response.data.errors === "object") {
+          Object.entries(error.response.data.errors).forEach(([key, messages]) => {
             if (Array.isArray(messages)) {
               messages.forEach((message) => {
-                toast.error(message); // Display the error messages
+                toast.error(message); 
               });
             } else {
-              // If it's not an array, display the message directly
               toast.error(messages);
             }
           });
         } else {
-          // If errors is not an object, assume it's just a message
           toast.error(error.response.data.errors);
         }
       } else if (error?.response?.data?.message) {
-        // If there's a general message outside of the 'errors' object
-        toast.error(error.response.data.message); // Display the general error message
+        toast.error(error.response.data.message); 
       } else {
-        // If no specific error messages are found, just display a fallback message
         toast.error("An unknown error occurred.");
       }
     } finally {
@@ -80,3 +71,4 @@ const navigate = useNavigate();
 
   return { postData, loadingPost, response };
 };
+;
