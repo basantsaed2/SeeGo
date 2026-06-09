@@ -12,7 +12,7 @@ import {
   FaUserFriends,
   FaHome,
   FaStore,
-  FaWrench 
+  FaWrench
 } from "react-icons/fa";
 import { MdReportProblem } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -54,7 +54,7 @@ const Home = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
         {/* Units Number */}
-        
+
         <Link to={"units"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
             <FaStore className="text-6xl text-[#0E7490]" />
@@ -71,7 +71,12 @@ const Home = () => {
             <FaUserFriends className="text-6xl text-[#0E7490]" />
           </div>
           <div className="!p-2">
-            <div className="text-3xl font-bold">{homeStats.visits_village}</div>
+            {/* التعديل هنا: اعرضي العدد الإجمالي من الـ API مباشرة */}
+            <div className="text-3xl font-bold">{homeStats.total_visits_count || 0}</div>
+
+            {/* أو بديل آخر باستخدام طول المصفوفة: */}
+            {/* <div className="text-3xl font-bold">{homeStats.visits_village?.length || 0}</div> */}
+
             <div className="">{t("Total Entrance")}</div>
           </div>
         </Link>
@@ -116,7 +121,7 @@ const Home = () => {
         {/* Units for Rent */}
         <Link to={"maintenance_request"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary">
           <div className="!p-4 flex items-center justify-center">
-            <FaWrench  className="text-6xl text-[#0E7490]" />
+            <FaWrench className="text-6xl text-[#0E7490]" />
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.maintenance_request_count}</div>
