@@ -346,7 +346,7 @@ useEffect(() => {
         </div>
       );
     }
-    return row[col.key] === null || row[col.key] === undefined ? <span className="text-gray-400 italic">{t("NotAvailable")}</span> : row[col.key];
+    return row[col.key] === null || row[col.key] === undefined ? <span className="text-gray-400 italic">{t("-")}</span> : row[col.key];
   };
 
   const renderNestedObject = (obj, prefix = "", depth = 0) => {
@@ -384,7 +384,7 @@ useEffect(() => {
                 <div key={i} className="mb-1 last:mb-0">
                   {typeof item === 'object'
                     ? renderNestedObject(item, `${prefix}${key}[${i}].`, depth + 2)
-                    : item?.toString() || <span className="text-gray-400 italic">{t("NotAvailable")}</span>
+                    : item?.toString() || <span className="text-gray-400 italic">{t("-")}</span>
                   }
                 </div>
               ))}
@@ -398,7 +398,7 @@ useEffect(() => {
           <div key={`${prefix}${key}`} className={`grid grid-cols-2 gap-4 py-1 ${depth > 0 ? "pl-2" : ""}`}>
             <span className="font-medium text-gray-600 break-words">{displayKey}</span>
             <span className="break-words">
-              {value?.toString() || <span className="text-gray-400 italic">{t("NotAvailable")}</span>}
+              {value?.toString() || <span className="text-gray-400 italic">{t("-")}</span>}
             </span>
           </div>
         );

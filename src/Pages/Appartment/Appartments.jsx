@@ -22,7 +22,7 @@ const Appartments = () => {
     const [Appartments, setAppartments] = useState([]);
     const [selectedRow, setselectedRow] = useState(null);
     const [rowEdit, setRowEdit] = useState(null);
-    const { deleteData, loadingDelete ,isDeleting} = useDelete();
+    const { deleteData, loadingDelete, isDeleting } = useDelete();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
@@ -64,9 +64,19 @@ const Appartments = () => {
             console.log("Appartment Data:", AppartmentData);
             const formatted = AppartmentData?.appartments?.map((u) => ({
                 id: u.id,
-                name: u.unit || "—", 
+                name: u.unit || "—",
                 type: u.type?.name || "—",
                 map: u.location || "—",
+                // إضافة الحالات هنا لكي يراها الـ DataTable
+                all_status: u.all_status,
+                entrance_status: u.entrance_status,
+                selling_status: u.selling_status,
+                rent_status: u.rent_status,
+                visits_status: u.visits_status,
+                pool_status: u.pool_status,
+                beach_status: u.beach_status,
+                rent_code_status: u.rent_code_status,
+                options_status: u.options_status,
             }));
             setAppartments(formatted);
             console.log("Formatted Appartments:", formatted);
@@ -80,8 +90,8 @@ const Appartments = () => {
         setIsEditOpen(true);
         setRowEdit({
             name: fullAppartmentData?.unit || "",
-            type: fullAppartmentData?.type?.id?.toString() || "", 
-            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "", 
+            type: fullAppartmentData?.type?.id?.toString() || "",
+            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "",
             map: fullAppartmentData?.location || "",
         });
 
@@ -119,13 +129,13 @@ const Appartments = () => {
     // 🛠️ 3. تعديل دالة الـ handleSave لدمج وإرسال بيانات السويتشات المعدلة كـ "1" أو "0" 
     const handleSave = async () => {
         const body = prepareFormData();
-        
+
         Object.keys(banStatuses).forEach((key) => {
-            const cleanKey = key.trim(); 
+            const cleanKey = key.trim();
             const stringValue = banStatuses[key] ? "1" : "0"; // تحويل الـ boolean لـ 1 أو 0 لحل مشكلة تحقق السيرفر
-            
+
             if (body instanceof FormData) {
-                body.delete(cleanKey); 
+                body.delete(cleanKey);
                 body.append(cleanKey, stringValue);
             } else {
                 body[cleanKey] = stringValue;
@@ -146,7 +156,23 @@ const Appartments = () => {
             );
         }
     };
+    // دالة مساعدة لتنسيق الحالات (0 و 1) داخل الجدول
+    const renderStatusBadge = (statusValue) => {
+        // التحقق من القيمة سواء كانت رقم، نص، أو boolean
+        const isActive = statusValue == 1 || statusValue === true || statusValue === "1";
 
+        return (
+            <span
+                className={`inline-flex items-center !px-2.5 !py-0.5 rounded-full text-xs font-medium ${isActive
+                        ? "bg-green-100 text-green-800 border border-green-200"
+                        : "bg-red-100 text-red-800 border border-red-200"   // إذا كان محظور (1) باللون الأحمر
+                    // إذا كان متاح (0) باللون الأخضر
+                    }`}
+            >
+                {isActive ? t("Active") : t("Inactive")}
+            </span>
+        );
+    };
     const columns = [
         {
             key: "name",
@@ -160,6 +186,53 @@ const Appartments = () => {
                 </Link>
             ),
         },
+        // --- تحديث أعمدة حالات الحظر هنا ---
+        {
+            key: "all_status",
+            label: t("all_status"),
+            render: (row) => renderStatusBadge(row.all_status)
+        },
+        {
+            key: "entrance_status",
+            label: t("entrance_status"),
+            render: (row) => renderStatusBadge(row.entrance_status)
+        },
+        {
+            key: "selling_status",
+            label: t("selling_status"),
+            render: (row) => renderStatusBadge(row.selling_status)
+        },
+        {
+            key: "rent_status",
+            label: t("rent_status"),
+            render: (row) => renderStatusBadge(row.rent_status)
+        },
+        {
+            key: "visits_status",
+            label: t("visits_status"),
+            render: (row) => renderStatusBadge(row.visits_status)
+        },
+        {
+            key: "pool_status",
+            label: t("pool_status"),
+            render: (row) => renderStatusBadge(row.pool_status)
+        },
+        {
+            key: "beach_status",
+            label: t("beach_status"),
+            render: (row) => renderStatusBadge(row.beach_status)
+        },
+        {
+            key: "rent_code_status",
+            label: t("rent_code_status"),
+            render: (row) => renderStatusBadge(row.rent_code_status)
+        },
+        {
+            key: "options_status",
+            label: t("options_status"),
+            render: (row) => renderStatusBadge(row.options_status)
+        },
+        // ----------------------------------
         { key: "type", label: t("Type") },
         { key: "map", label: t("Location") },
     ];
@@ -182,7 +255,7 @@ const Appartments = () => {
                 additionalLink="/units/create_code"
                 additionalLinkLabel={t("CreateCode")}
             />
-            
+
             {selectedRow && (
                 <>
                     <EditDialog
@@ -202,7 +275,7 @@ const Appartments = () => {
                                         fields={fields}
                                         formData={formData}
                                         handleFieldChange={handleFieldChange}
-                                        loading={loadingAppartment} 
+                                        loading={loadingAppartment}
                                     />
 
                                     {/* 🛠️ 4. حقن وإظهار قسم السويتشات الخاص بالـ BanStatuses أسفل الحقول داخل الـ Modal */}
@@ -212,9 +285,9 @@ const Appartments = () => {
                                             {Object.keys(banStatuses).map((statusKey) => (
                                                 <div key={statusKey} className="flex items-center justify-between !p-3 border rounded-xl bg-gray-50/50 shadow-sm">
                                                     <span className="text-xs font-medium text-gray-600">{t(statusKey)}</span>
-                                                    <Switch 
-                                                        checked={banStatuses[statusKey]} 
-                                                        onCheckedChange={(checked) => handleSwitchChange(statusKey, checked)} 
+                                                    <Switch
+                                                        checked={banStatuses[statusKey]}
+                                                        onCheckedChange={(checked) => handleSwitchChange(statusKey, checked)}
                                                     />
                                                 </div>
                                             ))}
