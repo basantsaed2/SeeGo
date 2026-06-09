@@ -17,6 +17,7 @@ import Gallery from "./Gallery";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import Profile from "@/Pages/Profile/Profile";
+import OnlineUsers from "@/Pages/Profile/OnlineUsers";
 
 export default function VillageDetailsCard({
   data,
@@ -49,7 +50,7 @@ export default function VillageDetailsCard({
   if (isImagesPath) {
     gridColsClass = 'grid-cols-1'; // Only 'Images' for pure /images path
   } else if (isProfilePath) {
-    gridColsClass = 'grid-cols-2'; // Only 'Information' and 'Profile' for /profile path
+    gridColsClass = 'grid-cols-3'; // 2. تم تغييرها من grid-cols-2 إلى grid-cols-3 لتستوعب الـ Tab الثالث الجديد
   } else {
     gridColsClass = 'grid-cols-4'; // Default for village pages (Info, Admin, Images, Units)
   }
@@ -120,14 +121,26 @@ export default function VillageDetailsCard({
               {t("Profile")}
             </TabsTrigger>
           )}
+
+          {/* 3. إضافة زر الـ Tab الجديد الخاص بالـ Online Users */}
+          {isProfilePath && (
+            <TabsTrigger
+              className="rounded-[10px] text-md md:text-lg border text-bg-primary !py-3 transition-all
+                        data-[state=active]:bg-bg-primary data-[state=active]:text-white
+                        hover:bg-teal-100 hover:text-teal-700"
+              value="online_users"
+            >
+              {t("OnlineUsers")}
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* TabsContent - simplified conditional rendering */}
-<TabsContent value="info">
+        <TabsContent value="info">
           <Card className="!p-8 !mb-2 bg-gradient-to-br from-[#f3fbfa] to-white w-full shadow-lg border-none rounded-2xl transition-all duration-300 hover:shadow-xl">
             <CardContent className="flex flex-col gap-6">
               {/* Header Section */}
-              <div  dir={dira} className="flex items-center justify-between flex-wrap gap-4">
+              <div dir={dira} className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                   {data.image && (
                     <img
@@ -164,9 +177,9 @@ export default function VillageDetailsCard({
                 ].map(({ field, icon: Icon, label }) => (
                   data[field] && (
                     <div
-                    dir={dira}
+                      dir={dira}
                       key={field}
-                      className="flex  items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200"
+                      className="flex items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200"
                     >
                       <Icon className="w-5 h-5 text-[#297878] flex-shrink-0" />
                       <div>
@@ -179,7 +192,7 @@ export default function VillageDetailsCard({
 
                 {/* Date Range Section */}
                 {(data.from || data.to) && (
-                  <div  dir={dira} className="flex items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200">
+                  <div dir={dira} className="flex items-center gap-3 !p-1 rounded-lg hover:bg-[#e6f0ef] transition-colors duration-200">
                     <Calendar className="w-5 h-5 text-[#297878] flex-shrink-0" />
                     <div className="flex items-center gap-2">
                       {data.from && (
@@ -189,7 +202,7 @@ export default function VillageDetailsCard({
                         </span>
                       )}
                       {data.from && data.to && (
-                        <span  className={`text-gray-500  !mx-2 `}>{dira==="rtl"?"←":"→"}</span>
+                        <span className={`text-gray-500 !mx-2 `}>{dira==="rtl"?"←":"→"}</span>
                       )}
                       {data.to && (
                         <span className="flex items-center">
@@ -215,6 +228,11 @@ export default function VillageDetailsCard({
 
         <TabsContent value="profile">
           <Profile />
+        </TabsContent>
+
+        {/* 4. إضافة المحتوى الذي سيظهر عند تفعيل الـ Tab الجديد */}
+        <TabsContent value="online_users">
+          <OnlineUsers />
         </TabsContent>
 
         <TabsContent value="units">

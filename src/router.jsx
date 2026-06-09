@@ -55,6 +55,7 @@ import EGate from "./Pages/Entrance/EGate";
 import TotalEntrance from "./Pages/TotalEntrance/TotalEntrance";
 import LandingPage from "./Pages/LandingPage/LandingPage";
 import PendingRequest from "./Pages/PendingRequest/PendingRequest";
+import OnlineUsers from "./Pages/Profile/OnlineUsers";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -259,6 +260,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ProfileSinglePage />
+          </ProtectedRoute>
+        ),
+      },
+            {
+        path: "online-list",
+        element: (
+          <ProtectedRoute>
+            <OnlineUsers />
           </ProtectedRoute>
         ),
       },
