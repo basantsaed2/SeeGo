@@ -14,7 +14,16 @@ import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Switch } from "@/components/ui/switch"; // 🛠️ استيراد الـ Switch للاستخدام في الـ Dialog
+import { Switch } from "@/components/ui/switch"; 
+import { Eye } from "lucide-react"; // استيراد أيقونة العين لزر العرض
+
+// استيراد مكونات الـ Dialog الأساسية من الـ UI الخاص بكِ لعرض الـ Bans
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 const Appartments = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -27,7 +36,10 @@ const Appartments = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
 
-    // 🛠️ 1. تعريف الـ State الخاص بحالات الحظر في صفحة التعديل
+    // 💡 حالات الـ Dialog الجديد الخاص بعرض الـ Bans
+    const [isBansDialogOpen, setIsBansDialogOpen] = useState(false);
+    const [activeBansData, setActiveBansData] = useState(null);
+
     const [banStatuses, setBanStatuses] = useState({
         all_status: false,
         entrance_status: false,
@@ -40,7 +52,6 @@ const Appartments = () => {
         options_status: false,
     });
 
-    // 🛠️ دالة تحديث السويتشات عند الضغط عليها
     const handleSwitchChange = (key, value) => {
         setBanStatuses((prev) => ({ ...prev, [key]: value }));
     };
@@ -53,7 +64,7 @@ const Appartments = () => {
         fields,
         handleFieldChange,
         prepareFormData,
-    } = useAppartmentForm(apiUrl, true, rowEdit); // true for edit mode
+    } = useAppartmentForm(apiUrl, true, rowEdit); 
 
     useEffect(() => {
         refetchAppartment();
@@ -61,13 +72,11 @@ const Appartments = () => {
 
     useEffect(() => {
         if (AppartmentData && AppartmentData.appartments) {
-            console.log("Appartment Data:", AppartmentData);
             const formatted = AppartmentData?.appartments?.map((u) => ({
                 id: u.id,
                 name: u.unit || "—",
                 type: u.type?.name || "—",
                 map: u.location || "—",
-                // إضافة الحالات هنا لكي يراها الـ DataTable
                 all_status: u.all_status,
                 entrance_status: u.entrance_status,
                 selling_status: u.selling_status,
@@ -79,11 +88,9 @@ const Appartments = () => {
                 options_status: u.options_status,
             }));
             setAppartments(formatted);
-            console.log("Formatted Appartments:", formatted);
         }
     }, [AppartmentData]);
 
-    // 🛠️ 2. تعديل دالة الـ handleEdit لجلب قيم السويتشات الحالية للوحدة المحددة
     const handleEdit = (Appartment) => {
         const fullAppartmentData = AppartmentData?.appartments.find((o) => o.id === Appartment.id);
         setselectedRow(Appartment);
@@ -95,7 +102,6 @@ const Appartments = () => {
             map: fullAppartmentData?.location || "",
         });
 
-        // ملء السويتشات بالقيم المخزنة في قاعدة البيانات مع دعم كافة أنواع التعبيرات الممكنة (1, true, "true")
         if (fullAppartmentData) {
             setBanStatuses({
                 all_status: fullAppartmentData.all_status == 1 || fullAppartmentData.all_status === true || fullAppartmentData.all_status === "true",
@@ -126,13 +132,12 @@ const Appartments = () => {
         }
     }, [response, loadingPost]);
 
-    // 🛠️ 3. تعديل دالة الـ handleSave لدمج وإرسال بيانات السويتشات المعدلة كـ "1" أو "0" 
     const handleSave = async () => {
         const body = prepareFormData();
 
         Object.keys(banStatuses).forEach((key) => {
             const cleanKey = key.trim();
-            const stringValue = banStatuses[key] ? "1" : "0"; // تحويل الـ boolean لـ 1 أو 0 لحل مشكلة تحقق السيرفر
+            const stringValue = banStatuses[key] ? "1" : "0";
 
             if (body instanceof FormData) {
                 body.delete(cleanKey);
@@ -149,90 +154,56 @@ const Appartments = () => {
         const success = await deleteData(`${apiUrl}/appartment/delete/${selectedRow.id}`, `${selectedRow.name} Deleted Success.`);
         if (success) {
             setIsDeleteOpen(false);
-            setAppartments(
-                Appartments.filter((Appartment) =>
-                    Appartment.id !== selectedRow.id
-                )
-            );
+            setAppartments(Appartments.filter((Appartment) => Appartment.id !== selectedRow.id));
         }
     };
-    // دالة مساعدة لتنسيق الحالات (0 و 1) داخل الجدول
-    const renderStatusBadge = (statusValue) => {
-        // التحقق من القيمة سواء كانت رقم، نص، أو boolean
-        const isActive = statusValue == 1 || statusValue === true || statusValue === "1";
 
+    // دالة مساعدة لتنسيق شارات الحالة (Badges) داخل الـ Dialog الجديد
+    const renderStatusBadge = (statusValue) => {
+        const isActive = statusValue == 1 || statusValue === true || statusValue === "1";
         return (
             <span
-                className={`inline-flex items-center !px-2.5 !py-0.5 rounded-full text-xs font-medium ${isActive
+                className={`inline-flex items-center !px-2.5 !py-1 rounded-full text-xs font-bold ${
+                    isActive
                         ? "bg-green-100 text-green-800 border border-green-200"
-                        : "bg-red-100 text-red-800 border border-red-200"   // إذا كان محظور (1) باللون الأحمر
-                    // إذا كان متاح (0) باللون الأخضر
-                    }`}
+                        : "bg-red-100 text-red-800 border border-red-200"
+                }`}
             >
                 {isActive ? t("Active") : t("Inactive")}
             </span>
         );
     };
+
+    // 💡 دالة فتح نافذة الـ Bans وتمرير بيانات السطر المحدد لها
+    const openBansDialog = (row) => {
+        setActiveBansData(row);
+        setIsBansDialogOpen(true);
+    };
+
+    // 🛠️ جدول الأعمدة الجديد: قمنا بتنظيف الـ 9 أعمدة واستبدالهم بزر عرض ذكي واحد
     const columns = [
         {
             key: "name",
             label: t("Unit"),
             render: (row) => (
-                <Link
-                    to={`details/${row.id}`}
-                    className="text-blue-600 hover:underline"
-                >
+                <Link to={`details/${row.id}`} className="text-blue-600 hover:underline font-semibold">
                     {row.name || "—"}
                 </Link>
             ),
         },
-        // --- تحديث أعمدة حالات الحظر هنا ---
         {
-            key: "all_status",
-            label: t("all_status"),
-            render: (row) => renderStatusBadge(row.all_status)
+            key: "bans_view",
+            label: t("BanStatuses"),
+            render: (row) => (
+                <button
+                    onClick={() => openBansDialog(row)}
+                    className="inline-flex items-center gap-1.5 !px-3 !py-1.5 bg-teal-50 text-teal-700 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors text-xs font-bold"
+                >
+                    <Eye size={14} />
+                    {t("View Statuses")}
+                </button>
+            ),
         },
-        {
-            key: "entrance_status",
-            label: t("entrance_status"),
-            render: (row) => renderStatusBadge(row.entrance_status)
-        },
-        {
-            key: "selling_status",
-            label: t("selling_status"),
-            render: (row) => renderStatusBadge(row.selling_status)
-        },
-        {
-            key: "rent_status",
-            label: t("rent_status"),
-            render: (row) => renderStatusBadge(row.rent_status)
-        },
-        {
-            key: "visits_status",
-            label: t("visits_status"),
-            render: (row) => renderStatusBadge(row.visits_status)
-        },
-        {
-            key: "pool_status",
-            label: t("pool_status"),
-            render: (row) => renderStatusBadge(row.pool_status)
-        },
-        {
-            key: "beach_status",
-            label: t("beach_status"),
-            render: (row) => renderStatusBadge(row.beach_status)
-        },
-        {
-            key: "rent_code_status",
-            label: t("rent_code_status"),
-            render: (row) => renderStatusBadge(row.rent_code_status)
-        },
-        {
-            key: "options_status",
-            label: t("options_status"),
-            render: (row) => renderStatusBadge(row.options_status)
-        },
-        // ----------------------------------
         { key: "type", label: t("Type") },
         { key: "map", label: t("Location") },
     ];
@@ -240,6 +211,12 @@ const Appartments = () => {
     if (isLoading || loadingPost || loadingAppartment) {
         return <FullPageLoader />;
     }
+
+    // مصفوفة مساعدة للمرور على مفاتيح الـ Bans لترجمتها وعرضها داخل الـ Dialog
+    const banKeys = [
+        "all_status", "entrance_status", "selling_status", "rent_status",
+        "visits_status", "pool_status", "beach_status", "rent_code_status", "options_status"
+    ];
 
     return (
         <div className="p-4">
@@ -256,6 +233,37 @@ const Appartments = () => {
                 additionalLinkLabel={t("CreateCode")}
             />
 
+            {/* 🌟 نافذة الـ Dialog الجديدة لعرض جميع حالات الحظر (Bans) للوحدة المحددة */}
+            <Dialog open={isBansDialogOpen} onOpenChange={setIsBansDialogOpen}>
+                <DialogContent className="sm:max-w-[460px] rounded-2xl !p-6">
+                    <DialogHeader className="border-b !pb-3">
+                        <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span>{t("BanStatuses")}</span>
+                            <span className="text-primary font-black bg-primary/10 !px-2 !py-0.5 rounded-lg text-sm">
+                                #{activeBansData?.name}
+                            </span>
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    {/* قائمة الحالات */}
+                    <div className="grid grid-cols-1 gap-3 !py-4 max-h-[50vh] overflow-y-auto !pr-1">
+                        {activeBansData && banKeys.map((key) => (
+                            <div 
+                                key={key} 
+                                className="flex items-center justify-between !p-3 border border-slate-100 rounded-xl bg-slate-50/50 shadow-sm hover:bg-slate-50 transition-colors"
+                            >
+                                <span className="text-xs font-bold text-slate-600">
+                                    {t(key)}
+                                </span>
+                                <div>
+                                    {renderStatusBadge(activeBansData[key])}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {selectedRow && (
                 <>
                     <EditDialog
@@ -268,7 +276,7 @@ const Appartments = () => {
                         onChange={handleFieldChange}
                         isLoading={loadingAppartment}
                     >
-                        <div className="w-full max-h-[60vh] p-4 overflow-y-auto">
+                        <div className="w-full max-h-[60vh] !p-4 overflow-y-auto">
                             <Tabs defaultValue="english" className="w-full">
                                 <TabsContent value="english">
                                     <AppartmentFormFields
@@ -278,7 +286,6 @@ const Appartments = () => {
                                         loading={loadingAppartment}
                                     />
 
-                                    {/* 🛠️ 4. حقن وإظهار قسم السويتشات الخاص بالـ BanStatuses أسفل الحقول داخل الـ Modal */}
                                     <div className="border-t !pt-5 !mt-4">
                                         <h3 className="text-md font-medium !mb-4 text-gray-700">{t("BanStatuses")}</h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
