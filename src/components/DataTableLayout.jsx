@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Edit, Trash, Plus, Eye, Calendar, XCircle } from "lucide-react";
+import { Edit, Trash, Plus, Calendar, XCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import clsx from "clsx";
@@ -48,8 +48,8 @@ import {
 } from "@/components/ui/popover";
 
 export default function DataTable({
-  data,
-  columns,
+  data = [],
+  columns = [],
   addRoute,
   onEdit,
   onDelete,
@@ -59,36 +59,46 @@ export default function DataTable({
   detailsData,
   pageDetailsRoute,
   pageDetailsLabel,
-  statusLabels = { active: "Active", inactive: "Inactive" }, // For the switch
-  statusLabelsText = { active: "Active", inactive: "Inactive" }, // For the statusText badge
-  additionalLink, additionalLinkLabel,
+  statusLabels = { active: "Active", inactive: "Inactive" },
+  statusLabelsText = { active: "Active", inactive: "Inactive" },
+  additionalLink,
+  additionalLinkLabel,
   dateRangeFilter = false,
   showFilter = true,
   dateRangeKey = 'created_at',
   onDateRangeChange,
-  // *** NEW PROPS FOR GENERIC FILTERING ***
-  filterOptions = [], // Array of options for the filter dropdown
-})
-{
+  filterOptions = [],
+  // 🌟 الخصائص الجديدة لدعم Pagination الباك إند
+  isBackendPagination = false,
+  backendCurrentPage = 1,
+  backendTotalPages = 1,
+  onBackendPageChange,
+}) {
   if (!Array.isArray(filterOptions)) {
-  filterOptions = [];
-}
+    filterOptions = [];
+  }
 
   const [searchValue, setSearchValue] = useState("");
-  // Initialize filterValue with "all" if filterOptions is empty, otherwise the first option
-const [activeFilters, setActiveFilters] = useState(() => {
-  const initialFilters = {};
-  filterOptions.forEach((group) => {
-    initialFilters[group.key] = "all";
+  
+  const [activeFilters, setActiveFilters] = useState(() => {
+    const initialFilters = {};
+    filterOptions.forEach((group) => {
+      initialFilters[group.key] = "all";
+    });
+    return initialFilters;
   });
-  return initialFilters;
-});  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [localCurrentPage, setLocalCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // تحديد الصفحة الحالية والـ Total الفعلي بناءً على نوع الـ Pagination
+  const currentPage = isBackendPagination ? backendCurrentPage : localCurrentPage;
+  const totalPages = isBackendPagination ? backendTotalPages : Math.ceil(data.length / itemsPerPage);
 
   const effectivePageDetailsLabel = pageDetailsLabel === undefined ? t("ViewDetails") : pageDetailsLabel;
 
@@ -101,89 +111,96 @@ const [activeFilters, setActiveFilters] = useState(() => {
       key: 'selection'
     }
   ]);
-const getNestedValue = (obj, path) => {
-  return path
-    .split(".")
-    .reduce((acc, part) => (acc ? acc[part] : undefined), obj);
-};
-const filteredData = useMemo(() => {
-  let result = data.filter((row) => {
-    const matchesSearch = columns.some(col => {
-      const cellValue = row[col.key];
-      return (typeof cellValue === 'string' || typeof cellValue === 'number') &&
-        String(cellValue).toLowerCase().includes(searchValue.toLowerCase());
+
+  const getNestedValue = (obj, path) => {
+    return path
+      .split(".")
+      .reduce((acc, part) => (acc ? acc[part] : undefined), obj);
+  };
+
+  const filteredData = useMemo(() => {
+    let result = data.filter((row) => {
+      const matchesSearch = columns.some(col => {
+        const cellValue = row[col.key];
+        return (typeof cellValue === 'string' || typeof cellValue === 'number') &&
+          String(cellValue).toLowerCase().includes(searchValue.toLowerCase());
+      });
+
+      const finalMatchesSearch = searchValue === "" ? true : matchesSearch;
+      return finalMatchesSearch;
     });
 
-    const finalMatchesSearch = searchValue === "" ? true : matchesSearch;
-    return finalMatchesSearch;
-  });
+    Object.entries(activeFilters).forEach(([filterKey, filterValue]) => {
+      if (filterValue !== "all") {
+        result = result.filter((row) => {
+          const rowValue = getNestedValue(row, filterKey);
+          const comparableRowValue =
+            rowValue !== null && rowValue !== undefined
+              ? String(rowValue).toLowerCase()
+              : "";
+          const comparableFilterValue = String(filterValue).toLowerCase();
 
-  // تطبيق فلاتر متعددة
-  Object.entries(activeFilters).forEach(([filterKey, filterValue]) => {
-    if (filterValue !== "all") {
-      result = result.filter((row) => {
-        const rowValue = getNestedValue(row, filterKey);
-        const comparableRowValue =
-          rowValue !== null && rowValue !== undefined
-            ? String(rowValue).toLowerCase()
-            : "";
-        const comparableFilterValue = String(filterValue).toLowerCase();
-
-        return comparableRowValue === comparableFilterValue;
-      });
-    }
-  });
-
-  // تطبيق فلتر التاريخ (إذا كان مفعل)
-  if (dateRangeFilter) {
-    result = result.filter((row) => {
-      if (!row[dateRangeKey]) return false;
-
-      try {
-        const rowDate = new Date(row[dateRangeKey]);
-        if (isNaN(rowDate.getTime())) return false;
-
-        const startDate = dateRange[0].startDate;
-        const endDate = new Date(dateRange[0].endDate);
-        endDate.setHours(23, 59, 59, 999);
-
-        return rowDate >= startDate && rowDate <= endDate;
-      } catch (e) {
-        console.error("Error parsing date for filter:", row[dateRangeKey], e);
-        return false;
+          return comparableRowValue === comparableFilterValue;
+        });
       }
     });
-  }
 
-  return result;
-}, [data, searchValue, activeFilters, dateRange, dateRangeFilter, dateRangeKey, columns]);
-   // Added filterByKey to dependencies
+    if (dateRangeFilter) {
+      result = result.filter((row) => {
+        if (!row[dateRangeKey]) return false;
 
-// الخطوة 4: إضافة handler للفلاتر
-const handleAccordionFilterChange = (filterKey, value) => {
-  setActiveFilters((prev) => ({
-    ...prev,
-    [filterKey]: value,
-  }));
-  setCurrentPage(1); // Reset to page 1 when filter changes
-};
-useEffect(() => {
-  if (dateRangeFilter && onDateRangeChange) {
-    onDateRangeChange({
-      startDate: dateRange[0].startDate,
-      endDate: dateRange[0].endDate,
-    });
-  }
-}, [dateRange, dateRangeFilter, onDateRangeChange]);
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        try {
+          const rowDate = new Date(row[dateRangeKey]);
+          if (isNaN(rowDate.getTime())) return false;
+
+          const startDate = dateRange[0].startDate;
+          const endDate = new Date(dateRange[0].endDate);
+          endDate.setHours(23, 59, 59, 999);
+
+          return rowDate >= startDate && rowDate <= endDate;
+        } catch (e) {
+          console.error("Error parsing date for filter:", row[dateRangeKey], e);
+          return false;
+        }
+      });
+    }
+
+    return result;
+  }, [data, searchValue, activeFilters, dateRange, dateRangeFilter, dateRangeKey, columns]);
+
+  const handleAccordionFilterChange = (filterKey, value) => {
+    setActiveFilters((prev) => ({
+      ...prev,
+      [filterKey]: value,
+    }));
+    handlePageChange(1);
+  };
+
+  useEffect(() => {
+    if (dateRangeFilter && onDateRangeChange) {
+      onDateRangeChange({
+        startDate: dateRange[0].startDate,
+        endDate: dateRange[0].endDate,
+      });
+    }
+  }, [dateRange, dateRangeFilter, onDateRangeChange]);
+
+  // إذا كان الترقيم من الباك إند، نعرض البيانات مباشرة كما جاءت دون عمل slice إضافي لها
   const paginatedData = useMemo(() => {
+    if (isBackendPagination) {
+      return filteredData;
+    }
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return filteredData.slice(startIndex, endIndex);
-  }, [filteredData, currentPage, itemsPerPage]);
+  }, [filteredData, currentPage, itemsPerPage, isBackendPagination]);
 
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    if (isBackendPagination) {
+      onBackendPageChange?.(page);
+    } else {
+      setLocalCurrentPage(page);
+    }
   };
 
   const handleViewDetails = (row) => {
@@ -196,18 +213,13 @@ useEffect(() => {
     if (col.render) {
       return col.render(row);
     }
-    // This 'status' key logic is specifically for the switch component
     if (col.key === "status") {
-      const isActive =
-        row.status === 1 ||
-        String(row.status).toLowerCase() === "active"; // Changed here
+      const isActive = row.status === 1 || String(row.status).toLowerCase() === "active";
       return (
         <div className="flex items-center gap-1">
           <Switch
             checked={isActive}
-            onCheckedChange={(checked) =>
-              onToggleStatus?.(row, checked ? 1 : 0)
-            }
+            onCheckedChange={(checked) => onToggleStatus?.(row, checked ? 1 : 0)}
             className={clsx(
               "h-5 w-9 rounded-full transition-colors focus:outline-none",
               isActive ? "bg-bg-primary" : "bg-gray-300"
@@ -220,22 +232,14 @@ useEffect(() => {
               )}
             />
           </Switch>
-          <span
-            className={clsx(
-              "text-xs !px-1 !py-0.5 rounded-full",
-              isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
-            )}
-          >
+          <span className={clsx("text-xs !px-1 !py-0.5 rounded-full", isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")}>
             {isActive ? statusLabels.active : statusLabels.inactive}
           </span>
         </div>
       );
     }
-    // This 'statusText' key logic is for displaying badges with dynamic colors
     if (col.key === "statusText") {
-      // FIX: Ensure row.status is a string before calling toLowerCase()
       const statusValue = String(row.status || "").toLowerCase();
-      // Use dynamic colors based on statusValue
       let bgColor = "bg-gray-100";
       let textColor = "text-gray-800";
 
@@ -245,21 +249,18 @@ useEffect(() => {
       } else if (statusValue === "unpaid") {
         bgColor = "bg-red-100";
         textColor = "text-red-800";
-      } else if (statusValue === "active") { // For generic "active" status
+      } else if (statusValue === "active") {
         bgColor = "bg-green-100";
         textColor = "text-green-800";
-      } else if (statusValue === "inactive") { // For generic "inactive" status
+      } else if (statusValue === "inactive") {
         bgColor = "bg-red-100";
         textColor = "text-red-800";
       }
-      // You can add more specific status value checks here for different colors
 
       const statusLabel = statusLabelsText[statusValue] || row.status || t("Unknown");
 
       return (
-        <span
-          className={`inline-flex items-center !px-3 !py-1 rounded-full text-xs font-medium ${bgColor} ${textColor}`}
-        >
+        <span className={`inline-flex items-center !px-3 !py-1 rounded-full text-xs font-medium ${bgColor} ${textColor}`}>
           {statusLabel}
         </span>
       );
@@ -274,68 +275,41 @@ useEffect(() => {
           {[...Array(5)].map((_, i) => {
             if (i < fullStars) {
               return (
-                <svg
-                  key={i}
-                  className="w-4 h-4 text-yellow-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               );
             } else if (i === fullStars && hasHalfStar) {
               return (
-                <svg
-                  key={i}
-                  className="w-4 h-4 text-yellow-400"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                   <defs>
                     <linearGradient id="half-star" x1="0" x2="100%" y1="0" y2="0">
                       <stop offset="50%" stopColor="currentColor" />
                       <stop offset="50%" stopColor="#D1D5DB" />
                     </linearGradient>
                   </defs>
-                  <path
-                    fill="url(#half-star)"
-                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  />
+                  <path fill="url(#half-star)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               );
             } else {
               return (
-                <svg
-                  key={i}
-                  className="w-4 h-4 text-gray-300"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784 .57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81 .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                <svg key={i} className="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               );
             }
           })}
-          <span className="ml-1 text-sm font-medium text-gray-700">
-            {rate.toFixed(1)}
-          </span>
+          <span className="ml-1 text-sm font-medium text-gray-700">{rate.toFixed(1)}</span>
         </div>
       );
     }
     if (col.key === "map") {
       const url = row[col.key];
-      // if (!url || typeof url !== 'string' || !url.startsWith('http')) {
-      //   return <span className="text-gray-400 italic">{t("InvalidURL")}</span>;
-      // }
+      if (!url) return <span className="text-gray-400 italic">{t("-")}</span>;
       const displayText = url.length > 20 ? `${url.substring(0, 10)}...${url.substring(url.length - 10)}` : url;
       return (
-        <div className="w-[120px] truncate">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 hover:underline"
-          >
+        <div className="w-[120px] truncate relative group">
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline">
             {displayText}
           </a>
           {url.length > 20 && (
@@ -360,9 +334,7 @@ useEffect(() => {
       const isEmptyObject = isObject && Object.keys(value).length === 0;
       const isEmptyArray = isArray && value.length === 0;
 
-      const displayKey = key
-        .replace(/([A-Z])/g, " $1")
-        .replace(/^./, (str) => str.toUpperCase());
+      const displayKey = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
       if (isObject && !isEmptyObject) {
         return (
@@ -397,9 +369,7 @@ useEffect(() => {
         return (
           <div key={`${prefix}${key}`} className={`grid grid-cols-2 gap-4 py-1 ${depth > 0 ? "pl-2" : ""}`}>
             <span className="font-medium text-gray-600 break-words">{displayKey}</span>
-            <span className="break-words">
-              {value?.toString() || <span className="text-gray-400 italic">{t("-")}</span>}
-            </span>
+            <span className="break-words">{value?.toString() || <span className="text-gray-400 italic">{t("-")}</span>}</span>
           </div>
         );
       }
@@ -411,7 +381,6 @@ useEffect(() => {
     <>
       <div className="w-full !p-3 !space-y-6">
         <div className="flex justify-between !mb-6 items-center flex-wrap gap-4">
-
           <div className="flex items-center gap-3 flex-wrap">
             <Input
               placeholder={t("Search...")}
@@ -425,7 +394,6 @@ useEffect(() => {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-
             {dateRangeFilter && showFilter && (
               <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
                 <PopoverTrigger className="border-bg-primary" asChild>
@@ -438,13 +406,7 @@ useEffect(() => {
                         className="ml-2 h-4 w-4 text-gray-500 cursor-pointer hover:text-gray-700"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setDateRange([
-                            {
-                              startDate: subDays(new Date(), 7),
-                              endDate: new Date(),
-                              key: 'selection'
-                            }
-                          ]);
+                          setDateRange([{ startDate: subDays(new Date(), 7), endDate: new Date(), key: 'selection' }]);
                           setShowDatePicker(false);
                         }}
                       />
@@ -460,59 +422,41 @@ useEffect(() => {
                     className="border-0"
                   />
                   <div className="flex justify-end p-2 border-t">
-                    <Button size="sm" onClick={() => setShowDatePicker(false)}>
-                      {t("Apply")}
-                    </Button>
+                    <Button size="sm" onClick={() => setShowDatePicker(false)}>{t("Apply")}</Button>
                   </div>
                 </PopoverContent>
               </Popover>
             )}
 
-            {/* *** MODIFIED FILTER DROPDOWN *** */}
-{Array.isArray(filterOptions) && filterOptions.length > 0 && showFilter && (
-  <div className="flex gap-3 flex-wrap">
-    {filterOptions.map((group) => (
-      <div key={group.key} className="w-[150px]">
-        <Select
-          value={activeFilters[group.key]}
-          onValueChange={(val) =>
-            handleAccordionFilterChange(group.key, val)
-          }
-        >
-          <SelectTrigger className="text-bg-primary w-full !p-4 border border-bg-primary focus:outline-none focus:ring-2 focus:ring-bg-primary rounded-[10px]">
-            <SelectValue placeholder={group.label} />
-          </SelectTrigger>
-          <SelectContent className="bg-white border !p-3 border-bg-primary rounded-[10px] text-bg-primary">
-            {group.options.map((option) => (
-              <SelectItem
-                key={option.value}
-                className="text-bg-primary"
-                value={option.value}
-              >
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    ))}
-  </div>
-)}
+            {Array.isArray(filterOptions) && filterOptions.length > 0 && showFilter && (
+              <div className="flex gap-3 flex-wrap">
+                {filterOptions.map((group) => (
+                  <div key={group.key} className="w-[150px]">
+                    <Select value={activeFilters[group.key]} onValueChange={(val) => handleAccordionFilterChange(group.key, val)}>
+                      <SelectTrigger className="text-bg-primary w-full !p-4 border border-bg-primary focus:outline-none focus:ring-2 focus:ring-bg-primary rounded-[10px]">
+                        <SelectValue placeholder={group.label} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border !p-3 border-bg-primary rounded-[10px] text-bg-primary">
+                        {group.options.map((option) => (
+                          <SelectItem key={option.value} className="text-bg-primary" value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {showAddButton && (
-              <Button
-                onClick={() => navigate(addRoute)}
-                className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3"
-              >
+              <Button onClick={() => navigate(addRoute)} className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3">
                 <Plus className="w-5 h-5 !mr-2" />
                 {t("Add")}
               </Button>
             )}
             {additionalLink && (
-              <Button
-                onClick={() => navigate(additionalLink)}
-                className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3"
-              >
+              <Button onClick={() => navigate(additionalLink)} className="bg-bg-primary cursor-pointer text-white hover:bg-teal-700 rounded-[10px] !p-3">
                 {additionalLinkLabel}
               </Button>
             )}
@@ -523,27 +467,14 @@ useEffect(() => {
           <Table className="!min-w-[600px] table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-bg-primary font-semibold w-[50px]">
-                  #
-                </TableHead>
+                <TableHead className="text-bg-primary font-semibold w-[50px]">#</TableHead>
                 {columns.map((col, index) => (
-                  <TableHead
-                    key={index}
-                    className={`text-bg-primary font-semibold ${col.width || "w-auto"}`}
-                  >
+                  <TableHead key={index} className={`text-bg-primary font-semibold ${col.width || "w-auto"}`}>
                     {col.label}
                   </TableHead>
                 ))}
-                {(detailsData || pageDetailsRoute) && (
-                  <TableHead className="text-bg-primary font-semibold w-auto">
-                    {t("Details")}
-                  </TableHead>
-                )}
-                {showActionColumns && (
-                  <TableHead className="text-bg-primary font-semibold w-[100px]">
-                    {t("Actions")}
-                  </TableHead>
-                )}
+                {(detailsData || pageDetailsRoute) && <TableHead className="text-bg-primary font-semibold w-auto">{t("Details")}</TableHead>}
+                {showActionColumns && <TableHead className="text-bg-primary font-semibold w-[100px]">{t("Actions")}</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -551,34 +482,23 @@ useEffect(() => {
                 paginatedData.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm !py-3 !px-1 w-[50px] text-gray-500 font-medium">
-                      {(currentPage - 1) * itemsPerPage + index + 1}
+                      {isBackendPagination ? (index + 1) : ((currentPage - 1) * itemsPerPage + index + 1)}
                     </TableCell>
                     {columns.map((col, idx) => (
-                      <TableCell
-                        key={idx}
-                        className={`text-sm !py-3 !px-1 whitespace-normal break-words ${col.width || "w-auto"} truncate`}
-                      >
+                      <TableCell key={idx} className={`text-sm !py-3 !px-1 whitespace-normal break-words ${col.width || "w-auto"} truncate`}>
                         {renderCellContent(row, col)}
                       </TableCell>
                     ))}
                     {detailsData && (
                       <TableCell className="text-sm !py-3 !px-1 w-[100px]">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleViewDetails(row)}
-                          className="text-blue-600 hover:text-blue-800 hover:underline"
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleViewDetails(row)} className="text-blue-600 hover:text-blue-800 hover:underline">
                           {t("ViewDetails")}
                         </Button>
                       </TableCell>
                     )}
                     {pageDetailsRoute && (
                       <TableCell className="text-sm !py-3 !px-1 w-[100px]">
-                        <Link
-                          to={`details/${row.id}`}
-                          className="text-blue-600 hover:text-blue-800 hover:underline"
-                        >
+                        <Link to={`details/${row.id}`} className="text-blue-600 hover:text-blue-800 hover:underline">
                           {effectivePageDetailsLabel}
                         </Link>
                       </TableCell>
@@ -587,23 +507,12 @@ useEffect(() => {
                       <TableCell className="w-[100px]">
                         <div className="flex gap-2">
                           {onEdit && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                console.log("Edit clicked for row:", row);
-                                onEdit?.(row);
-                              }}
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => onEdit?.(row)}>
                               <Edit className="w-4 h-4 text-bg-primary" />
                             </Button>
                           )}
                           {onDelete && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => onDelete?.(row)}
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => onDelete?.(row)}>
                               <Trash className="w-4 h-4 text-red-600" />
                             </Button>
                           )}
@@ -615,13 +524,7 @@ useEffect(() => {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={
-                      columns.length +
-                      1 + // # column
-                      (detailsData ? 1 : 0) +
-                      (pageDetailsRoute ? 1 : 0) +
-                      (showActionColumns ? 1 : 0)
-                    }
+                    colSpan={columns.length + 1 + (detailsData ? 1 : 0) + (pageDetailsRoute ? 1 : 0) + (showActionColumns ? 1 : 0)}
                     className="text-center text-gray-500 py-4"
                   >
                     {t("Nodatafound")}
@@ -633,55 +536,82 @@ useEffect(() => {
         </div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent
-            className="sm:max-w-[650px] !p-6 max-h-[85vh] overflow-y-auto rounded-lg shadow-xl"
-            style={{
-              backgroundColor: "white",
-              border: "none",
-              padding: "0",
-            }}
-          >
+          <DialogContent className="sm:max-w-[650px] !p-6 max-h-[85vh] overflow-y-auto rounded-lg shadow-xl" style={{ backgroundColor: "white", border: "none", padding: "0" }}>
             <DialogHeader>
               <DialogTitle>{t("Details")}</DialogTitle>
             </DialogHeader>
-            {selectedRowData && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 !py-4">
-                {renderNestedObject(selectedRowData)}
-              </div>
-            )}
+            {selectedRowData && <div className="grid grid-cols-1 md:grid-cols-2 gap-4 !py-4">{renderNestedObject(selectedRowData)}</div>}
           </DialogContent>
         </Dialog>
 
+        {/* 🌟 تعديل الشرط ليعمل ديناميكياً مع الباك إند */}
         {totalPages > 1 && (
-          <div className="w-full !mb-10 max-w-[1200px] mx-auto">
-            <Pagination className="!mb-2 flex justify-center items-center m-auto">
-              <PaginationContent className="text-bg-primary font-semibold flex gap-2">
+          <div className="flex justify-center mt-6 w-full overflow-x-auto pb-2">
+            <Pagination>
+              <PaginationContent className="flex flex-wrap items-center gap-1 sm:gap-2 justify-center">
                 <PaginationItem>
                   <PaginationPrevious
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : "text-bg-primary"}
+                    className={clsx(
+                      "border border-gray-300 rounded-xl px-3 py-1.5 transition-all text-xs font-semibold cursor-pointer select-none",
+                      currentPage === 1 ? "pointer-events-none opacity-40 bg-gray-100 text-gray-400" : "text-bg-primary hover:bg-gray-100"
+                    )}
                   />
                 </PaginationItem>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <PaginationItem key={page}>
-                    <PaginationLink
-                      onClick={() => handlePageChange(page)}
-                      isActive={currentPage === page}
-                      className={clsx(
-                        "border border-gray-400 hover:bg-gray-200 transition-all px-3 py-1 rounded-lg",
-                        currentPage === page ? "bg-bg-primary text-white hover:bg-bg-primary" : "text-bg-primary"
-                      )}
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+
+                {(() => {
+                  const pageNumbers = [];
+                  const maxVisiblePages = 5;
+
+                  if (totalPages <= maxVisiblePages) {
+                    for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+                  } else {
+                    if (currentPage <= 3) {
+                      pageNumbers.push(1, 2, 3, 4, "ellipsis", totalPages);
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNumbers.push(1, "ellipsis", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                    } else {
+                      pageNumbers.push(1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages);
+                    }
+                  }
+
+                  return pageNumbers.map((page, index) => {
+                    if (page === "ellipsis") {
+                      return (
+                        <PaginationItem key={`ellipsis-${index}`}>
+                          <PaginationEllipsis className="text-gray-400 px-1" />
+                        </PaginationItem>
+                      );
+                    }
+
+                    return (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => handlePageChange(page)}
+                          isActive={currentPage === page}
+                          className={clsx(
+                            "border transition-all px-3 py-1.5 rounded-xl text-xs font-bold min-w-[36px] h-9 flex items-center justify-center cursor-pointer select-none",
+                            currentPage === page
+                              ? "bg-bg-primary text-white border-bg-primary shadow-sm hover:bg-bg-primary/90"
+                              : "border-gray-300 text-slate-600 hover:bg-slate-100"
+                          )}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  });
+                })()}
+
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : "text-bg-primary"}
+                    className={clsx(
+                      "border border-gray-300 rounded-xl px-3 py-1.5 transition-all text-xs font-semibold cursor-pointer select-none",
+                      currentPage === totalPages ? "pointer-events-none opacity-40 bg-gray-100 text-gray-400" : "text-bg-primary hover:bg-gray-100"
+                    )}
                   />
                 </PaginationItem>
               </PaginationContent>

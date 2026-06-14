@@ -15,9 +15,8 @@ import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Switch } from "@/components/ui/switch"; 
-import { Eye } from "lucide-react"; // استيراد أيقونة العين لزر العرض
+import { Eye, Key } from "lucide-react"; 
 
-// استيراد مكونات الـ Dialog الأساسية من الـ UI الخاص بكِ لعرض الـ Bans
 import {
     Dialog,
     DialogContent,
@@ -36,9 +35,15 @@ const Appartments = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
 
-    // 💡 حالات الـ Dialog الجديد الخاص بعرض الـ Bans
+    // 💡 1. إضافة حالة لمتابعة الصفحة الحالية من الباك إند
+    const [currentPage, setCurrentPage] = useState(1);
+
     const [isBansDialogOpen, setIsBansDialogOpen] = useState(false);
     const [activeBansData, setActiveBansData] = useState(null);
+
+    const [isCodesDialogOpen, setIsCodesDialogOpen] = useState(false);
+    const [activeCodesData, setActiveCodesData] = useState([]);
+    const [activeUnitName, setActiveUnitName] = useState("");
 
     const [banStatuses, setBanStatuses] = useState({
         all_status: false,
@@ -56,7 +61,11 @@ const Appartments = () => {
         setBanStatuses((prev) => ({ ...prev, [key]: value }));
     };
 
-    const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ url: `${apiUrl}/appartment` });
+    // 💡 2. تعديل الرابط ليمرر رقم الصفحة الحالية للـ API لتجلب البيانات ديناميكياً عند تغيرها
+    const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ 
+        url: `${apiUrl}/appartment?page=${currentPage}` 
+    });
+    
     const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/appartment/update/${selectedRow?.id}` });
 
     const {
@@ -68,11 +77,13 @@ const Appartments = () => {
 
     useEffect(() => {
         refetchAppartment();
-    }, [refetchAppartment]);
+    }, [refetchAppartment, currentPage]); // 💡 إعادة الجلب فور تغير رقم الصفحة
 
     useEffect(() => {
-        if (AppartmentData && AppartmentData.appartments) {
-            const formatted = AppartmentData?.appartments?.map((u) => ({
+        const appartmentList = AppartmentData?.appartments?.data || AppartmentData?.appartments;
+        
+        if (appartmentList && Array.isArray(appartmentList)) {
+            const formatted = appartmentList.map((u) => ({
                 id: u.id,
                 name: u.unit || "—",
                 type: u.type?.name || "—",
@@ -86,13 +97,16 @@ const Appartments = () => {
                 beach_status: u.beach_status,
                 rent_code_status: u.rent_code_status,
                 options_status: u.options_status,
+                formatted_codes: u.formatted_codes || [], 
             }));
             setAppartments(formatted);
         }
     }, [AppartmentData]);
 
     const handleEdit = (Appartment) => {
-        const fullAppartmentData = AppartmentData?.appartments.find((o) => o.id === Appartment.id);
+        const appartmentList = AppartmentData?.appartments?.data || AppartmentData?.appartments || [];
+        const fullAppartmentData = appartmentList.find((o) => o.id === Appartment.id);
+        
         setselectedRow(Appartment);
         setIsEditOpen(true);
         setRowEdit({
@@ -158,7 +172,6 @@ const Appartments = () => {
         }
     };
 
-    // دالة مساعدة لتنسيق شارات الحالة (Badges) داخل الـ Dialog الجديد
     const renderStatusBadge = (statusValue) => {
         const isActive = statusValue == 1 || statusValue === true || statusValue === "1";
         return (
@@ -174,13 +187,17 @@ const Appartments = () => {
         );
     };
 
-    // 💡 دالة فتح نافذة الـ Bans وتمرير بيانات السطر المحدد لها
     const openBansDialog = (row) => {
         setActiveBansData(row);
         setIsBansDialogOpen(true);
     };
 
-    // 🛠️ جدول الأعمدة الجديد: قمنا بتنظيف الـ 9 أعمدة واستبدالهم بزر عرض ذكي واحد
+    const openCodesDialog = (row) => {
+        setActiveCodesData(row.formatted_codes || []);
+        setActiveUnitName(row.name);
+        setIsCodesDialogOpen(true);
+    };
+
     const columns = [
         {
             key: "name",
@@ -204,6 +221,19 @@ const Appartments = () => {
                 </button>
             ),
         },
+        {
+            key: "codes_view",
+            label: t("FormattedCodes"), 
+            render: (row) => (
+                <button
+                    onClick={() => openCodesDialog(row)}
+                    className="inline-flex items-center gap-1.5 !px-3 !py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors text-xs font-bold"
+                >
+                    <Key size={14} />
+                    {t("View Codes")} ({row.formatted_codes?.length || 0})
+                </button>
+            ),
+        },
         { key: "type", label: t("Type") },
         { key: "map", label: t("Location") },
     ];
@@ -212,7 +242,6 @@ const Appartments = () => {
         return <FullPageLoader />;
     }
 
-    // مصفوفة مساعدة للمرور على مفاتيح الـ Bans لترجمتها وعرضها داخل الـ Dialog
     const banKeys = [
         "all_status", "entrance_status", "selling_status", "rent_status",
         "visits_status", "pool_status", "beach_status", "rent_code_status", "options_status"
@@ -220,6 +249,7 @@ const Appartments = () => {
 
     return (
         <div className="p-4">
+            {/* 💡 3. تمرير متغيرات ودوال الـ Pagination المأخوذة من الـ API مباشرة إلى الـ DataTable */}
             <DataTable
                 data={Appartments}
                 columns={columns}
@@ -231,9 +261,14 @@ const Appartments = () => {
                 pageDetailsRoute={false}
                 additionalLink="/units/create_code"
                 additionalLinkLabel={t("CreateCode")}
+                
+                // الخصائص المرسلة للتحكم بالباك إند:
+                isBackendPagination={true}
+                backendCurrentPage={AppartmentData?.appartments?.current_page || 1}
+                backendTotalPages={AppartmentData?.appartments?.last_page || 1}
+                onBackendPageChange={(newPage) => setCurrentPage(newPage)}
             />
 
-            {/* 🌟 نافذة الـ Dialog الجديدة لعرض جميع حالات الحظر (Bans) للوحدة المحددة */}
             <Dialog open={isBansDialogOpen} onOpenChange={setIsBansDialogOpen}>
                 <DialogContent className="sm:max-w-[460px] rounded-2xl !p-6">
                     <DialogHeader className="border-b !pb-3">
@@ -245,7 +280,6 @@ const Appartments = () => {
                         </DialogTitle>
                     </DialogHeader>
 
-                    {/* قائمة الحالات */}
                     <div className="grid grid-cols-1 gap-3 !py-4 max-h-[50vh] overflow-y-auto !pr-1">
                         {activeBansData && banKeys.map((key) => (
                             <div 
@@ -264,6 +298,54 @@ const Appartments = () => {
                 </DialogContent>
             </Dialog>
 
+            <Dialog open={isCodesDialogOpen} onOpenChange={setIsCodesDialogOpen}>
+                <DialogContent className="sm:max-w-[500px] rounded-2xl !p-6">
+                    <DialogHeader className="border-b !pb-3">
+                        <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span>{t("Unit Codes")}</span>
+                            <span className="text-blue-600 font-black bg-blue-50 !px-2 !py-0.5 rounded-lg text-sm">
+                                #{activeUnitName}
+                            </span>
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="flex flex-col gap-3 !py-4 max-h-[55vh] overflow-y-auto !pr-1">
+                        {activeCodesData.length > 0 ? (
+                            activeCodesData.map((item, index) => (
+                                <div 
+                                    key={index} 
+                                    className="border border-slate-100 rounded-2xl bg-white shadow-sm !p-4 hover:border-blue-100 transition-all flex flex-col gap-2 relative overflow-hidden"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold bg-slate-100 text-slate-700 !px-2.5 !py-1 rounded-lg uppercase tracking-wide">
+                                            {t(item.type || "Code")}
+                                        </span>
+                                        <span className="text-xs text-slate-400 font-medium">
+                                            {t("People")}: <strong className="text-slate-700">{item.people || 0}</strong>
+                                        </span>
+                                    </div>
+
+                                    <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl !py-2.5 text-center font-mono text-xl font-black text-blue-600 tracking-wider">
+                                        {item.code}
+                                    </div>
+
+                                    {(item.from || item.to) && (
+                                        <div className="flex justify-between text-[11px] text-slate-500 font-semibold !mt-1">
+                                            <span>{t("From")}: {item.from || "—"}</span>
+                                            <span>{t("To")}: {item.to || "—"}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            <div className="text-center !py-8 text-sm font-medium text-slate-400">
+                                {t("No codes available for this unit")}
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             {selectedRow && (
                 <>
                     <EditDialog
@@ -276,7 +358,7 @@ const Appartments = () => {
                         onChange={handleFieldChange}
                         isLoading={loadingAppartment}
                     >
-                        <div className="w-full max-h-[60vh] !p-4 overflow-y-auto">
+                        <div className="w-full max-h-[60vh] p-4 overflow-y-auto">
                             <Tabs defaultValue="english" className="w-full">
                                 <TabsContent value="english">
                                     <AppartmentFormFields
