@@ -73,6 +73,7 @@ export default function DataTable({
   backendCurrentPage = 1,
   backendTotalPages = 1,
   onBackendPageChange,
+  onSearchChange,
 }) {
   if (!Array.isArray(filterOptions)) {
     filterOptions = [];
@@ -118,7 +119,7 @@ export default function DataTable({
       .reduce((acc, part) => (acc ? acc[part] : undefined), obj);
   };
 
-  const filteredData = useMemo(() => {
+const filteredData = useMemo(() => {
     let result = data.filter((row) => {
       const matchesSearch = columns.some(col => {
         const cellValue = row[col.key];
@@ -126,7 +127,8 @@ export default function DataTable({
           String(cellValue).toLowerCase().includes(searchValue.toLowerCase());
       });
 
-      const finalMatchesSearch = searchValue === "" ? true : matchesSearch;
+      // 💡 تخطي الفلترة المحلية للبحث إذا كان هناك Backend Pagination نشط
+      const finalMatchesSearch = (searchValue === "" || isBackendPagination) ? true : matchesSearch;
       return finalMatchesSearch;
     });
 
@@ -382,11 +384,15 @@ export default function DataTable({
       <div className="w-full !p-3 !space-y-6">
         <div className="flex justify-between !mb-6 items-center flex-wrap gap-4">
           <div className="flex items-center gap-3 flex-wrap">
-            <Input
+<Input
               placeholder={t("Search...")}
               className="w-full md:!ms-3 sm:!ms-0 !p-2 sm:w-1/3 max-w-sm border-bg-primary focus:border-bg-primary focus:ring-bg-primary rounded-[10px]"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSearchValue(val);
+                if (onSearchChange) onSearchChange(val); // 💡 إرسال القيمة للمكون الأب فوراً
+              }}
             />
             <span className="text-sm text-gray-500 whitespace-nowrap">
               {t("Total")}: <span className="font-semibold text-bg-primary">{filteredData.length}</span>

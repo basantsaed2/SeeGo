@@ -67,7 +67,7 @@ const UnitDetails = () => {
   const { id } = useParams();
   const isLoading = useSelector((state) => state.loader.isLoading);
   
-  // 🔑 جلب الـ Token من الـ Redux (عدلي المسار حسب الهيكل عندك، مثلاً state.auth.token)
+  // 🔑 جلب الـ Token من الـ Redux
   const token = useSelector((state) => state.auth?.token || localStorage.getItem("token"));
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -76,7 +76,7 @@ const UnitDetails = () => {
   
   // حالات الـ Delete Dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null); // لتخزين بيانات المستخدم المختار للحذف { id, name }
+  const [userToDelete, setUserToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { refetch, loading, data } = useGet({
@@ -110,20 +110,17 @@ const UnitDetails = () => {
     }
   };
 
-  // دالة فتح الـ Dialog وتجهيز بيانات المستخدم
   const openDeleteConfirmation = (userId, userName) => {
     setUserToDelete({ id: userId, name: userName });
     setIsDeleteDialogOpen(true);
   };
 
-  // دالة الحذف الفعلية عند التأكيد داخل الـ Dialog
   const handleDeleteOwner = async () => {
     if (!userToDelete) return;
 
     try {
       setIsDeleting(true);
       
-      // إرسال الطلب مع الـ Headers المطلوبة لحل مشكلة الـ Unauthenticated
       const response = await axios.post(
         `${apiUrl}/appartment/delete_user_appartment`,
         {
@@ -132,15 +129,15 @@ const UnitDetails = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // تمرير الـ Token هنا
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       if (response.status === 200 || response.data) {
         toast.success(t("OwnerDeletedSuccessfully", { name: userToDelete.name || "User" }));
-        setIsDeleteDialogOpen(false); // غلق المودال بعد النجاح
-        refetch(); // إعادة جلب البيانات لتحديث الصفحة
+        setIsDeleteDialogOpen(false);
+        refetch();
       }
     } catch (error) {
       console.error("Error deleting owner:", error);
@@ -187,10 +184,11 @@ const UnitDetails = () => {
 
   const { appartment, owners, renters } = data;
 
-  const hasValidOwners = 
-    owners && 
-    owners.length > 0 && 
-    owners.some(owner => owner.name !== null || owner.phone !== null || owner.email !== null);
+  // تصفية الملّاك بحيث نحذف أي مالك يحمل الاسم unknown
+  const validOwners = (owners || []).filter((owner) => {
+    const ownerName = owner.name || owner.owner_name || "";
+    return ownerName && ownerName.toLowerCase() !== "unknown";
+  });
 
   const renderUserCard = (user, isOwner = true) => (
     <motion.div
@@ -254,7 +252,6 @@ const UnitDetails = () => {
         
         {isOwner && (
           <CardFooter className="flex justify-end gap-2 mt-4 !p-0">
-            {/* زر الحذف الذي يفتح الـ Dialog */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -355,18 +352,16 @@ const UnitDetails = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full bg-gray-100 dark:bg-gray-800 rounded-lg !p-1 ${hasValidOwners ? "grid-cols-4" : "grid-cols-3"}`}>
+          <TabsList className="grid w-full bg-gray-100 dark:bg-gray-800 rounded-lg !p-1 grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2 !p-2">
               <Home className="h-4 w-4" />
               {t("Overview")}
             </TabsTrigger>
             
-            {hasValidOwners && (
-              <TabsTrigger value="owners" className="flex items-center gap-2 !p-2">
-                <User className="h-4 w-4" />
-                {t("Owners")} ({owners.length})
-              </TabsTrigger>
-            )}
+            <TabsTrigger value="owners" className="flex items-center gap-2 !p-2">
+              <User className="h-4 w-4" />
+              {t("Owners")} ({validOwners.length})
+            </TabsTrigger>
 
             <TabsTrigger value="renters" className="flex items-center gap-2 !p-2">
               <Users className="h-4 w-4" />
@@ -379,9 +374,7 @@ const UnitDetails = () => {
           </TabsList>
 
           <AnimatePresence mode="wait">
-            {/* Contents of Tabs... */}
             <TabsContent value="overview" className="!mt-6">
-              {/* ... Overview Card ... */}
               <Card className="!p-4 border border-gray-200 dark:border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-xl">{t("ApartmentDetails")}</CardTitle>
@@ -423,29 +416,31 @@ const UnitDetails = () => {
               </Card>
             </TabsContent>
 
-            {hasValidOwners && (
-              <TabsContent value="owners" className="!mt-6">
-                <motion.div
-                  key="owners"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {owners.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-                      {owners.map((owner) => renderUserCard(owner, true))}
-                    </div>
-                  ) : (
-                    <Card className="text-center !py-12">
-                      <CardContent className="text-muted-foreground">
+            <TabsContent value="owners" className="!mt-6">
+              <motion.div
+                key="owners"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {validOwners.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+                    {validOwners.map((owner) => renderUserCard(owner, true))}
+                  </div>
+                ) : (
+                  <Card className="text-center !py-12 border border-slate-100 shadow-sm rounded-2xl">
+                    <CardContent className="flex flex-col items-center justify-center p-6 text-muted-foreground">
+                      <Users className="h-12 w-12 text-slate-300 mb-3" />
+                      <h3 className="text-lg font-bold text-slate-700">{t("No Owners Found")}</h3>
+                      <p className="text-sm font-medium text-slate-400 mt-1">
                         {t("Noownersfoundforthisunit")}
-                      </CardContent>
-                    </Card>
-                  )}
-                </motion.div>
-              </TabsContent>
-            )}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </motion.div>
+            </TabsContent>
 
             <TabsContent value="renters" className="!mt-6">
               <motion.div
@@ -460,9 +455,13 @@ const UnitDetails = () => {
                     {renters.map((renter) => renderUserCard(renter, false))}
                   </div>
                 ) : (
-                  <Card className="text-center !py-12">
-                    <CardContent className="text-muted-foreground">
-                      {t("Norentersfoundforthisunit")}
+                  <Card className="text-center !py-12 border border-slate-100 shadow-sm rounded-2xl">
+                    <CardContent className="flex flex-col items-center justify-center p-6 text-muted-foreground">
+                      <Users className="h-12 w-12 text-slate-300 mb-3" />
+                      <h3 className="text-lg font-bold text-slate-700">{t("No Renters Found")}</h3>
+                      <p className="text-sm font-medium text-slate-400 mt-1">
+                        {t("Norentersfoundforthisunit")}
+                      </p>
                     </CardContent>
                   </Card>
                 )}
@@ -484,7 +483,6 @@ const UnitDetails = () => {
         </Tabs>
       </motion.div>
 
-      {/* 🟢 إدراج الـ DeleteDialog هنا ومزامنة الحالات معه */}
       <DeleteDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}

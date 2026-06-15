@@ -14,8 +14,8 @@ import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Switch } from "@/components/ui/switch"; 
-import { Eye, Key } from "lucide-react"; 
+import { Switch } from "@/components/ui/switch";
+import { Eye, Key } from "lucide-react";
 
 import {
     Dialog,
@@ -35,8 +35,10 @@ const Appartments = () => {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const { t } = useTranslation();
 
-    // 💡 1. إضافة حالة لمتابعة الصفحة الحالية من الباك إند
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [searchInput, setSearchInput] = useState(""); 
+    const [debouncedSearch, setDebouncedSearch] = useState(""); 
 
     const [isBansDialogOpen, setIsBansDialogOpen] = useState(false);
     const [activeBansData, setActiveBansData] = useState(null);
@@ -61,11 +63,21 @@ const Appartments = () => {
         setBanStatuses((prev) => ({ ...prev, [key]: value }));
     };
 
-    // 💡 2. تعديل الرابط ليمرر رقم الصفحة الحالية للـ API لتجلب البيانات ديناميكياً عند تغيرها
-    const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ 
-        url: `${apiUrl}/appartment?page=${currentPage}` 
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchInput);
+            setCurrentPage(1); 
+        }, 500); 
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchInput]);
+
+    const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({
+        url: `${apiUrl}/appartment?page=${currentPage}${debouncedSearch ? `&search=${debouncedSearch}` : ""}`
     });
-    
+
     const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/appartment/update/${selectedRow?.id}` });
 
     const {
@@ -73,15 +85,15 @@ const Appartments = () => {
         fields,
         handleFieldChange,
         prepareFormData,
-    } = useAppartmentForm(apiUrl, true, rowEdit); 
+    } = useAppartmentForm(apiUrl, true, rowEdit);
 
     useEffect(() => {
         refetchAppartment();
-    }, [refetchAppartment, currentPage]); // 💡 إعادة الجلب فور تغير رقم الصفحة
+    }, [refetchAppartment, currentPage, debouncedSearch]); 
 
     useEffect(() => {
         const appartmentList = AppartmentData?.appartments?.data || AppartmentData?.appartments;
-        
+
         if (appartmentList && Array.isArray(appartmentList)) {
             const formatted = appartmentList.map((u) => ({
                 id: u.id,
@@ -97,16 +109,18 @@ const Appartments = () => {
                 beach_status: u.beach_status,
                 rent_code_status: u.rent_code_status,
                 options_status: u.options_status,
-                formatted_codes: u.formatted_codes || [], 
+                formatted_codes: u.formatted_codes || [],
             }));
             setAppartments(formatted);
+        } else {
+            setAppartments([]); 
         }
     }, [AppartmentData]);
 
     const handleEdit = (Appartment) => {
         const appartmentList = AppartmentData?.appartments?.data || AppartmentData?.appartments || [];
         const fullAppartmentData = appartmentList.find((o) => o.id === Appartment.id);
-        
+
         setselectedRow(Appartment);
         setIsEditOpen(true);
         setRowEdit({
@@ -140,26 +154,40 @@ const Appartments = () => {
         if (!loadingPost && response) {
             if (response.status === 200 || response.status === 201) {
                 setIsEditOpen(false);
+                setIsBansDialogOpen(false); // 💡 التأكد من إغلاق نافذة الحظر أيضاً عند النجاح
                 setselectedRow(null);
                 refetchAppartment();
             }
         }
     }, [response, loadingPost]);
 
-    const handleSave = async () => {
+const handleSave = async () => {
         const body = prepareFormData();
 
-        Object.keys(banStatuses).forEach((key) => {
-            const cleanKey = key.trim();
-            const stringValue = banStatuses[key] ? "1" : "0";
+        // 💡 التأكد من إرسال unit و appartment_type_id بشكل إجباري
+        const unitValue = rowEdit?.name || "";
+        const typeIdValue = rowEdit?.appartment_type_id || "";
 
-            if (body instanceof FormData) {
-                body.delete(cleanKey);
-                body.append(cleanKey, stringValue);
-            } else {
-                body[cleanKey] = stringValue;
-            }
-        });
+        if (body instanceof FormData) {
+            // نستخدم set بدلاً من append لتجنب التكرار إذا كانت موجودة بالفعل
+            body.set("unit", unitValue);
+            body.set("appartment_type_id", typeIdValue);
+            
+            // إضافة حالات الحظر
+            Object.keys(banStatuses).forEach((key) => {
+                const stringValue = banStatuses[key] ? "1" : "0";
+                body.set(key.trim(), stringValue);
+            });
+        } else {
+            body["unit"] = unitValue;
+            body["appartment_type_id"] = typeIdValue;
+            
+            // إضافة حالات الحظر
+            Object.keys(banStatuses).forEach((key) => {
+                const stringValue = banStatuses[key] ? "1" : "0";
+                body[key.trim()] = stringValue;
+            });
+        }
 
         postData(body, t("Appartmentupdatedsuccessfully!"));
     };
@@ -172,30 +200,36 @@ const Appartments = () => {
         }
     };
 
-    const renderStatusBadge = (statusValue) => {
-        const isActive = statusValue == 1 || statusValue === true || statusValue === "1";
-        return (
-            <span
-                className={`inline-flex items-center !px-2.5 !py-1 rounded-full text-xs font-bold ${
-                    isActive
-                        ? "bg-green-100 text-green-800 border border-green-200"
-                        : "bg-red-100 text-red-800 border border-red-200"
-                }`}
-            >
-                {isActive ? t("Active") : t("Inactive")}
-            </span>
-        );
-    };
-
+    // 💡 تم تعديل الدالة لتحميل البيانات في حالة selectedRow لتسمح للـ API بالحفظ بدون مشاكل
     const openBansDialog = (row) => {
-        setActiveBansData(row);
-        setIsBansDialogOpen(true);
-    };
+        const appartmentList = AppartmentData?.appartments?.data || AppartmentData?.appartments || [];
+        const fullAppartmentData = appartmentList.find((o) => o.id === row.id);
 
-    const openCodesDialog = (row) => {
-        setActiveCodesData(row.formatted_codes || []);
-        setActiveUnitName(row.name);
-        setIsCodesDialogOpen(true);
+        setActiveBansData(row);
+        setselectedRow(row); 
+        
+        setRowEdit({
+            name: fullAppartmentData?.unit || "",
+            type: fullAppartmentData?.type?.id?.toString() || "",
+            appartment_type_id: fullAppartmentData?.type?.id?.toString() || "",
+            map: fullAppartmentData?.location || "",
+        });
+
+        if (fullAppartmentData) {
+            setBanStatuses({
+                all_status: fullAppartmentData.all_status == 1 || fullAppartmentData.all_status === true || fullAppartmentData.all_status === "true",
+                entrance_status: fullAppartmentData.entrance_status == 1 || fullAppartmentData.entrance_status === true || fullAppartmentData.entrance_status === "true",
+                selling_status: fullAppartmentData.selling_status == 1 || fullAppartmentData.selling_status === true || fullAppartmentData.selling_status === "true",
+                rent_status: fullAppartmentData.rent_status == 1 || fullAppartmentData.rent_status === true || fullAppartmentData.rent_status === "true",
+                visits_status: fullAppartmentData.visits_status == 1 || fullAppartmentData.visits_status === true || fullAppartmentData.visits_status === "true",
+                pool_status: fullAppartmentData.pool_status == 1 || fullAppartmentData.pool_status === true || fullAppartmentData.pool_status === "true",
+                beach_status: fullAppartmentData.beach_status == 1 || fullAppartmentData.beach_status === true || fullAppartmentData.beach_status === "true",
+                rent_code_status: fullAppartmentData.rent_code_status == 1 || fullAppartmentData.rent_code_status === true || fullAppartmentData.rent_code_status === "true",
+                options_status: fullAppartmentData.options_status == 1 || fullAppartmentData.options_status === true || fullAppartmentData.options_status === "true",
+            });
+        }
+        
+        setIsBansDialogOpen(true);
     };
 
     const columns = [
@@ -222,23 +256,14 @@ const Appartments = () => {
             ),
         },
         {
-            key: "codes_view",
-            label: t("FormattedCodes"), 
-            render: (row) => (
-                <button
-                    onClick={() => openCodesDialog(row)}
-                    className="inline-flex items-center gap-1.5 !px-3 !py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl hover:bg-blue-100 transition-colors text-xs font-bold"
-                >
-                    <Key size={14} />
-                    {t("View Codes")} ({row.formatted_codes?.length || 0})
-                </button>
-            ),
+            key: "code",
+            label: t("FormattedCodes"),
         },
         { key: "type", label: t("Type") },
         { key: "map", label: t("Location") },
     ];
 
-    if (isLoading || loadingPost || loadingAppartment) {
+    if (isLoading || loadingPost) { 
         return <FullPageLoader />;
     }
 
@@ -249,7 +274,6 @@ const Appartments = () => {
 
     return (
         <div className="p-4">
-            {/* 💡 3. تمرير متغيرات ودوال الـ Pagination المأخوذة من الـ API مباشرة إلى الـ DataTable */}
             <DataTable
                 data={Appartments}
                 columns={columns}
@@ -261,12 +285,13 @@ const Appartments = () => {
                 pageDetailsRoute={false}
                 additionalLink="/units/create_code"
                 additionalLinkLabel={t("CreateCode")}
-                
-                // الخصائص المرسلة للتحكم بالباك إند:
+
                 isBackendPagination={true}
                 backendCurrentPage={AppartmentData?.appartments?.current_page || 1}
                 backendTotalPages={AppartmentData?.appartments?.last_page || 1}
                 onBackendPageChange={(newPage) => setCurrentPage(newPage)}
+
+                onSearchChange={(val) => setSearchInput(val)}
             />
 
             <Dialog open={isBansDialogOpen} onOpenChange={setIsBansDialogOpen}>
@@ -274,7 +299,7 @@ const Appartments = () => {
                     <DialogHeader className="border-b !pb-3">
                         <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span>{t("BanStatuses")}</span>
-                            <span className="text-primary font-black bg-primary/10 !px-2 !py-0.5 rounded-lg text-sm">
+                            <span className="text-teal-600 font-black bg-teal-50 !px-2 !py-0.5 rounded-lg text-sm">
                                 #{activeBansData?.name}
                             </span>
                         </DialogTitle>
@@ -282,24 +307,40 @@ const Appartments = () => {
 
                     <div className="grid grid-cols-1 gap-3 !py-4 max-h-[50vh] overflow-y-auto !pr-1">
                         {activeBansData && banKeys.map((key) => (
-                            <div 
-                                key={key} 
+                            <div
+                                key={key}
                                 className="flex items-center justify-between !p-3 border border-slate-100 rounded-xl bg-slate-50/50 shadow-sm hover:bg-slate-50 transition-colors"
                             >
                                 <span className="text-xs font-bold text-slate-600">
                                     {t(key)}
                                 </span>
                                 <div>
-                                    {renderStatusBadge(activeBansData[key])}
+                                    {/* 💡 نقل الـ Switch ليكون هنا بدلاً من الـ Badge الثابت */}
+                                    <Switch
+                                        checked={banStatuses[key]}
+                                        onCheckedChange={(checked) => handleSwitchChange(key, checked)}
+                                    />
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    {/* 💡 زر للحفظ مخصص لنافذة الحظر */}
+                    <div className="flex justify-end border-t !pt-4 mt-2">
+                        <button
+                            onClick={handleSave}
+                            disabled={loadingPost}
+                            className="inline-flex items-center justify-center rounded-xl bg-teal-600 !px-5 !py-2.5 text-sm font-bold text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
+                        >
+                            {loadingPost ? t("Saving...") : t("Save Changes")}
+                        </button>
                     </div>
                 </DialogContent>
             </Dialog>
 
             <Dialog open={isCodesDialogOpen} onOpenChange={setIsCodesDialogOpen}>
                 <DialogContent className="sm:max-w-[500px] rounded-2xl !p-6">
+                    {/* ... (نفس كود isCodesDialogOpen الحالي بدون تغيير) ... */}
                     <DialogHeader className="border-b !pb-3">
                         <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span>{t("Unit Codes")}</span>
@@ -312,8 +353,8 @@ const Appartments = () => {
                     <div className="flex flex-col gap-3 !py-4 max-h-[55vh] overflow-y-auto !pr-1">
                         {activeCodesData.length > 0 ? (
                             activeCodesData.map((item, index) => (
-                                <div 
-                                    key={index} 
+                                <div
+                                    key={index}
                                     className="border border-slate-100 rounded-2xl bg-white shadow-sm !p-4 hover:border-blue-100 transition-all flex flex-col gap-2 relative overflow-hidden"
                                 >
                                     <div className="flex justify-between items-center">
@@ -367,21 +408,7 @@ const Appartments = () => {
                                         handleFieldChange={handleFieldChange}
                                         loading={loadingAppartment}
                                     />
-
-                                    <div className="border-t !pt-5 !mt-4">
-                                        <h3 className="text-md font-medium !mb-4 text-gray-700">{t("BanStatuses")}</h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {Object.keys(banStatuses).map((statusKey) => (
-                                                <div key={statusKey} className="flex items-center justify-between !p-3 border rounded-xl bg-gray-50/50 shadow-sm">
-                                                    <span className="text-xs font-medium text-gray-600">{t(statusKey)}</span>
-                                                    <Switch
-                                                        checked={banStatuses[statusKey]}
-                                                        onCheckedChange={(checked) => handleSwitchChange(statusKey, checked)}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+                                    {/* 💡 تمت إزالة سويتشات الـ Ban من هنا نهائياً */}
                                 </TabsContent>
                             </Tabs>
                         </div>
