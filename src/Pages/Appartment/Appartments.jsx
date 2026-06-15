@@ -15,7 +15,7 @@ import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Switch } from "@/components/ui/switch";
-import { Eye, Key } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import {
     Dialog,
@@ -42,10 +42,6 @@ const Appartments = () => {
 
     const [isBansDialogOpen, setIsBansDialogOpen] = useState(false);
     const [activeBansData, setActiveBansData] = useState(null);
-
-    const [isCodesDialogOpen, setIsCodesDialogOpen] = useState(false);
-    const [activeCodesData, setActiveCodesData] = useState([]);
-    const [activeUnitName, setActiveUnitName] = useState("");
 
     const [banStatuses, setBanStatuses] = useState({
         all_status: false,
@@ -154,26 +150,23 @@ const Appartments = () => {
         if (!loadingPost && response) {
             if (response.status === 200 || response.status === 201) {
                 setIsEditOpen(false);
-                setIsBansDialogOpen(false); // 💡 التأكد من إغلاق نافذة الحظر أيضاً عند النجاح
+                setIsBansDialogOpen(false); 
                 setselectedRow(null);
                 refetchAppartment();
             }
         }
     }, [response, loadingPost]);
 
-const handleSave = async () => {
+    const handleSave = async () => {
         const body = prepareFormData();
 
-        // 💡 التأكد من إرسال unit و appartment_type_id بشكل إجباري
         const unitValue = rowEdit?.name || "";
         const typeIdValue = rowEdit?.appartment_type_id || "";
 
         if (body instanceof FormData) {
-            // نستخدم set بدلاً من append لتجنب التكرار إذا كانت موجودة بالفعل
             body.set("unit", unitValue);
             body.set("appartment_type_id", typeIdValue);
             
-            // إضافة حالات الحظر
             Object.keys(banStatuses).forEach((key) => {
                 const stringValue = banStatuses[key] ? "1" : "0";
                 body.set(key.trim(), stringValue);
@@ -182,7 +175,6 @@ const handleSave = async () => {
             body["unit"] = unitValue;
             body["appartment_type_id"] = typeIdValue;
             
-            // إضافة حالات الحظر
             Object.keys(banStatuses).forEach((key) => {
                 const stringValue = banStatuses[key] ? "1" : "0";
                 body[key.trim()] = stringValue;
@@ -200,7 +192,6 @@ const handleSave = async () => {
         }
     };
 
-    // 💡 تم تعديل الدالة لتحميل البيانات في حالة selectedRow لتسمح للـ API بالحفظ بدون مشاكل
     const openBansDialog = (row) => {
         const appartmentList = AppartmentData?.appartments?.data || AppartmentData?.appartments || [];
         const fullAppartmentData = appartmentList.find((o) => o.id === row.id);
@@ -232,6 +223,7 @@ const handleSave = async () => {
         setIsBansDialogOpen(true);
     };
 
+    // 🌟 تحديث المصفوفة لتعرض الأكواد مباشرة وبشكل منسق داخل الخلية
     const columns = [
         {
             key: "name",
@@ -255,10 +247,30 @@ const handleSave = async () => {
                 </button>
             ),
         },
-        {
-            key: "code",
-            label: t("FormattedCodes"),
+{
+        key: "formatted_codes",
+        label: t("Codes"),
+        render: (row) => {
+            // التأكد أولاً إذا كان الكود موجوداً داخل الأوبجكت
+            if (row.formatted_codes && row.formatted_codes.code) {
+                return (
+                    <span className="font-mono text-sm font-bold text-blue-600 bg-blue-50/50 border border-blue-100 !px-2.5 !py-1 rounded-lg">
+                        {row.formatted_codes.code}
+                    </span>
+                );
+            }
+            // في حال كان جاي من الـ API كـ Array (للاحتياط)
+            if (Array.isArray(row.formatted_codes) && row.formatted_codes.length > 0) {
+                return (
+                    <span className="font-mono text-sm font-bold text-blue-600 bg-blue-50/50 border border-blue-100 !px-2.5 !py-1 rounded-lg">
+                        {row.formatted_codes[0].code}
+                    </span>
+                );
+            }
+            // إذا لم يكن هناك كود مطلقاً
+            return <span className="text-gray-400 font-normal">—</span>;
         },
+    },
         { key: "type", label: t("Type") },
         { key: "map", label: t("Location") },
     ];
@@ -315,7 +327,6 @@ const handleSave = async () => {
                                     {t(key)}
                                 </span>
                                 <div>
-                                    {/* 💡 نقل الـ Switch ليكون هنا بدلاً من الـ Badge الثابت */}
                                     <Switch
                                         checked={banStatuses[key]}
                                         onCheckedChange={(checked) => handleSwitchChange(key, checked)}
@@ -325,7 +336,6 @@ const handleSave = async () => {
                         ))}
                     </div>
 
-                    {/* 💡 زر للحفظ مخصص لنافذة الحظر */}
                     <div className="flex justify-end border-t !pt-4 mt-2">
                         <button
                             onClick={handleSave}
@@ -334,55 +344,6 @@ const handleSave = async () => {
                         >
                             {loadingPost ? t("Saving...") : t("Save Changes")}
                         </button>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog open={isCodesDialogOpen} onOpenChange={setIsCodesDialogOpen}>
-                <DialogContent className="sm:max-w-[500px] rounded-2xl !p-6">
-                    {/* ... (نفس كود isCodesDialogOpen الحالي بدون تغيير) ... */}
-                    <DialogHeader className="border-b !pb-3">
-                        <DialogTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                            <span>{t("Unit Codes")}</span>
-                            <span className="text-blue-600 font-black bg-blue-50 !px-2 !py-0.5 rounded-lg text-sm">
-                                #{activeUnitName}
-                            </span>
-                        </DialogTitle>
-                    </DialogHeader>
-
-                    <div className="flex flex-col gap-3 !py-4 max-h-[55vh] overflow-y-auto !pr-1">
-                        {activeCodesData.length > 0 ? (
-                            activeCodesData.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="border border-slate-100 rounded-2xl bg-white shadow-sm !p-4 hover:border-blue-100 transition-all flex flex-col gap-2 relative overflow-hidden"
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs font-bold bg-slate-100 text-slate-700 !px-2.5 !py-1 rounded-lg uppercase tracking-wide">
-                                            {t(item.type || "Code")}
-                                        </span>
-                                        <span className="text-xs text-slate-400 font-medium">
-                                            {t("People")}: <strong className="text-slate-700">{item.people || 0}</strong>
-                                        </span>
-                                    </div>
-
-                                    <div className="bg-slate-50 border border-dashed border-slate-200 rounded-xl !py-2.5 text-center font-mono text-xl font-black text-blue-600 tracking-wider">
-                                        {item.code}
-                                    </div>
-
-                                    {(item.from || item.to) && (
-                                        <div className="flex justify-between text-[11px] text-slate-500 font-semibold !mt-1">
-                                            <span>{t("From")}: {item.from || "—"}</span>
-                                            <span>{t("To")}: {item.to || "—"}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            ))
-                        ) : (
-                            <div className="text-center !py-8 text-sm font-medium text-slate-400">
-                                {t("No codes available for this unit")}
-                            </div>
-                        )}
                     </div>
                 </DialogContent>
             </Dialog>
@@ -408,7 +369,6 @@ const handleSave = async () => {
                                         handleFieldChange={handleFieldChange}
                                         loading={loadingAppartment}
                                     />
-                                    {/* 💡 تمت إزالة سويتشات الـ Ban من هنا نهائياً */}
                                 </TabsContent>
                             </Tabs>
                         </div>
