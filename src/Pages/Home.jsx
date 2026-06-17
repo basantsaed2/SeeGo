@@ -12,10 +12,16 @@ import {
   FaUserFriends,
   FaHome,
   FaStore,
-  FaWrench
+  FaWrench,
+  FaBell,
+  FaKey,
+  FaQrcode
 } from "react-icons/fa";
 import { MdReportProblem } from "react-icons/md";
 import { Link } from "react-router-dom";
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
+window.Pusher = Pusher;
 
 const Home = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -33,6 +39,13 @@ const Home = () => {
   const { refetch: refetchHomeList, loading: loadingHomeList, data: HomeListData } = useGet({
     url: `${apiUrl}/home`,
   });
+
+  const { refetch: refetchCodeRequests, data: codeRequestsData } = useGet({ url: `${apiUrl}/code_request` });
+  const { refetch: refetchLoginRequests, data: loginRequestsData } = useGet({ url: `${apiUrl}/login_request` });
+  
+  const [codeNotificationCount, setCodeNotificationCount] = useState(0);
+  const [loginNotificationCount, setLoginNotificationCount] = useState(0);
+
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -44,6 +57,51 @@ const Home = () => {
       setHomeStats(HomeListData);
     }
   }, [HomeListData]);
+
+  useEffect(() => {
+    if (codeRequestsData) {
+      const list = codeRequestsData?.code_requests?.data || codeRequestsData?.data || [];
+      setCodeNotificationCount(Array.isArray(list) ? list.length : 0);
+    }
+  }, [codeRequestsData]);
+
+  useEffect(() => {
+    if (loginRequestsData) {
+      const list = loginRequestsData?.login_requests?.data || loginRequestsData?.data || [];
+      setLoginNotificationCount(Array.isArray(list) ? list.length : 0);
+    }
+  }, [loginRequestsData]);
+
+  useEffect(() => {
+      const village_id = localStorage.getItem("village_id");
+      if (!village_id) return;
+
+      const echo = new Echo({
+          broadcaster: 'pusher',
+          key: 'hfauysjmov3blta8zfql',
+          wsHost: "bcknd.sea-go.org",
+          wsPort: 443,
+          wssPort: 443,
+          forceTLS: true,
+          enabledTransports: ['ws', 'wss'],
+          cluster: 'mt1'
+      });
+
+      const channelName = "newNotification_" + village_id;
+      
+      echo.channel(channelName)
+          .listen('.NewNotificationEvent', (data) => {
+              console.log('New notification received:', data);
+              // إعادة جلب البيانات لتحديث الأعداد في الكروت بشكل دقيق
+              if (refetchCodeRequests) refetchCodeRequests();
+              if (refetchLoginRequests) refetchLoginRequests();
+          });
+
+      return () => {
+          echo.leaveChannel(channelName);
+      };
+  }, []);
+
 
   if (isLoading || loadingHomeList) {
     return <FullPageLoader />;
@@ -126,6 +184,38 @@ const Home = () => {
           <div className="!p-2">
             <div className="text-3xl font-bold">{homeStats.maintenance_request_count}</div>
             <div className="">{t("MaintenanceRequest")}</div>
+          </div>
+        </Link>
+
+        {/* Login Requests Card */}
+        <Link to={"login-requests"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary relative">
+          {loginNotificationCount > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold animate-bounce shadow-lg">
+              <FaBell className="w-3 h-3 mr-1" /> {loginNotificationCount}
+            </div>
+          )}
+          <div className="!p-4 flex items-center justify-center">
+            <FaKey className="text-6xl text-[#0E7490]" />
+          </div>
+          <div className="!p-2">
+            <div className="text-3xl font-bold">{loginNotificationCount}</div>
+            <div className="">{t("LoginRequests") || "Login Requests"}</div>
+          </div>
+        </Link>
+
+        {/* Code Requests Card */}
+        <Link to={"pending-requests"} className="bg-[#F2FAFA] text-bg-primary !p-2 rounded-2xl shadow flex items-start border-r-4 border-bg-primary relative">
+          {codeNotificationCount > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold animate-bounce shadow-lg">
+              <FaBell className="w-3 h-3 mr-1" /> {codeNotificationCount}
+            </div>
+          )}
+          <div className="!p-4 flex items-center justify-center">
+            <FaQrcode className="text-6xl text-[#0E7490]" />
+          </div>
+          <div className="!p-2">
+            <div className="text-3xl font-bold">{codeNotificationCount}</div>
+            <div className="">{t("PendingRequests") || "Code Requests"}</div>
           </div>
         </Link>
       </div>
