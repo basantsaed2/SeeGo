@@ -15,7 +15,7 @@ import {
   FaWrench,
   FaBell,
   FaKey,
-  FaQrcode
+  FaCode
 } from "react-icons/fa";
 import { MdReportProblem } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -42,7 +42,7 @@ const Home = () => {
 
   const { refetch: refetchCodeRequests, data: codeRequestsData } = useGet({ url: `${apiUrl}/code_request` });
   const { refetch: refetchLoginRequests, data: loginRequestsData } = useGet({ url: `${apiUrl}/login_request` });
-  
+
   const [codeNotificationCount, setCodeNotificationCount] = useState(0);
   const [loginNotificationCount, setLoginNotificationCount] = useState(0);
 
@@ -73,33 +73,33 @@ const Home = () => {
   }, [loginRequestsData]);
 
   useEffect(() => {
-      const village_id = localStorage.getItem("village_id");
-      if (!village_id) return;
+    const village_id = localStorage.getItem("village_id");
+    if (!village_id) return;
 
-      const echo = new Echo({
-          broadcaster: 'pusher',
-          key: 'hfauysjmov3blta8zfql',
-          wsHost: "bcknd.sea-go.org",
-          wsPort: 443,
-          wssPort: 443,
-          forceTLS: true,
-          enabledTransports: ['ws', 'wss'],
-          cluster: 'mt1'
+    const echo = new Echo({
+      broadcaster: 'pusher',
+      key: 'hfauysjmov3blta8zfql',
+      wsHost: "bcknd.sea-go.org",
+      wsPort: 443,
+      wssPort: 443,
+      forceTLS: true,
+      enabledTransports: ['ws', 'wss'],
+      cluster: 'mt1'
+    });
+
+    const channelName = "newNotification_" + village_id;
+
+    echo.channel(channelName)
+      .listen('.NewNotificationEvent', (data) => {
+        console.log('New notification received:', data);
+        // إعادة جلب البيانات لتحديث الأعداد في الكروت بشكل دقيق
+        if (refetchCodeRequests) refetchCodeRequests();
+        if (refetchLoginRequests) refetchLoginRequests();
       });
 
-      const channelName = "newNotification_" + village_id;
-      
-      echo.channel(channelName)
-          .listen('.NewNotificationEvent', (data) => {
-              console.log('New notification received:', data);
-              // إعادة جلب البيانات لتحديث الأعداد في الكروت بشكل دقيق
-              if (refetchCodeRequests) refetchCodeRequests();
-              if (refetchLoginRequests) refetchLoginRequests();
-          });
-
-      return () => {
-          echo.leaveChannel(channelName);
-      };
+    return () => {
+      echo.leaveChannel(channelName);
+    };
   }, []);
 
 
@@ -211,11 +211,11 @@ const Home = () => {
             </div>
           )}
           <div className="!p-4 flex items-center justify-center">
-            <FaQrcode className="text-6xl text-[#0E7490]" />
+            <FaCode className="text-6xl text-[#0E7490]" />
           </div>
           <div className="!p-2">
             <div className="text-3xl font-bold">{codeNotificationCount}</div>
-            <div className="">{t("PendingRequests") || "Code Requests"}</div>
+            <div className="">{t("CodeRequests") || "Code Requests"}</div>
           </div>
         </Link>
       </div>
