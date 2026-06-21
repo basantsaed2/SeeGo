@@ -103,7 +103,7 @@ const audioRef = useRef(new Audio(notificationSound));
     if (item.type === "login") {
       navigate("/login-requests"); 
     } else if (item.type === "code") {
-      navigate("/code-requests"); 
+      navigate("/pending-requests"); 
     }
   };
 
