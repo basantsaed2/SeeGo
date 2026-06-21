@@ -13,19 +13,17 @@ import { useTranslation } from "react-i18next";
 
 export default function UnitCode() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  
-  // التحكم في كلمة البحث المرسلة للباك إند
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const { postData, loadingPost, response } = usePost({ url: `${apiUrl}/appartment/create_code` });
-  
-  // جلب البيانات بناءً على السيرش القادم من الباك إند
-  const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({ 
-    url: `${apiUrl}/appartment?search=${debouncedSearch}` 
+
+  const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({
+    url: `${apiUrl}/appartment/appartement_list`
   });
-  
-  const [appartments, setAppartments] = useState([]);
+
+  const [allAppartments, setAllAppartments] = useState([]); // لحفظ القائمة الكاملة الأصلية
+  const [filteredAppartments, setFilteredAppartments] = useState([]); // للقائمة المفلترة بناءً على البحث
+  const [selectSearchValue, setSelectSearchValue] = useState(""); // لحفظ النص المكتوب في حقل البحث
+
   const [generatedCode, setGeneratedCode] = useState("");
   const isLoading = useSelector((state) => state.loader.isLoading);
   const navigate = useNavigate();
@@ -42,32 +40,32 @@ export default function UnitCode() {
   });
   const { t } = useTranslation();
 
-  // عمل Debounce لتجنب إرسال طلبات مكثفة للـ API
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 400);
+    const rawData = AppartmentData?.data?.data || AppartmentData?.data || AppartmentData;
+    const apartmentsList = Array.isArray(rawData) ? rawData : (rawData?.appartments || rawData?.data || []);
 
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    if (AppartmentData && AppartmentData.appartments && Array.isArray(AppartmentData.appartments.data)) {
-      setAppartments(
-        AppartmentData.appartments.data.map((appartment) => ({
-          label: appartment.unit,
-          value: appartment.id.toString(),
-        }))
-      );
-    } else if (AppartmentData && Array.isArray(AppartmentData.data)) {
-      setAppartments(
-        AppartmentData.data.map((appartment) => ({
-          label: appartment.unit,
-          value: appartment.id.toString(),
-        }))
-      );
+    if (Array.isArray(apartmentsList)) {
+      const formatted = apartmentsList.map((appartment) => ({
+        label: appartment.unit || appartment.name || `Unit ${appartment.id}`,
+        value: appartment.id.toString(),
+      }));
+      setAllAppartments(formatted);
+      setFilteredAppartments(formatted); // البداية تكون بالقائمة كاملة
     }
   }, [AppartmentData]);
+
+  // هنا السحر: عند كتابة أي كلمة في الـ Search، بنعمل فلترة فورية
+  useEffect(() => {
+    if (!selectSearchValue.trim()) {
+      setFilteredAppartments(allAppartments);
+    } else {
+      const lowercasedSearch = selectSearchValue.toLowerCase();
+      const filtered = allAppartments.filter(app =>
+        app.label.toLowerCase().includes(lowercasedSearch)
+      );
+      setFilteredAppartments(filtered);
+    }
+  }, [selectSearchValue, allAppartments]);
 
   useEffect(() => {
     if (formData.en.type !== "renter") {
@@ -134,7 +132,6 @@ export default function UnitCode() {
     }
   };
 
-  // تعريف الحقول بدون حقل البحث النصي المنفصل
   const fields = [
     {
       type: "select",
@@ -150,11 +147,10 @@ export default function UnitCode() {
       type: "select",
       placeholder: t("Appartment"),
       name: "appartment",
-      options: appartments,
+      options: filteredAppartments, // مررنا القائمة المفلترة هنا لتحديث النتائج فوراً
       value: formData.en.appartment,
-      // نمرر دالة التغيير الخاصة بالسيرش لكي يلقطها الـ Combobox من الداخل
-      onSearchChange: (val) => setSearchTerm(val), 
-      searchValue: searchTerm
+      searchValue: selectSearchValue, // ربط حقل القيمة النصية للمكون الداخلي
+      onSearchChange: (value) => setSelectSearchValue(value), // تحديث القيمة عند الكتابة
     },
     {
       type: "input",

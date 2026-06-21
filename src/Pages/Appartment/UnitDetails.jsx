@@ -53,10 +53,10 @@ import DeleteDialog from "@/components/DeleteDialog";
 const formatDate = (dateString) => {
   return dateString
     ? new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
     : "N/A";
 };
 
@@ -66,14 +66,14 @@ const UnitDetails = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { id } = useParams();
   const isLoading = useSelector((state) => state.loader.isLoading);
-  
+
   // 🔑 جلب الـ Token من الـ Redux
   const token = useSelector((state) => state.auth?.token || localStorage.getItem("token"));
 
   const [activeTab, setActiveTab] = useState("overview");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
-  
+
   // حالات الـ Delete Dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -120,7 +120,7 @@ const UnitDetails = () => {
 
     try {
       setIsDeleting(true);
-      
+
       const response = await axios.post(
         `${apiUrl}/appartment/delete_user_appartment`,
         {
@@ -249,7 +249,7 @@ const UnitDetails = () => {
             )}
           </CardContent>
         </div>
-        
+
         {isOwner && (
           <CardFooter className="flex justify-end gap-2 mt-4 !p-0">
             <TooltipProvider>
@@ -278,17 +278,16 @@ const UnitDetails = () => {
                     size="sm"
                     onClick={() => handleToggleType(user, user.user_type)}
                     disabled={loadingChange || isDeleting}
-                    className={`flex !p-2 items-center gap-2 ${
-                      user.user_type !== "super"
+                    className={`flex !p-2 items-center gap-2 ${user.user_type !== "super"
                         ? "bg-bg-primary hover:text-bg-primary hover:bg-white text-white"
                         : "text-white bg-amber-500 hover:bg-amber-600"
-                    }`}
+                      }`}
                   >
                     {loadingChange
                       ? "Processing..."
                       : user.user_type === "super"
-                      ? t("DemotefromSuper")
-                      : t("MakeSuper")}
+                        ? t("DemotefromSuper")
+                        : t("MakeSuper")}
                     {user.user_type !== "super" && (
                       <Crown className="h-4 w-4 ml-1" />
                     )}
@@ -352,12 +351,12 @@ const UnitDetails = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full bg-gray-100 dark:bg-gray-800 rounded-lg !p-1 grid-cols-4">
+          <TabsList className="grid w-full bg-gray-100 rounded-lg !p-1 grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2 !p-2">
               <Home className="h-4 w-4" />
               {t("Overview")}
             </TabsTrigger>
-            
+
             <TabsTrigger value="owners" className="flex items-center gap-2 !p-2">
               <User className="h-4 w-4" />
               {t("Owners")} ({validOwners.length})
@@ -375,7 +374,7 @@ const UnitDetails = () => {
 
           <AnimatePresence mode="wait">
             <TabsContent value="overview" className="!mt-6">
-              <Card className="!p-4 border border-gray-200 dark:border-gray-700">
+              <Card className="!p-4 border border-gray-200 ">
                 <CardHeader>
                   <CardTitle className="text-xl">{t("ApartmentDetails")}</CardTitle>
                 </CardHeader>
