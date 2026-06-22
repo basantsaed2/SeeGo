@@ -36,7 +36,7 @@ const audioRef = useRef(new Audio(notificationSound));
 
   const navigate = useNavigate();
   const location = useLocation();
-  const userName = userData?.village?.name;
+  const userName = userData?.name;
   const userInitials = userName
     ? userName.split(" ").slice(0, 2).map((word) => word[0]).join("")
     : "AD";
@@ -181,14 +181,7 @@ const audioRef = useRef(new Audio(notificationSound));
             <span>{t("Hello")} {userName || "Admin"}</span>
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/pending-requests")}
-            className="text-teal-700 hover:bg-teal-50 relative cursor-pointer"
-          >
-            <ClipboardList className="w-5 h-5" />
-          </Button>
+
         </div>
 
         {/* Right Section */}
