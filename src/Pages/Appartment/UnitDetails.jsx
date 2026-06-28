@@ -48,6 +48,7 @@ import {
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import UnitCodeManager from "./UnitCodeManager";
+import UnitRenters from "./UnitRenters";
 import DeleteDialog from "@/components/DeleteDialog";
 
 const formatDate = (dateString) => {
@@ -279,8 +280,8 @@ const UnitDetails = () => {
                     onClick={() => handleToggleType(user, user.user_type)}
                     disabled={loadingChange || isDeleting}
                     className={`flex !p-2 items-center gap-2 ${user.user_type !== "super"
-                        ? "bg-bg-primary hover:text-bg-primary hover:bg-white text-white"
-                        : "text-white bg-amber-500 hover:bg-amber-600"
+                      ? "bg-bg-primary hover:text-bg-primary hover:bg-white text-white"
+                      : "text-white bg-amber-500 hover:bg-amber-600"
                       }`}
                   >
                     {loadingChange
@@ -429,10 +430,10 @@ const UnitDetails = () => {
                   </div>
                 ) : (
                   <Card className="text-center !py-12 border border-slate-100 shadow-sm rounded-2xl">
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-muted-foreground">
-                      <Users className="h-12 w-12 text-slate-300 mb-3" />
+                    <CardContent className="flex flex-col items-center justify-center !p-6 text-muted-foreground">
+                      <Users className="h-12 w-12 text-slate-300 !mb-3" />
                       <h3 className="text-lg font-bold text-slate-700">{t("No Owners Found")}</h3>
-                      <p className="text-sm font-medium text-slate-400 mt-1">
+                      <p className="text-sm font-medium text-slate-400 !mt-1">
                         {t("Noownersfoundforthisunit")}
                       </p>
                     </CardContent>
@@ -449,21 +450,7 @@ const UnitDetails = () => {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                {renters.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {renters.map((renter) => renderUserCard(renter, false))}
-                  </div>
-                ) : (
-                  <Card className="text-center !py-12 border border-slate-100 shadow-sm rounded-2xl">
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-muted-foreground">
-                      <Users className="h-12 w-12 text-slate-300 mb-3" />
-                      <h3 className="text-lg font-bold text-slate-700">{t("No Renters Found")}</h3>
-                      <p className="text-sm font-medium text-slate-400 mt-1">
-                        {t("Norentersfoundforthisunit")}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
+                <UnitRenters appartmentId={id} apiUrl={apiUrl} />
               </motion.div>
             </TabsContent>
 
@@ -493,11 +480,11 @@ const UnitDetails = () => {
       {/* Image Modal */}
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden">
-          <DialogHeader className="p-4 pb-0">
+          <DialogHeader className="!p-4 !pb-0">
             <DialogTitle>{t("ApartmentImage")}</DialogTitle>
           </DialogHeader>
           {currentImage && (
-            <div className="flex justify-center items-center p-2">
+            <div className="flex justify-center items-center !p-2">
               <img
                 src={currentImage}
                 alt="Apartment"

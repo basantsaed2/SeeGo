@@ -9,6 +9,9 @@ import { useChangeState } from "@/Hooks/useChangeState";
 const UnitCodeManager = ({ codes, apiUrl, refetchCodes }) => {
   const { t } = useTranslation();
 
+  // فلترة الأكواد لعرض النوع owner فقط
+  const ownerCodes = codes?.appartment_codes?.filter(code => code.type === "owner") || [];
+
   return (
     <div className="space-y-6 mt-6">
       <div className="flex items-center justify-between px-2">
@@ -19,13 +22,15 @@ const UnitCodeManager = ({ codes, apiUrl, refetchCodes }) => {
 
         <div className="rounded-full bg-teal-50 !px-4 !py-1.5 border border-teal-100">
           <span className="text-sm font-semibold text-teal-700">
-            {codes?.appartment_codes?.length || 0} {t("ActiveCodes")}
+            {/* عرض عدد أكواد الـ owner فقط */}
+            {ownerCodes.length} {t("ActiveCodes")}
           </span>
         </div>
       </div>
 
       <div className="grid gap-4">
-        {codes?.appartment_codes?.map((code) => (
+        {/* عمل map على الأكواد المفلترة فقط */}
+        {ownerCodes.map((code) => (
           <CodeItem
             key={code.id}
             code={code}
