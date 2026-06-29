@@ -35,27 +35,27 @@ const Rent = () => {
             const formattedRent = RentData?.rents?.map((u) => {
                 return {
                     id: u.id,
-                    img: u.image_id_link ? (
+                    img: u?.image_id_link ? (
                         <img
-                            src={u.image_id_link}
-                            alt={u.user?.name}
+                            src={u?.image_id_link}
+                            alt={u?.user?.name}
                             className="w-12 h-12 object-cover rounded-md"
                         />
                     ) : (
                         <Avatar className="w-12 h-12">
-                            <AvatarFallback>{u.user?.name?.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{u?.user?.name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                     ),
-                    renter: u.user?.name,
+                    renter: u?.user?.name,
                     phone: u?.user?.phone || "—",
-                    owner: u.owner?.name,
-                    ownerPhone: u.owner?.phone,
-                    code: u.code,
-                    from: u.from,
-                    to: u.to,
-                    people: u.people,
-                    unit: u.appartment?.unit || "—",
-                    floor: u.appartment?.number_floors || "—",
+                    owner: u?.owner?.name,
+                    ownerPhone: u?.owner?.phone,
+                    code: u?.code,
+                    from: u?.from,
+                    to: u?.to,
+                    people: u?.people,
+                    unit: u?.appartment?.unit || "—",
+                    floor: u?.appartment?.number_floors || "—",
                 };
             });
             // const formattedDetailsRent = RentData?.rents?.map((u) => {
