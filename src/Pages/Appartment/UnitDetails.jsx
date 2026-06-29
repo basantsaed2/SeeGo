@@ -190,6 +190,9 @@ const UnitDetails = () => {
     const ownerName = owner.name || owner.owner_name || "";
     return ownerName && ownerName.toLowerCase() !== "unknown";
   });
+  const validRenters = (renters || []).filter(
+    (renter) => renter.user !== null && renter.user_id !== null
+  );
 
   const renderUserCard = (user, isOwner = true) => (
     <motion.div

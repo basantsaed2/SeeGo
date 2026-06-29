@@ -3,7 +3,18 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarDays, Users, Key, Trash2, Edit, ChevronDown, ChevronUp, Loader2, User } from "lucide-react";
+import {
+  CalendarDays,
+  Users,
+  Key,
+  Trash2,
+  Edit,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  User,
+  ImageIcon // تم إضافة الأيقونة هنا
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -13,6 +24,13 @@ import { useChangeState } from "@/Hooks/useChangeState";
 import { useGet } from "@/Hooks/UseGet";
 import FullPageLoader from "@/components/Loading";
 import DeleteDialog from "@/components/DeleteDialog";
+// استيراد مكونات الـ Dialog لعرض الصورة
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const formatDate = (dateString) => {
   return dateString
@@ -90,11 +108,16 @@ const UnitRenters = ({ appartmentId, apiUrl }) => {
 };
 
 const RentGroupCard = ({ group, apiUrl, refetch }) => {
+  const activeRenters = group.codes.filter((code) => code.user !== null && code.user_id !== null);
   const { t } = useTranslation();
   const token = useSelector((state) => state.auth?.token || localStorage.getItem("token"));
   const [showDetails, setShowDetails] = useState(false);
   const [isDeletingRent, setIsDeletingRent] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // حالات عرض الصورة
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
 
   const handleDeleteRent = async () => {
     try {
@@ -120,6 +143,11 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
       setIsDeleteDialogOpen(false);
     }
   };
+
+  // التأكد إن الصورة موجودة ومفيهاش خطأ من الباك إند
+  const rentImage = group.codes[0]?.image_id_link;
+
+  const hasValidImage = rentImage
 
   return (
     <Card className="overflow-hidden bg-white shadow-sm transition-all duration-300 hover:shadow-md border border-gray-200 rounded-xl">
@@ -150,7 +178,22 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center flex-wrap gap-3 w-full sm:w-auto">
+          {/* زرار عرض الصورة */}
+          {hasValidImage && (
+            <Button
+              variant="outline"
+              className="flex-1 sm:flex-none !py-2 !px-4 flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+              onClick={() => {
+                setCurrentImage(rentImage);
+                setIsImageModalOpen(true);
+              }}
+            >
+              <ImageIcon className="h-4 w-4" />
+              {t("View Contract")}
+            </Button>
+          )}
+
           <Button
             variant="outline"
             className="flex-1 sm:flex-none !py-2 !px-4 flex items-center gap-2"
@@ -159,7 +202,7 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
             {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             {showDetails ? t("Hide Details") : t("Show Details")}
             <span className="bg-primary/10 text-primary !px-2 !py-0.5 rounded-full text-xs font-bold !ml-1">
-              {group.codes.length}
+              {activeRenters.length} / {group.codes.length}
             </span>
           </Button>
 
@@ -182,6 +225,24 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
         name={group.owner?.name || group.owner?.owner_name || t("UnknownOwner")}
         isDeleting={isDeletingRent}
       />
+
+      {/* مودال عرض الصورة */}
+      <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden">
+          <DialogHeader className="!p-4 !pb-0">
+            <DialogTitle>{t("Rent Contract Image")}</DialogTitle>
+          </DialogHeader>
+          {currentImage && (
+            <div className="flex justify-center items-center !p-4 bg-slate-50/50">
+              <img
+                src={currentImage}
+                alt="Contract"
+                className="max-w-full h-auto max-h-[75vh] object-contain rounded-md shadow-sm border border-slate-200"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Codes Details */}
       <AnimatePresence>
@@ -210,17 +271,22 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
                 </div>
                 <GroupPeopleEditor group={group} apiUrl={apiUrl} refetch={refetch} />
               </div>
-
               <div className="grid gap-3">
-                {group.codes.map((code) => (
-                  <RenterUserItem
-                    key={code.id}
-                    code={code}
-                    apiUrl={apiUrl}
-                    refetch={refetch}
-                    token={token}
-                  />
-                ))}
+                {activeRenters.length > 0 ? (
+                  activeRenters.map((code) => (
+                    <RenterUserItem
+                      key={code.id}
+                      code={code}
+                      apiUrl={apiUrl}
+                      refetch={refetch}
+                      token={token}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center !py-6 text-sm font-medium text-slate-400 bg-slate-50 rounded-lg border border-dashed border-slate-200">
+                    {t("No users have claimed this code yet")}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -293,7 +359,7 @@ const RenterUserItem = ({ code, apiUrl, refetch, token }) => {
       setIsDeleting(true);
       await axios.post(
         `${apiUrl}/rents/delete_code`,
-        { 
+        {
           code: code.code,
           user_id: code.user_id || code.user?.id
         },
