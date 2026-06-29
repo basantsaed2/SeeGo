@@ -13,7 +13,7 @@ const Rent = () => {
     const isLoading = useSelector((state) => state.loader.isLoading);
     const [Rent, setRent] = useState([]);
     const [RentDetails, setRentDetails] = useState([]);
-  const {t}=useTranslation();
+    const { t } = useTranslation();
 
     const { refetch: refetchRent, loading: loadingRent, data: RentData } = useGet({
         url: `${apiUrl}/rents`,
@@ -47,7 +47,7 @@ const Rent = () => {
                         </Avatar>
                     ),
                     renter: u.user?.name,
-                    phone: u.user.phone || "—",
+                    phone: u?.user?.phone || "—",
                     owner: u.owner?.name,
                     ownerPhone: u.owner?.phone,
                     code: u.code,
