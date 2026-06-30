@@ -195,7 +195,7 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
               }}
             >
               <ImageIcon className="h-4 w-4" />
-              {t("View Contract")}
+              {t("View Id")}
             </Button>
           )}
 
@@ -302,6 +302,9 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
 const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
   const { t } = useTranslation();
 
+  // الحصول على تاريخ اليوم بصيغة YYYY-MM-DD لمنع التواريخ القديمة
+  const todayStr = new Date().toISOString().split("T")[0];
+
   // تعريف الحالات الخاصة بعدد الأشخاص والتاريخ من وإلى
   const [people, setPeople] = useState(group.codes[0]?.people || 1);
   const [fromDate, setFromDate] = useState(formatDateForInput(group.from));
@@ -359,9 +362,10 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
         </label>
         <Input
           type="date"
+          min={todayStr}
           value={fromDate}
           onChange={(e) => setFromDate(e.target.value)}
-          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28"
+          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28 md:w-40"
         />
       </div>
 
@@ -372,9 +376,10 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
         </label>
         <Input
           type="date"
+          min={fromDate || todayStr}
           value={toDate}
           onChange={(e) => setToDate(e.target.value)}
-          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28"
+          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28 md:w-40"
         />
       </div>
 
