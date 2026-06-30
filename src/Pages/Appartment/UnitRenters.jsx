@@ -13,7 +13,7 @@ import {
   ChevronUp,
   Loader2,
   User,
-  ImageIcon // تم إضافة الأيقونة هنا
+  ImageIcon
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
@@ -24,7 +24,6 @@ import { useChangeState } from "@/Hooks/useChangeState";
 import { useGet } from "@/Hooks/UseGet";
 import FullPageLoader from "@/components/Loading";
 import DeleteDialog from "@/components/DeleteDialog";
-// استيراد مكونات الـ Dialog لعرض الصورة
 import {
   Dialog,
   DialogContent,
@@ -42,6 +41,16 @@ const formatDate = (dateString) => {
     : "N/A";
 };
 
+// تنسيق التاريخ ليطابق صيغة حقل الإدخال YYYY-MM-DD
+const formatDateForInput = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const UnitRenters = ({ appartmentId, apiUrl }) => {
   const { t } = useTranslation();
 
@@ -55,12 +64,10 @@ const UnitRenters = ({ appartmentId, apiUrl }) => {
 
   const allRenters = data?.rents || [];
 
-  // Filter renters to only show those for the current apartment
   const renters = allRenters.filter(
     (renter) => String(renter.appartment_id) === String(appartmentId)
   );
 
-  // Group renters by owner_id, from, and to
   const rentGroups = renters.reduce((acc, renter) => {
     const key = `${renter.owner_id}_${renter.from}_${renter.to}`;
     if (!acc[key]) {
@@ -115,24 +122,27 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
   const [isDeletingRent, setIsDeletingRent] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // حالات عرض الصورة
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
 
   const handleDeleteRent = async () => {
     try {
       setIsDeletingRent(true);
-      // Delete all codes sequentially
-      for (const code of group.codes) {
+
+      // استهداف العنصر الأول في المجموعة بدلاً من عمل Loop على الجميع
+      const primaryCode = group.codes[0];
+
+      if (primaryCode) {
         await axios.post(
           `${apiUrl}/rents/delete_user`,
           {
-            user_id: code.user_id || code.user?.id,
-            code: code.code
+            id: primaryCode.appartment_id, // أو primaryCode.id حسب رغبة السيرفر
+
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
+
       toast.success(t("Rent deleted successfully"));
       refetch();
     } catch (error) {
@@ -144,15 +154,12 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
     }
   };
 
-  // التأكد إن الصورة موجودة ومفيهاش خطأ من الباك إند
   const rentImage = group.codes[0]?.image_id_link;
-
-  const hasValidImage = rentImage
+  const hasValidImage = rentImage;
 
   return (
     <Card className="overflow-hidden bg-white shadow-sm transition-all duration-300 hover:shadow-md border border-gray-200 rounded-xl">
       <div className="!p-4 sm:!p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Owner Info & Date */}
         <div className="flex items-center gap-4">
           <Avatar className="h-14 w-14 ring-2 ring-primary/20">
             <AvatarImage src={group.owner?.image || group.owner?.owner_image || "/default-avatar.png"} />
@@ -177,9 +184,7 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center flex-wrap gap-3 w-full sm:w-auto">
-          {/* زرار عرض الصورة */}
           {hasValidImage && (
             <Button
               variant="outline"
@@ -226,7 +231,6 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
         isDeleting={isDeletingRent}
       />
 
-      {/* مودال عرض الصورة */}
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden">
           <DialogHeader className="!p-4 !pb-0">
@@ -244,7 +248,6 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Codes Details */}
       <AnimatePresence>
         {showDetails && (
           <motion.div
@@ -254,8 +257,7 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
             className="overflow-hidden"
           >
             <div className="bg-gray-50 border-t border-gray-100 !p-4 sm:!p-6 space-y-4">
-
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white !p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 bg-white !p-4 rounded-lg border border-gray-200 shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-50 text-teal-600">
                     <Key className="h-5 w-5" />
@@ -269,6 +271,7 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
                     </span>
                   </div>
                 </div>
+                {/* تم تمرير دالة refetch ومكونات المجموعة بالكامل */}
                 <GroupPeopleEditor group={group} apiUrl={apiUrl} refetch={refetch} />
               </div>
               <div className="grid gap-3">
@@ -298,28 +301,44 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
 
 const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
   const { t } = useTranslation();
+
+  // تعريف الحالات الخاصة بعدد الأشخاص والتاريخ من وإلى
   const [people, setPeople] = useState(group.codes[0]?.people || 1);
+  const [fromDate, setFromDate] = useState(formatDateForInput(group.from));
+  const [toDate, setToDate] = useState(formatDateForInput(group.to));
+
   const { changeState, loadingChange } = useChangeState();
 
-  const hasChanges = Number(people) !== Number(group.codes[0]?.people);
+  // التحقق من وجود أي تغييرات مقارنة بالبيانات الأصلية لتفعيل زر الحفظ
+  const hasChanges =
+    Number(people) !== Number(group.codes[0]?.people) ||
+    fromDate !== formatDateForInput(group.from) ||
+    toDate !== formatDateForInput(group.to);
 
   const handleUpdate = async () => {
-    let success = true;
-    for (const code of group.codes) {
-      const res = await changeState(
-        `${apiUrl}/appartment/update_code/${code.id}`,
-        t("Code Updated Successfully"),
-        { people: parseInt(people) }
-      );
-      if (!res) success = false;
-    }
-    if (success) {
+    // استهداف العنصر الأول فقط في المجموعة بدلاً من عمل Loop على الجميع
+    const primaryCode = group.codes[0];
+
+    if (!primaryCode) return;
+
+    const res = await changeState(
+      `${apiUrl}/appartment/update_code/${primaryCode.id}`,
+      t("Code Updated Successfully"),
+      {
+        people: parseInt(people),
+        from: fromDate,
+        to: toDate
+      }
+    );
+
+    if (res) {
       refetch();
     }
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+    <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+      {/* حقل إدخال عدد الأشخاص */}
       <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
         <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
           {t("People")}
@@ -329,7 +348,33 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
           min={1}
           value={people}
           onChange={(e) => setPeople(e.target.value)}
-          className="w-16 h-8 text-center font-bold border-none bg-white shadow-inner rounded-sm"
+          className="w-14 h-8 text-center font-bold border-none bg-white shadow-inner rounded-sm"
+        />
+      </div>
+
+      {/* حقل إدخال تاريخ البداية From */}
+      <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
+        <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
+          {t("From")}
+        </label>
+        <Input
+          type="date"
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
+          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28"
+        />
+      </div>
+
+      {/* حقل إدخال تاريخ النهاية To */}
+      <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
+        <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
+          {t("To")}
+        </label>
+        <Input
+          type="date"
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
+          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28"
         />
       </div>
 
