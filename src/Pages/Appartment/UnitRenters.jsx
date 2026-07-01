@@ -136,7 +136,7 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
         await axios.post(
           `${apiUrl}/rents/delete_user`,
           {
-            id: primaryCode.appartment_id, // أو primaryCode.id حسب رغبة السيرفر
+            id: primaryCode.id, // أو primaryCode.id حسب رغبة السيرفر
 
           },
           { headers: { Authorization: `Bearer ${token}` } }
