@@ -129,15 +129,13 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
     try {
       setIsDeletingRent(true);
 
-      // استهداف العنصر الأول في المجموعة بدلاً من عمل Loop على الجميع
       const primaryCode = group.codes[0];
 
       if (primaryCode) {
         await axios.post(
           `${apiUrl}/rents/delete_user`,
           {
-            id: primaryCode.id, // أو primaryCode.id حسب رغبة السيرفر
-
+            id: primaryCode.id,
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -271,7 +269,6 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
                     </span>
                   </div>
                 </div>
-                {/* تم تمرير دالة refetch ومكونات المجموعة بالكامل */}
                 <GroupPeopleEditor group={group} apiUrl={apiUrl} refetch={refetch} />
               </div>
               <div className="grid gap-3">
@@ -301,27 +298,26 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
 
 const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
   const { t } = useTranslation();
+  const token = useSelector((state) => state.auth?.token || localStorage.getItem("token"));
 
-  // الحصول على تاريخ اليوم بصيغة YYYY-MM-DD لمنع التواريخ القديمة
   const todayStr = new Date().toISOString().split("T")[0];
 
-  // تعريف الحالات الخاصة بعدد الأشخاص والتاريخ من وإلى
   const [people, setPeople] = useState(group.codes[0]?.people || 1);
   const [fromDate, setFromDate] = useState(formatDateForInput(group.from));
   const [toDate, setToDate] = useState(formatDateForInput(group.to));
 
+  const [isDeletingCode, setIsDeletingCode] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const { changeState, loadingChange } = useChangeState();
 
-  // التحقق من وجود أي تغييرات مقارنة بالبيانات الأصلية لتفعيل زر الحفظ
   const hasChanges =
     Number(people) !== Number(group.codes[0]?.people) ||
     fromDate !== formatDateForInput(group.from) ||
     toDate !== formatDateForInput(group.to);
 
   const handleUpdate = async () => {
-    // استهداف العنصر الأول فقط في المجموعة بدلاً من عمل Loop على الجميع
     const primaryCode = group.codes[0];
-
     if (!primaryCode) return;
 
     const res = await changeState(
@@ -339,9 +335,34 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
     }
   };
 
+  // تعديل الـ handleDelete واستخدام اللوجيك اللي طلبتيه
+  const handleDeleteCode = async () => {
+    const primaryCode = group.codes[0];
+    if (!primaryCode) return;
+
+    try {
+      setIsDeletingCode(true);
+      await axios.post(
+        `${apiUrl}/rents/delete_code`,
+        {
+          code: primaryCode.code,
+          user_id: primaryCode.user_id || primaryCode.user?.id
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success(t("Code deleted successfully")); // غيرنا الرسالة لكود بدلاً من Renter
+      refetch();
+    } catch (error) {
+      console.error("Error deleting code:", error);
+      toast.error(error.response?.data?.message || t("Failed to delete code"));
+    } finally {
+      setIsDeletingCode(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-      {/* حقل إدخال عدد الأشخاص */}
       <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
         <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
           {t("People")}
@@ -355,7 +376,6 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
         />
       </div>
 
-      {/* حقل إدخال تاريخ البداية From */}
       <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
         <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
           {t("From")}
@@ -369,7 +389,6 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
         />
       </div>
 
-      {/* حقل إدخال تاريخ النهاية To */}
       <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
         <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
           {t("To")}
@@ -383,18 +402,39 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
         />
       </div>
 
-      <Button
-        onClick={handleUpdate}
-        disabled={!hasChanges || loadingChange}
-        size="sm"
-        className={`h-8 font-semibold rounded-md transition-all ${hasChanges
-          ? "bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-200"
-          : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
-      >
-        {loadingChange ? <Loader2 className="h-3 w-3 animate-spin" /> : <Edit className="h-3 w-3 mr-1" />}
-        {t("Edit")}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          onClick={handleUpdate}
+          disabled={!hasChanges || loadingChange || isDeletingCode}
+          size="sm"
+          className={`h-8 font-semibold rounded-md transition-all ${hasChanges
+            ? "bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-200"
+            : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+        >
+          {loadingChange ? <Loader2 className="h-3 w-3 animate-spin" /> : <Edit className="h-3 w-3 mr-1" />}
+          {t("Edit")}
+        </Button>
+
+        <Button
+          onClick={() => setIsDeleteDialogOpen(true)}
+          disabled={loadingChange || isDeletingCode}
+          size="sm"
+          variant="destructive"
+          className="h-8 font-semibold rounded-md transition-all bg-red-500 hover:bg-red-600 text-white"
+        >
+          {isDeletingCode ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3 mr-1" />}
+          {t("Delete")}
+        </Button>
+      </div>
+
+      <DeleteDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onDelete={handleDeleteCode}
+        name={group.codes[0]?.code || t("Code")}
+        isDeleting={isDeletingCode}
+      />
     </div>
   );
 };
