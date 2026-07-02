@@ -74,12 +74,13 @@ export default function DataTable({
   backendTotalPages = 1,
   onBackendPageChange,
   onSearchChange,
+  initialSearchValue = "",
 }) {
   if (!Array.isArray(filterOptions)) {
     filterOptions = [];
   }
 
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(initialSearchValue);
   
   const [activeFilters, setActiveFilters] = useState(() => {
     const initialFilters = {};

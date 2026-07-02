@@ -12,7 +12,7 @@ import { useGet } from "@/Hooks/UseGet";
 import { useDelete } from "@/Hooks/useDelete";
 import { usePost } from "@/Hooks/UsePost";
 import { useAppartmentForm, AppartmentFormFields } from "./AppartmentForm";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Switch } from "@/components/ui/switch";
 import { Eye } from "lucide-react";
@@ -37,8 +37,10 @@ const Appartments = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
 
-    const [searchInput, setSearchInput] = useState(""); 
-    const [debouncedSearch, setDebouncedSearch] = useState(""); 
+    const [searchParams, setSearchParams] = useSearchParams();
+    const initialSearch = searchParams.get("search") || "";
+    const [searchInput, setSearchInput] = useState(initialSearch); 
+    const [debouncedSearch, setDebouncedSearch] = useState(initialSearch); 
 
     const [isBansDialogOpen, setIsBansDialogOpen] = useState(false);
     const [activeBansData, setActiveBansData] = useState(null);
@@ -63,12 +65,18 @@ const Appartments = () => {
         const handler = setTimeout(() => {
             setDebouncedSearch(searchInput);
             setCurrentPage(1); 
+            
+            if (searchInput) {
+                setSearchParams({ search: searchInput }, { replace: true });
+            } else {
+                setSearchParams({}, { replace: true });
+            }
         }, 500); 
 
         return () => {
             clearTimeout(handler);
         };
-    }, [searchInput]);
+    }, [searchInput, setSearchParams]);
 
     const { refetch: refetchAppartment, loading: loadingAppartment, data: AppartmentData } = useGet({
         url: `${apiUrl}/appartment?page=${currentPage}${debouncedSearch ? `&search=${debouncedSearch}` : ""}`
@@ -304,6 +312,7 @@ const Appartments = () => {
                 onBackendPageChange={(newPage) => setCurrentPage(newPage)}
 
                 onSearchChange={(val) => setSearchInput(val)}
+                initialSearchValue={initialSearch}
             />
 
             <Dialog open={isBansDialogOpen} onOpenChange={setIsBansDialogOpen}>
