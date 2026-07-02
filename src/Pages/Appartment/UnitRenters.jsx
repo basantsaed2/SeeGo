@@ -232,13 +232,13 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
         <DialogContent className="max-w-3xl p-0 overflow-hidden">
           <DialogHeader className="!p-4 !pb-0">
-            <DialogTitle>{t("Rent Contract Image")}</DialogTitle>
+            <DialogTitle>{t("Rent id Image")}</DialogTitle>
           </DialogHeader>
           {currentImage && (
             <div className="flex justify-center items-center !p-4 bg-slate-50/50">
               <img
                 src={currentImage}
-                alt="Contract"
+                alt="id"
                 className="max-w-full h-auto max-h-[75vh] object-contain rounded-md shadow-sm border border-slate-200"
               />
             </div>

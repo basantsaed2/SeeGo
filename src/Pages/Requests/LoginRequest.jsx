@@ -150,7 +150,7 @@ const LoginRequest = () => {
                 showActionColumns={false}
                 showDeleteButton={false} // إخفاء زر الحذف الافتراضي لأننا أضفنا أكشنز مخصصة
                 pageDetailsRoute={false}
-                searchKeys={["user_name", "user_email"]} // مفاتيح البحث المتوافقة مع الكود والـ JSON
+                searchKeys={["user_name", "user_email", "user_phone"]} // مفاتيح البحث المتوافقة مع الكود والـ JSON
             />
         </div>
     );

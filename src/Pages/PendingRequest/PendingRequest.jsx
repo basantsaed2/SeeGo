@@ -158,7 +158,7 @@ const PendingRequest = () => {
                 showDeleteButton={false}
                 pageDetailsRoute={false}
                 // تحديث مفاتيح البحث لتشمل الكود واسم الوحدة بجانب اسم المستخدم
-                searchKeys={["user_name", "user_email", "code", "appartment_unit"]}
+                searchKeys={["user_name", "user_email", "code", "appartment_unit", "user_phone"]}
             />
         </div>
     );
