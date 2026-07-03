@@ -63,6 +63,7 @@ import UmbrellasList from "./Pages/UnitType/UmbrellasList";
 import UmbrellaAdd from "./Pages/UnitType/UmbrellaAdd";
 import InsideGate from "./Pages/InsideGate/InsideGate";
 import InsideGateAdd from "./Pages/InsideGate/InsideGateAdd";
+import InsideGateEntranceList from "./Pages/InsideGate/InsideGateEntranceList";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -171,6 +172,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <InsideGate /> },
           { path: "add", element: <InsideGateAdd /> },
+          { path: "details/:id", element: <InsideGateEntranceList /> },
         ],
       },
       {

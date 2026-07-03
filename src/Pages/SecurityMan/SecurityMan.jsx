@@ -35,18 +35,17 @@ const SecurityMan = () => {
     fields,
     handleFieldChange,
     prepareFormData
-  } = useSecurityManForm(apiUrl, true, rowEdit); // true for edit mode
+  } = useSecurityManForm(apiUrl, true, rowEdit);
 
   useEffect(() => {
     refetchSecuritys();
   }, [refetchSecuritys]);
 
-
   const handleForceLogout = async (id, name) => {
     try {
-      const token = localStorage.getItem("token"); // أو الطريقة اللي بتجيبي بيها التوكن
+      const token = localStorage.getItem("token");
       const res = await fetch(`${apiUrl}/security/logout/${id}`, {
-        method: "GET", // لو الباك اند عاملها GET غيريها لـ GET
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -71,6 +70,10 @@ const SecurityMan = () => {
         if (u.pool?.length > 0) types.push("pool");
         if (u.beach?.length > 0) types.push("beach");
         if (u.gate?.length > 0) types.push("gate");
+        // 🟢 التحقق من وجود بوابات داخلية وتحديد النوع
+        const insideGatesArray = u.inside_gate || u.inside_gates || [];
+        if (insideGatesArray.length > 0) types.push("inside_gate");
+
         return {
           id: u.id,
           name: u.name || "—",
@@ -79,6 +82,7 @@ const SecurityMan = () => {
           pool_ids: u.pool?.map((p) => p.id).join(", ") || "—",
           beach_ids: u.beach?.map((b) => b.id).join(", ") || "—",
           gate_ids: u.gate?.map((g) => g.id).join(", ") || "—",
+          inside_gate_ids: insideGatesArray.map((ig) => ig.name).join(", ") || "—", // 🟢 عرض البوابات الداخلية في الجدول
           status: u.status === 1 ? t("Active") : t("Inactive"),
           type: types.length > 0 ? types.join(", ") : "—",
           force_logout: (
@@ -108,6 +112,7 @@ const SecurityMan = () => {
 
   const handleEdit = (Securitys) => {
     const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
+    const insideGatesArray = fullSecuritysData?.inside_gate || fullSecuritysData?.inside_gates || [];
 
     setselectedRow(Securitys);
     setIsEditOpen(true);
@@ -116,15 +121,18 @@ const SecurityMan = () => {
       pool_ids: fullSecuritysData.pool?.map(p => p.id.toString()) || [],
       beach_ids: fullSecuritysData.beach?.map(b => b.id.toString()) || [],
       gate_ids: fullSecuritysData.gate?.map(g => g.id.toString()) || [],
+      inside_gate_ids: insideGatesArray.map(ig => ig.id.toString()) || [], // 🟢 تجهيز الـ IDs عند فتح المودال للتعديل
       types: [
         ...(fullSecuritysData.pool?.length > 0 ? ["pool"] : []),
         ...(fullSecuritysData.beach?.length > 0 ? ["beach"] : []),
         ...(fullSecuritysData.gate?.length > 0 ? ["gate"] : []),
+        ...(insideGatesArray.length > 0 ? ["inside_gate"] : []), // 🟢 إضافة التايب في حالة وجود بوابات داخلية
       ],
       image_link: fullSecuritysData?.image_link || null,
       status: Securitys.status === t("Active") ? 1 : 0,
     });
   };
+
   const handleDelete = (Securitys) => {
     setselectedRow(Securitys);
     setIsDeleteOpen(true);
@@ -178,12 +186,15 @@ const SecurityMan = () => {
     { key: "phone", label: t("Phone") },
     { key: "email", label: t("Email") },
     { key: "type", label: t("Type") },
+    { key: "inside_gate_ids", label: t("Inside Gates") }, // 🟢 إضافة عمود البوابات الداخلية في الجدول
     { key: "force_logout", label: t("Force Logout") },
     { key: "status", label: t("Status") },
   ];
+
   if (isLoading || loadingPost || loadingSecuritys) {
     return <FullPageLoader />;
   }
+
   return (
     <div className="p-4">
       <ToastContainer />

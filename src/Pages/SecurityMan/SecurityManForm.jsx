@@ -10,12 +10,13 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
             phone: "",
             email: "",
             password: "",
-            types: [], 
+            types: [],
             status: isEdit ? 0 : "",
             image: null,
             pool_ids: [],
             beach_ids: [],
             gate_ids: [],
+            inside_gate_ids: [], // 🟢 إضافة حقل البوابات الداخلية
             gate_visitors: true,
             gate_entrance: true,
         },
@@ -23,10 +24,13 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
     const { t } = useTranslation();
 
     const { refetch: refetchList, data: listData } = useGet({ url: `${apiUrl}/security` });
+    // 🟢 استدعاء API البوابات الداخلية
+    const { refetch: refetchInsideGates, data: insideGatesData } = useGet({ url: `${apiUrl}/security/inside_gates_list` });
 
     const [pools, setPools] = useState([]);
     const [beaches, setBeaches] = useState([]);
     const [gates, setGates] = useState([]);
+    const [insideGates, setInsideGates] = useState([]); // 🟢 State للبوابات الداخلية
     const [dynamicFields, setDynamicFields] = useState([]);
 
     useEffect(() => {
@@ -37,14 +41,15 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
                     name: initialData.name || "",
                     phone: initialData.phone || "",
                     email: initialData.email || "",
-                    password: "", 
-                    types: initialData.types || [], 
+                    password: "",
+                    types: initialData.types || [],
                     status: initialData.status === t("Active") ? 1 : 0,
                     image_link: initialData.image_link || null,
                     image: initialData.image_link || null,
-                    pool_ids: initialData.pool_ids || [], 
-                    beach_ids: initialData.beach_ids || [], 
+                    pool_ids: initialData.pool_ids || [],
+                    beach_ids: initialData.beach_ids || [],
                     gate_ids: initialData.gate_ids || [],
+                    inside_gate_ids: initialData.inside_gate_ids || [], // 🟢 ربط القيم عند التعديل
                     gate_visitors: initialData.gate_visitors || false,
                     gate_entrance: initialData.gate_entrance || false,
                 }
@@ -54,7 +59,8 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
 
     useEffect(() => {
         refetchList();
-    }, [refetchList]);
+        refetchInsideGates(); // 🟢 إعادة جلب القائمة
+    }, [refetchList, refetchInsideGates]);
 
     useEffect(() => {
         if (listData?.beaches || listData?.pools || listData?.gates) {
@@ -77,7 +83,17 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
                 })) || []
             );
         }
-    }, [listData]);
+        // 🟢 تحويل بيانات البوابات الداخلية إلى خيارات للـ Select
+        const insideGatesList = insideGatesData?.inside_gates || listData?.inside_gates;
+        if (insideGatesList) {
+            setInsideGates(
+                insideGatesList.map((gate) => ({
+                    label: gate.name,
+                    value: gate.id.toString(),
+                })) || []
+            );
+        }
+    }, [listData, insideGatesData]);
 
     useEffect(() => {
         const baseFields = [
@@ -94,6 +110,7 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
                     { value: "pool", label: t("Pool") },
                     { value: "beach", label: t("Beach") },
                     { value: "gate", label: t("Gate") },
+                    { value: "inside_gate", label: t("InsideGate") }, // 🟢 إضافة خيار البوابات الداخلية
                 ],
             },
             {
@@ -146,6 +163,17 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
             });
         }
 
+        // 🟢 إضافة حقل اختيار البوابات الداخلية عند اختيار الـ Type
+        if (formData.en.types.includes("inside_gate")) {
+            locationFields.push({
+                type: "multi-select",
+                placeholder: t('SelectInsideGates'),
+                name: "inside_gate_ids",
+                required: true,
+                options: insideGates,
+            });
+        }
+
         const otherFields = [
             { type: "file", placeholder: t("GateImage"), name: "image", accept: "image/*" },
             {
@@ -160,7 +188,7 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
 
         const fields = [...baseFields, ...locationFields, ...otherFields];
         setDynamicFields(fields);
-    }, [formData.en.types, pools, beaches, gates]);
+    }, [formData.en.types, pools, beaches, gates, insideGates]);
 
     const handleFieldChange = (lang, name, value) => {
         setFormData(prev => ({
@@ -178,11 +206,10 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         body.append("phone", formData.en.phone);
         body.append("email", formData.en.email);
         body.append("password", formData.en.password);
-        
-        // 🛠️ التعديل هنا: نتحقق من القيمة ونرسل "1" أو "0" لتخطي الـ Validation بنجاح
+
         const visitorsValue = (formData.en.gate_visitors === true || formData.en.gate_visitors === 1 || formData.en.gate_visitors === "1") ? "1" : "0";
         const entranceValue = (formData.en.gate_entrance === true || formData.en.gate_entrance === 1 || formData.en.gate_entrance === "1") ? "1" : "0";
-        
+
         body.append("gate_visitors", visitorsValue);
         body.append("gate_entrance", entranceValue);
 
@@ -200,6 +227,11 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
 
         if (formData.en.types.includes("gate") && formData.en.gate_ids) {
             formData.en.gate_ids.forEach(id => body.append("gate_ids[]", id));
+        }
+
+        // 🟢 إرسال الـ inside_gate_ids إلى الباك إند
+        if (formData.en.types.includes("inside_gate") && formData.en.inside_gate_ids) {
+            formData.en.inside_gate_ids.forEach(id => body.append("inside_gate_ids[]", id));
         }
 
         if (formData.en.image) {

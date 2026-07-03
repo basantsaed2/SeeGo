@@ -147,6 +147,8 @@ export default function InsideGate() {
                 columns={columns}
                 addRoute="/inside_gate/add"
                 showAddButton={false}
+                pageDetailsRoute={true}
+                pageDetailsLabel={t("Entrance List") || "Entrance List"}
                 onEdit={handleEditOpen}
                 onDelete={handleDeleteOpen}
                 onToggleStatus={handleToggleStatus}
