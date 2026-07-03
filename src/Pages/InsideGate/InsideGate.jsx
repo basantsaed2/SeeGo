@@ -1,149 +1,108 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-// استيراد المكونات المساعدة
-import DataTable from "@/components/DataTableLayout"; //
-import Add from "@/components/AddFieldSection"; //[cite: 4]
-import EditDialog from "@/components/EditDialog"; //[cite: 3]
-import DeleteDialog from "@/components/DeleteDialog"; //[cite: 2]
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// Components
+import DataTable from "@/components/DataTableLayout";
+import EditDialog from "@/components/EditDialog";
+import DeleteDialog from "@/components/DeleteDialog";
+import FullPageLoader from "@/components/Loading";
 
-// استيراد الهوكس الخاصة بالـ API
-import { useGet } from "@/Hooks/useGet"; //[cite: 8]
-import { usePost } from "@/Hooks/usePost"; //[cite: 5]
-import { useChangeState } from "@/Hooks/useChangeState"; //[cite: 6]
-import { useDelete } from "@/Hooks/useDelete"; //[cite: 7]
+// Custom Hooks
+import { useGet } from "@/Hooks/UseGet";
+import { usePost } from "@/Hooks/UsePost";
+import { useChangeState } from "@/Hooks/useChangeState";
+import { useDelete } from "@/Hooks/useDelete";
+import { useInsideGateForm } from "./useInsideGateForm";
+import InsideGateForm from "./InsideGateForm";
 
 export default function InsideGate() {
-    // افترضنا الحصول على الـ id الخاص بالبوابة أو القرية من الرابط
-    const { id } = useParams();
-    const gateId = id || "1"; // قيمة افتراضية للتجربة
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+    const { t } = useTranslation();
+    const navigate = useNavigate();
 
-    // حالات الصفحة والبحث والـ Pagination
-    const [page, setPage] = useState(1);
-    const [search, setSearch] = useState("");
-
-    // حالات فتح وإغلاق الموديلز
-    const [isAddOpen, setIsAddOpen] = useState(false);
+    // Dialog states
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-    // حفظ البيانات المحددة للتعديل أو الحذف
     const [selectedRow, setSelectedRow] = useState(null);
-    const [formValues, setFormValues] = useState({});
 
-    // 1. جلب البيانات (Read)[cite: 8]
+    // Form logic hook
+    const { formValues, setFormValues, formFields, handleFormChange, prepareFormData } = useInsideGateForm(selectedRow);
+
+    // Fetch inside_gates list from https://bcknd.sea-go.org/village/inside_gate
     const { data: apiResponse, loading, refetch } = useGet({
-        url: `https://bcknd.sea-go.org/village/inside_gate`,
+        url: `${apiUrl}/inside_gate`,
     });
 
     const tableData = apiResponse?.inside_gates || [];
-    const pagination = apiResponse?.pagination || { current_page: 1, last_page: 1 };
 
-    // استدعاء هوكس العمليات[cite: 5, 6, 7]
-    const { postData, loadingPost } = usePost({
-        url: `https://bcknd.sea-go.org/village/inside_gate/store`,
-        type: true // application/json[cite: 5]
+    // API Update Mutation
+    const { postData: updateGate, loadingPost: loadingUpdate } = usePost({
+        url: `${apiUrl}/inside_gate/update/${selectedRow?.id}`,
+        type: true,
     });
 
-    const { postData: updateData, loadingPost: loadingUpdate } = usePost({
-        url: `https://bcknd.sea-go.org/village/inside_gate/update/${selectedRow?.id}`,
-        type: true
-    });
+    const { changeState } = useChangeState();
+    const { deleteData, isDeleting } = useDelete();
 
-    const { changeState } = useChangeState(); //[cite: 6]
-    const { deleteData, isDeleting } = useDelete(); //[cite: 7]
-
-    // 2. إعداد أعمدة الجدول (بما فيها الـ status اللي هيتحول لـ Switch)
-    const columns = [
-        { key: "user_name", label: "User Name" },
-        { key: "user_phone", label: "Phone" },
-        { key: "user_email", label: "Email" },
-        { key: "visitor_type", label: "Visitor Type" },
-        { key: "user_type", label: "User Type" },
-        { key: "appartment", label: "Apartment" },
-        { key: "gate_type", label: "Gate Type" },
-        { key: "date", label: "Date" },
-        { key: "time", label: "Time" },
-        { key: "status", label: "Status" }, // 🌟 هذا السطر هو المسؤول عن رسم الـ Switch
-    ];
-
-    // 3. إعداد حقول الفورم للإضافة والتعديل[cite: 4]
-    const formFields = [
-        { name: "user_name", placeholder: "User Name", type: "input", inputType: "text" },
-        { name: "user_phone", placeholder: "Phone Number", type: "input", inputType: "text" },
-        { name: "user_email", placeholder: "Email Address", type: "input", inputType: "email" },
-        { name: "appartment", placeholder: "Apartment", type: "input", inputType: "text" },
-        {
-            name: "visitor_type",
-            placeholder: "Visitor Type",
-            type: "select",
-            options: [
-                { label: "Guest", value: "guest" },
-                { label: "Owner", value: "owner" },
-                { label: "Delivery", value: "delivery" },
-            ]
-        },
-        {
-            name: "user_type",
-            placeholder: "User Type",
-            type: "select",
-            options: [
-                { label: "Resident", value: "resident" },
-                { label: "Visitor", value: "visitor" },
-            ]
-        },
-        {
-            name: "gate_type",
-            placeholder: "Gate Type",
-            type: "select",
-            options: [
-                { label: "Beach", value: "beach" },
-                { label: "Main Gate", value: "main" },
-            ]
-        },
-        { name: "date", placeholder: "Date", type: "input", inputType: "date" },
-        { name: "time", placeholder: "Time", type: "time" },
-        { name: "status", placeholder: "Status", type: "switch", returnType: "binary" } //[cite: 4]
-    ];
-
-    // التعامل مع إدخال البيانات في الفورم[cite: 4]
-    const handleFormChange = (lang, name, value) => {
-        setFormValues((prev) => ({ ...prev, [name]: value }));
-    };
-
-    // 4. دالة إضافة عنصر جديد (Create)
-    const handleCreate = async () => {
-        await postData({ ...formValues, inside_gate_id: gateId }, "Gate entry created successfully");
-        setIsAddOpen(false);
-        setFormValues({});
+    useEffect(() => {
         refetch();
-    };
+    }, [refetch]);
 
-    // 5. دالة تعديل العنصر (Update)[cite: 3]
+    // Table Column Definitions
+    const columns = [
+        { key: "id", label: t("ID") || "ID" },
+        { key: "name", label: t("Gate Name") || "Gate Name" },
+        { key: "from", label: t("From") || "From" },
+        { key: "to", label: t("To") || "To" },
+        {
+            key: "visitor",
+            label: t("Visitor") || "Visitor",
+            render: (row) => (
+                <span className={`px-2 py-1 text-xs rounded-full ${row.visitor ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                    {row.visitor ? (t("Allowed") || "Allowed") : (t("Not Allowed") || "Not Allowed")}
+                </span>
+            ),
+        },
+        { key: "status", label: t("Status") || "Status" }, // Interactive Switch column in DataTableLayout
+    ];
+
+    // Edit Inside Gate Handler
     const handleEditOpen = (row) => {
         setSelectedRow(row);
-        setFormValues(row); // تعبئة الفورم بالبيانات القديمة
+        setFormValues({
+            name: row.name || "",
+            from: row.from ? row.from.substring(0, 5) : "08:00",
+            to: row.to ? row.to.substring(0, 5) : "22:00",
+            status: row.status === 1 || row.status === "Active" ? 1 : 0,
+            visitor: row.visitor !== undefined ? Boolean(row.visitor) : true,
+        });
         setIsEditOpen(true);
     };
 
     const handleSaveEdit = async () => {
-        await updateData(formValues, "Gate entry updated successfully");
+        if (!selectedRow?.id) return;
+        const payload = prepareFormData();
+        await updateGate(payload, t("Inside Gate updated successfully") || "Inside Gate updated successfully");
         setIsEditOpen(false);
         setSelectedRow(null);
         refetch();
     };
 
-    // 6. دالة حذف العنصر (Delete)
+    // Delete Inside Gate Handler
     const handleDeleteOpen = (row) => {
         setSelectedRow(row);
         setIsDeleteOpen(true);
     };
 
     const handleDeleteConfirm = async () => {
-        const success = await deleteData(`https://bcknd.sea-go.org/village/inside_gate/delete/${selectedRow.id}`, "Gate entry deleted successfully"); //[cite: 7]
+        if (!selectedRow?.id) return;
+        const success = await deleteData(
+            `${apiUrl}/inside_gate/delete/${selectedRow.id}`,
+            t("Inside Gate deleted successfully") || "Inside Gate deleted successfully"
+        );
         if (success) {
             setIsDeleteOpen(false);
             setSelectedRow(null);
@@ -151,92 +110,76 @@ export default function InsideGate() {
         }
     };
 
-    // 7. دالة تغيير حالة الـ Status (Toggle Switch)
+    // Status Switch Handler (Toggle Switch in Table)
     const handleToggleStatus = async (row, newStatus) => {
-        // newStatus بيرجع 1 لو شغال و 0 لو مقفول من الـ DataTable[cite: 1]
         const success = await changeState(
-            `https://bcknd.sea-go.org/village/inside_gate/status/${row.id}`,
-            "Status changed successfully",
+            `${apiUrl}/inside_gate/status/${row.id}`,
+            t("Status updated successfully") || "Status updated successfully",
             { status: newStatus }
-        ); //[cite: 6]
-
+        );
         if (success) {
             refetch();
         }
     };
 
+    if (loading && !tableData.length) {
+        return <FullPageLoader />;
+    }
+
     return (
-        <div className="p-6 space-y-6">
-            {/* زر الإضافة العلوي */}
+        <div className="!p-6 space-y-6">
+            {/* Header section */}
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-bg-primary">Inside Gate Entries</h1>
+                <h1 className="text-2xl font-bold text-bg-primary">
+                    {t("Inside Gates") || "Inside Gates"}
+                </h1>
                 <Button
-                    onClick={() => { setFormValues({}); setIsAddOpen(true); }}
-                    className="bg-bg-primary text-white hover:bg-teal-700 rounded-[10px] p-3 flex items-center gap-2"
+                    onClick={() => navigate("/inside_gate/add")}
+                    className="bg-bg-primary text-white hover:bg-teal-700 rounded-[10px] !p-3 flex items-center gap-2"
                 >
-                    <Plus className="w-5 h-5" /> Add New Entry
+                    <Plus className="w-5 h-5" /> {t("Add New Gate") || "Add New Gate"}
                 </Button>
             </div>
 
-            {/* جدول عرض البيانات */}
+            {/* Data Table */}
             <DataTable
-                data={tableData} //[cite: 1]
-                columns={columns} //[cite: 1]
-                showAddButton={false} // أخفينا زر الإضافة الافتراضي واستخدمنا زر مخصص ليفتح Modal[cite: 1]
-
-                // دمج عمليات الـ Actions
-                onEdit={handleEditOpen} //[cite: 1]
-                onDelete={handleDeleteOpen} //[cite: 1]
-                onToggleStatus={handleToggleStatus} // 🌟 تمرير دالة تغيير الحالة للـ Switch[cite: 1]
-
-                // إعدادات الـ Backend Pagination والبحث[cite: 1]
-                isBackendPagination={true} //[cite: 1]
-                backendCurrentPage={pagination.current_page || page} //[cite: 1]
-                backendTotalPages={pagination.last_page || 1} //[cite: 1]
-                onBackendPageChange={(newPage) => setPage(newPage)} //[cite: 1]
-                onSearchChange={(val) => {
-                    setSearch(val);
-                    setPage(1); // تصفير الصفحة عند البحث[cite: 1]
-                }}
+                data={tableData}
+                columns={columns}
+                addRoute="/inside_gate/add"
+                showAddButton={false}
+                onEdit={handleEditOpen}
+                onDelete={handleDeleteOpen}
+                onToggleStatus={handleToggleStatus}
             />
 
-            {/* Modal الإضافة */}
-            <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-                <DialogContent className="bg-white p-6 rounded-lg shadow-lg max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle className="text-lg font-semibold text-bg-primary">Add New Gate Entry</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <Add fields={formFields} values={formValues} onChange={handleFormChange} /> {/*[cite: 4] */}
-                    </div>
-                    <div className="flex justify-end gap-3 mt-4">
-                        <Button variant="outline" onClick={() => setIsAddOpen(false)}>Cancel</Button>
-                        <Button disabled={loadingPost} onClick={handleCreate} className="bg-bg-primary text-white">
-                            {loadingPost ? "Saving..." : "Save"}
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            {/* Edit Modal */}
+            {selectedRow && (
+                <EditDialog
+                    open={isEditOpen}
+                    onOpenChange={setIsEditOpen}
+                    selectedRow={selectedRow}
+                    title={t("Edit Gate") || "Edit Gate"}
+                    onSave={handleSaveEdit}
+                    isLoading={loadingUpdate}
+                >
+                    <InsideGateForm
+                        fields={formFields}
+                        values={formValues}
+                        onChange={handleFormChange}
+                    />
+                </EditDialog>
+            )}
 
-            {/* Modal التعديل (EditDialog) */}
-            <EditDialog
-                open={isEditOpen} //[cite: 3]
-                onOpenChange={setIsEditOpen} //[cite: 3]
-                selectedRow={selectedRow} //[cite: 3]
-                title="Edit Gate Entry" //[cite: 3]
-                onSave={handleSaveEdit} //[cite: 3]
-            >
-                <Add fields={formFields} values={formValues} onChange={handleFormChange} /> {/*[cite: 4] */}
-            </EditDialog>
-
-            {/* Modal الحذف (DeleteDialog) */}
-            <DeleteDialog
-                open={isDeleteOpen} //[cite: 2]
-                onOpenChange={setIsDeleteOpen} //[cite: 2]
-                onDelete={handleDeleteConfirm} //[cite: 2]
-                name={selectedRow?.user_name || "this entry"} //[cite: 2]
-                isDeleting={isDeleting} //[cite: 2]
-            />
+            {/* Delete Dialog */}
+            {selectedRow && (
+                <DeleteDialog
+                    open={isDeleteOpen}
+                    onOpenChange={setIsDeleteOpen}
+                    onDelete={handleDeleteConfirm}
+                    name={selectedRow?.name || "this gate"}
+                    isDeleting={isDeleting}
+                />
+            )}
         </div>
     );
 }
