@@ -59,8 +59,10 @@ export function AppSidebar() {
       icon: <Building2 size={20} />,
       subItems: [
         { label: t("Gates"), to: "/gates", icon: <GiOpenGate size={20} /> },
+         { label: t("InsideGates"), to: "/inside_gate", icon: <GiOpenGate size={20} /> },
         { label: t("Pools"), to: "/pools", icon: <MdOutlinePool size={20} /> },
         { label: t("Beaches"), to: "/beaches", icon: <TbBeach size={20} /> },
+        
       ],
     },
     {

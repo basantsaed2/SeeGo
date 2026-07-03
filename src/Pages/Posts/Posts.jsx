@@ -108,10 +108,19 @@ const PostsCardLayout = ({ data, onEdit, onDelete }) => {
                 </div>
               </div>
               <div className="!p-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {t("Post")} #{post.id}
-                </h3>
-                <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {t("Post")} #{post.id}
+                  </h3>
+                  {/* 👇 عرض اسم الأدمن هنا */}
+                  {post.admin_name && (
+                    <span className="text-xs bg-teal-50 text-teal-700 dark:bg-gray-700 dark:text-teal-400 font-medium !px-2.5 !py-0.5 rounded-full border border-teal-200">
+                      👤 {post.admin_name}
+                    </span>
+                  )}
+                </div>
+                <p className="!mt-2 text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
                   {post.description}
                 </p>
               </div>
@@ -224,6 +233,7 @@ const Posts = () => {
       const formattedPosts = postDataFromApi.post.map((post) => ({
         id: post.id,
         description: post.description || "—",
+        admin_name: post.admin_name || post.admin || post.user?.name || "Unknown Admin",
         images:
           post.images && post.images.length > 0
             ? post.images.map((img) => ({
@@ -350,7 +360,9 @@ const Posts = () => {
       currentPosts = currentPosts.filter(
         (post) =>
           post.description.toLowerCase().includes(lowerCaseSearch) ||
-          String(post.id).includes(lowerCaseSearch)
+          String(post.id).includes(lowerCaseSearch) ||
+          // 👇 إضافة البحث باسم الأدمن
+          (post.admin_name && post.admin_name.toLowerCase().includes(lowerCaseSearch))
       );
     }
     return currentPosts;

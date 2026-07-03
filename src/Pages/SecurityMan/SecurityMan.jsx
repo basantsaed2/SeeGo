@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import DataTable from "@/components/DataTableLayout";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 import EditDialog from "@/components/EditDialog";
 import DeleteDialog from "@/components/DeleteDialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -23,7 +22,7 @@ const SecurityMan = () => {
   const [selectedRow, setselectedRow] = useState(null);
   const [rowEdit, setRowEdit] = useState(null);
   const { changeState } = useChangeState();
-  const { deleteData, loadingDelete,isDeleting } = useDelete();
+  const { deleteData, loadingDelete, isDeleting } = useDelete();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { t } = useTranslation();
@@ -42,16 +41,36 @@ const SecurityMan = () => {
     refetchSecuritys();
   }, [refetchSecuritys]);
 
+
+  const handleForceLogout = async (id, name) => {
+    try {
+      const token = localStorage.getItem("token"); // أو الطريقة اللي بتجيبي بيها التوكن
+      const res = await fetch(`${apiUrl}/security/logout/${id}`, {
+        method: "GET", // لو الباك اند عاملها GET غيريها لـ GET
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        toast.success(t("Logged out successfully for") + ` ${name}`);
+      } else {
+        toast.error(t("Failed to logout"));
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error(t("Something went wrong"));
+    }
+  };
+
   useEffect(() => {
     if (SecuritysData && SecuritysData.security) {
-      console.log("Securitys Data:", SecuritysData);
       const formatted = SecuritysData?.security?.map((u) => {
-        // Determine types based on non-empty arrays
         const types = [];
         if (u.pool?.length > 0) types.push("pool");
         if (u.beach?.length > 0) types.push("beach");
         if (u.gate?.length > 0) types.push("gate");
-
         return {
           id: u.id,
           name: u.name || "—",
@@ -61,7 +80,15 @@ const SecurityMan = () => {
           beach_ids: u.beach?.map((b) => b.id).join(", ") || "—",
           gate_ids: u.gate?.map((g) => g.id).join(", ") || "—",
           status: u.status === 1 ? t("Active") : t("Inactive"),
-          type: types.length > 0 ? types.join(", ") : "—", // Join types for display
+          type: types.length > 0 ? types.join(", ") : "—",
+          force_logout: (
+            <button
+              onClick={() => handleForceLogout(u.id, u.name)}
+              className="bg-red-500 hover:bg-red-600 text-white !px-3 !py-1 !rounded-md text-xs transition-colors shadow-sm"
+            >
+              {t("Force Logout")}
+            </button>
+          ),
           img: u.image_link ? (
             <img
               src={u.image_link}
@@ -80,29 +107,24 @@ const SecurityMan = () => {
   }, [SecuritysData, t]);
 
   const handleEdit = (Securitys) => {
-  const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
-  console.log("fullSecuritysData:", fullSecuritysData); // Debug
-  
-  setselectedRow(Securitys);
-  setIsEditOpen(true);
-  
-  // Prepare the data for the form
-  setRowEdit({
-    ...fullSecuritysData,
-    // Convert array of objects to array of IDs (as strings)
-    pool_ids: fullSecuritysData.pool?.map(p => p.id.toString()) || [],
-    beach_ids: fullSecuritysData.beach?.map(b => b.id.toString()) || [],
-    gate_ids: fullSecuritysData.gate?.map(g => g.id.toString()) || [],
-    // Determine types based on what exists
-    types: [
-      ...(fullSecuritysData.pool?.length > 0 ? ["pool"] : []),
-      ...(fullSecuritysData.beach?.length > 0 ? ["beach"] : []),
-      ...(fullSecuritysData.gate?.length > 0 ? ["gate"] : []),
-    ],
-    image_link: fullSecuritysData?.image_link || null,
-    status: Securitys.status === t("Active") ? 1 : 0,
-  });
-};
+    const fullSecuritysData = SecuritysData?.security.find(o => o.id === Securitys.id);
+
+    setselectedRow(Securitys);
+    setIsEditOpen(true);
+    setRowEdit({
+      ...fullSecuritysData,
+      pool_ids: fullSecuritysData.pool?.map(p => p.id.toString()) || [],
+      beach_ids: fullSecuritysData.beach?.map(b => b.id.toString()) || [],
+      gate_ids: fullSecuritysData.gate?.map(g => g.id.toString()) || [],
+      types: [
+        ...(fullSecuritysData.pool?.length > 0 ? ["pool"] : []),
+        ...(fullSecuritysData.beach?.length > 0 ? ["beach"] : []),
+        ...(fullSecuritysData.gate?.length > 0 ? ["gate"] : []),
+      ],
+      image_link: fullSecuritysData?.image_link || null,
+      status: Securitys.status === t("Active") ? 1 : 0,
+    });
+  };
   const handleDelete = (Securitys) => {
     setselectedRow(Securitys);
     setIsDeleteOpen(true);
@@ -156,6 +178,7 @@ const SecurityMan = () => {
     { key: "phone", label: t("Phone") },
     { key: "email", label: t("Email") },
     { key: "type", label: t("Type") },
+    { key: "force_logout", label: t("Force Logout") },
     { key: "status", label: t("Status") },
   ];
   if (isLoading || loadingPost || loadingSecuritys) {

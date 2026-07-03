@@ -61,6 +61,7 @@ import UnitType from "./Pages/UnitType/UmbrellasList";
 import UnitTypeAdd from "./Pages/UnitType/UmbrellaAdd";
 import UmbrellasList from "./Pages/UnitType/UmbrellasList";
 import UmbrellaAdd from "./Pages/UnitType/UmbrellaAdd";
+import InsideGate from "./Pages/InsideGate/InsideGate";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -123,7 +124,7 @@ const router = createBrowserRouter([
           { path: "details/:id", element: <UnitDetails /> },
         ],
       },
-            {
+      {
         path: "unit-type",
         children: [
           { index: true, element: <UmbrellasList /> },
@@ -162,6 +163,13 @@ const router = createBrowserRouter([
         path: "problems",
         children: [
           { index: true, element: <Problems /> },
+        ],
+      },
+      {
+        path: "inside_gate",
+        children: [
+          { index: true, element: <InsideGate /> },
+          // { path: "add", element: <InsideGateAdd /> },
         ],
       },
       {
@@ -275,7 +283,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-            {
+      {
         path: "online-list",
         element: (
           <ProtectedRoute>
@@ -308,7 +316,7 @@ const router = createBrowserRouter([
         path: "pending-requests",
         element: <PendingRequest />,
       },
-            {
+      {
         path: "login-requests",
         element: <LoginRequest />,
       },

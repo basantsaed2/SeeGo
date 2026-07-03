@@ -110,7 +110,9 @@ export default function UnitCode() {
     if (formData.en.type === "renter") {
       body.append("from", formatDateForBackend(formData.en.from));
       body.append("to", formatDateForBackend(formData.en.to));
-      if (formData.en.image) body.append("image", formData.en.image);
+      if (formData.en.image) {
+        body.append("image[]", formData.en.image);
+      }
     }
 
     postData(body, t("Appartmentaddedsuccessfully!"));
@@ -152,8 +154,9 @@ export default function UnitCode() {
       required: true
     },
     ...(formData.en.type === "renter" ? [
-      { type: "input", inputType: "date", name: "from", placeholder: t("From"), value: formData.en.from },
-      { type: "input", inputType: "date", name: "to", placeholder: t("To"), value: formData.en.to },
+      // تغيير inputType إلى datetime-local عشان يختار تاريخ وساعة
+      { type: "input", inputType: "datetime-local", name: "from", placeholder: t("From"), value: formData.en.from },
+      { type: "input", inputType: "datetime-local", name: "to", placeholder: t("To"), value: formData.en.to },
       { type: "file", placeholder: t("AppartmentImage"), name: "image", accept: "image/*" },
     ] : [])
   ];
