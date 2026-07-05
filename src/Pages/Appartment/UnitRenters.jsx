@@ -41,7 +41,7 @@ const formatDate = (dateString) => {
     : "N/A";
 };
 
-// تنسيق التاريخ ليطابق صيغة حقل الإدخال YYYY-MM-DD
+// تنسيق التاريخ ليطابق صيغة حقل الإدخال العادي YYYY-MM-DD
 const formatDateForInput = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -49,6 +49,36 @@ const formatDateForInput = (dateString) => {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+};
+
+// تنسيق التاريخ والوقت للعرض النصي في الكارت
+const formatDateTime = (dateString) => {
+  if (!dateString) return "N/A";
+  const date = new Date(dateString);
+  
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  
+  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
+};
+
+// تنسيق التاريخ والوقت ليطابق صيغة حقل الإدخال datetime-local (YYYY-MM-DDTHH:mm)
+const formatDateTimeForInput = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return ""; // للتأكد من صحة التاريخ
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
 const UnitRenters = ({ appartmentId, apiUrl }) => {
@@ -169,10 +199,10 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
             <h4 className="text-lg font-bold text-gray-900">
               {group.owner?.name || group.owner?.owner_name || t("UnknownOwner")}
             </h4>
-            <div className="flex items-center gap-2 text-sm text-gray-500 !mt-1">
-              <CalendarDays className="h-4 w-4" />
+            <div className="flex items-center gap-2  text-sm text-gray-500 !mt-1">
+              <CalendarDays className="h-4 w-4 " />
               <span>
-                {formatDate(group.from)} - {formatDate(group.to)}
+                {formatDateTime(group.from)} - {formatDateTime(group.to)}
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500 !mt-1">
@@ -207,16 +237,6 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
             <span className="bg-primary/10 text-primary !px-2 !py-0.5 rounded-full text-xs font-bold !ml-1">
               {activeRenters.length} / {group.codes.length}
             </span>
-          </Button>
-
-          <Button
-            variant="destructive"
-            className="flex-1 sm:flex-none !py-2 !px-4 flex items-center gap-2 bg-red-600 hover:bg-red-700"
-            onClick={() => setIsDeleteDialogOpen(true)}
-            disabled={isDeletingRent}
-          >
-            {isDeletingRent ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-            {t("Delete Rent")}
           </Button>
         </div>
       </div>
@@ -300,11 +320,9 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
   const { t } = useTranslation();
   const token = useSelector((state) => state.auth?.token || localStorage.getItem("token"));
 
-  const todayStr = new Date().toISOString().split("T")[0];
-
   const [people, setPeople] = useState(group.codes[0]?.people || 1);
-  const [fromDate, setFromDate] = useState(formatDateForInput(group.from));
-  const [toDate, setToDate] = useState(formatDateForInput(group.to));
+  const [fromDate, setFromDate] = useState(formatDateTimeForInput(group.from));
+  const [toDate, setToDate] = useState(formatDateTimeForInput(group.to));
 
   const [isDeletingCode, setIsDeletingCode] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -313,20 +331,24 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
 
   const hasChanges =
     Number(people) !== Number(group.codes[0]?.people) ||
-    fromDate !== formatDateForInput(group.from) ||
-    toDate !== formatDateForInput(group.to);
+    fromDate !== formatDateTimeForInput(group.from) ||
+    toDate !== formatDateTimeForInput(group.to);
 
   const handleUpdate = async () => {
     const primaryCode = group.codes[0];
     if (!primaryCode) return;
+
+    // تحويل الصيغة من YYYY-MM-DDTHH:mm إلى YYYY-MM-DD HH:mm:ss
+    const formattedFrom = fromDate.replace('T', ' ') + ':00';
+    const formattedTo = toDate.replace('T', ' ') + ':00';
 
     const res = await changeState(
       `${apiUrl}/appartment/update_code/${primaryCode.id}`,
       t("Code Updated Successfully"),
       {
         people: parseInt(people),
-        from: fromDate,
-        to: toDate
+        from: formattedFrom, 
+        to: formattedTo      
       }
     );
 
@@ -335,7 +357,6 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
     }
   };
 
-  // تعديل الـ handleDelete واستخدام اللوجيك اللي طلبتيه
   const handleDeleteCode = async () => {
     const primaryCode = group.codes[0];
     if (!primaryCode) return;
@@ -350,7 +371,7 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success(t("Code deleted successfully")); // غيرنا الرسالة لكود بدلاً من Renter
+      toast.success(t("Code deleted successfully"));
       refetch();
     } catch (error) {
       console.error("Error deleting code:", error);
@@ -375,17 +396,15 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
           className="w-14 h-8 text-center font-bold border-none bg-white shadow-inner rounded-sm"
         />
       </div>
-
       <div className="flex items-center gap-2 bg-gray-50 !px-2 !py-1 rounded-md border border-gray-100">
         <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">
           {t("From")}
         </label>
         <Input
-          type="date"
-          min={todayStr}
+          type="datetime-local" 
           value={fromDate}
           onChange={(e) => setFromDate(e.target.value)}
-          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28 md:w-40"
+          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm  w-40 md:w-48"
         />
       </div>
 
@@ -394,14 +413,12 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
           {t("To")}
         </label>
         <Input
-          type="date"
-          min={fromDate || todayStr}
+          type="datetime-local" 
           value={toDate}
           onChange={(e) => setToDate(e.target.value)}
-          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm !p-1 w-28 md:w-40"
+          className="h-8 text-xs font-medium border-none bg-white shadow-inner rounded-sm w-40 md:w-48"
         />
       </div>
-
       <div className="flex items-center gap-2">
         <Button
           onClick={handleUpdate}
@@ -409,7 +426,7 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
           size="sm"
           className={`h-8 font-semibold rounded-md transition-all ${hasChanges
             ? "bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-200"
-            : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-100 text-gray-400 cursor-not-allowed !py-3 !px-4"
             }`}
         >
           {loadingChange ? <Loader2 className="h-3 w-3 animate-spin" /> : <Edit className="h-3 w-3 mr-1" />}
@@ -421,9 +438,9 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
           disabled={loadingChange || isDeletingCode}
           size="sm"
           variant="destructive"
-          className="h-8 font-semibold rounded-md transition-all bg-red-500 hover:bg-red-600 text-white"
+          className="h-8 !py-3 !px-4 font-semibold rounded-md transition-all bg-red-500 hover:bg-red-600 text-white"
         >
-          {isDeletingCode ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3 mr-1" />}
+          {isDeletingCode ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3 !mr-1" />}
           {t("Delete")}
         </Button>
       </div>

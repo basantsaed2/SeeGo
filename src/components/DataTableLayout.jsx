@@ -352,7 +352,7 @@ const filteredData = useMemo(() => {
 
       if (isArray && !isEmptyArray) {
         return (
-          <div key={`${prefix}${key}`} className={`grid grid-cols-2 gap-4 py-1 ${depth > 0 ? "pl-2" : ""}`}>
+          <div key={`${prefix}${key}`} className={`grid grid-cols-2 gap-4 !py-1 ${depth > 0 ? "pl-2" : ""}`}>
             <span className="font-medium text-gray-600 break-words">{displayKey}</span>
             <div className="break-words">
               {value.map((item, i) => (
@@ -370,7 +370,7 @@ const filteredData = useMemo(() => {
 
       if (!isObject && !isArray) {
         return (
-          <div key={`${prefix}${key}`} className={`grid grid-cols-2 gap-4 py-1 ${depth > 0 ? "pl-2" : ""}`}>
+          <div key={`${prefix}${key}`} className={`grid grid-cols-2 gap-4 !py-1 ${depth > 0 ? "pl-2" : ""}`}>
             <span className="font-medium text-gray-600 break-words">{displayKey}</span>
             <span className="break-words">{value?.toString() || <span className="text-gray-400 italic">{t("-")}</span>}</span>
           </div>
@@ -532,7 +532,7 @@ const filteredData = useMemo(() => {
                 <TableRow>
                   <TableCell
                     colSpan={columns.length + 1 + (detailsData ? 1 : 0) + (pageDetailsRoute ? 1 : 0) + (showActionColumns ? 1 : 0)}
-                    className="text-center text-gray-500 py-4"
+                    className="text-center text-gray-500 !py-4"
                   >
                     {t("Nodatafound")}
                   </TableCell>
@@ -561,7 +561,7 @@ const filteredData = useMemo(() => {
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={clsx(
-                      "border border-gray-300 rounded-xl px-3 py-1.5 transition-all text-xs font-semibold cursor-pointer select-none",
+                      "border border-gray-300 rounded-xl !px-3 !py-1.5 transition-all text-xs font-semibold cursor-pointer select-none",
                       currentPage === 1 ? "pointer-events-none opacity-40 bg-gray-100 text-gray-400" : "text-bg-primary hover:bg-gray-100"
                     )}
                   />
@@ -598,7 +598,7 @@ const filteredData = useMemo(() => {
                           onClick={() => handlePageChange(page)}
                           isActive={currentPage === page}
                           className={clsx(
-                            "border transition-all px-3 py-1.5 rounded-xl text-xs font-bold min-w-[36px] h-9 flex items-center justify-center cursor-pointer select-none",
+                            "border transition-all !px-3 !py-1.5 rounded-xl text-xs font-bold min-w-[36px] h-9 flex items-center justify-center cursor-pointer select-none",
                             currentPage === page
                               ? "bg-bg-primary text-white border-bg-primary shadow-sm hover:bg-bg-primary/90"
                               : "border-gray-300 text-slate-600 hover:bg-slate-100"
@@ -616,7 +616,7 @@ const filteredData = useMemo(() => {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className={clsx(
-                      "border border-gray-300 rounded-xl px-3 py-1.5 transition-all text-xs font-semibold cursor-pointer select-none",
+                      "border border-gray-300 rounded-xl !px-3 !py-1.5 transition-all text-xs font-semibold cursor-pointer select-none",
                       currentPage === totalPages ? "pointer-events-none opacity-40 bg-gray-100 text-gray-400" : "text-bg-primary hover:bg-gray-100"
                     )}
                   />

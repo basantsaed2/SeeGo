@@ -216,7 +216,7 @@ const VisitorLimit = () => {
                             showAddButton={false} // تم تعطيله لأننا نستخدم زر مخصص لفتح Dialog بدلاً من التوجيه لصفحة جديدة
                             onEdit={handleOpenEditDialog}
                             onDelete={handleOpenDeleteDialog}
-                            detailsData={renterList} // لتمكين زر View Details المدمج داخل DataTable
+                            // detailsData={renterList} // لتمكين زر View Details المدمج داخل DataTable
                         />
 
                         {/* Edit & Add Dialog Component */}
