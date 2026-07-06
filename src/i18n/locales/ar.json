@@ -371,5 +371,18 @@
   "CurrentPackage": "الباقة الحالية",
   "ConfirmUpgrade": "تأكيد الترقية",
   "ConfirmPayment": "تأكيد الدفع",
-  "Processing...": "جاري المعالجة..."
+  "Processing...": "جاري المعالجة...",
+  "upcoming": "قادم",
+  "current": "حالي",
+  "past": "سابق",
+  "all": "الكل",
+  "Show Details": "عرض التفاصيل",
+  "Hide Details": "إخفاء التفاصيل",
+  "People": "أشخاص",
+  "No Renters Found": "لم يتم العثور على مستأجرين",
+  "UnknownOwner": "مالك غير معروف",
+  "View Id": "عرض الهوية",
+  "Rent id Image": "صورة هوية الإيجار",
+  "No users have claimed this code yet": "لم يطالب أي مستخدم بهذا الكود بعد",
+  "N/A": "غير متاح"
 }

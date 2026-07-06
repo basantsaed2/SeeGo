@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   CalendarDays,
   Users,
@@ -21,11 +22,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatDateTime, deleteRent } from "@/utils/rentHelpers";
+import { formatDateTime, deleteRent, getRentStatus } from "@/utils/rentHelpers";
 import GroupPeopleEditor from "./GroupPeopleEditor";
 import RenterUserItem from "./RenterUserItem";
 
-const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false }) => {
+const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false, showStatus = false }) => {
   const activeRenters = group.codes.filter((code) => code.user !== null && code.user_id !== null);
   const { t } = useTranslation();
   const token = useSelector((state) => state.auth?.token || localStorage.getItem("token"));
@@ -54,6 +55,14 @@ const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false }) => {
   const rentImage = group.codes[0]?.image_id_link;
   const hasValidImage = rentImage;
 
+  // Get rent status and color
+  const rentStatus = getRentStatus(group.from, group.to);
+  const statusColors = {
+    upcoming: "bg-blue-100 text-blue-700 border-blue-200",
+    current: "bg-green-100 text-green-700 border-green-200",
+    past: "bg-gray-100 text-gray-700 border-gray-200"
+  };
+
   return (
     <Card className="overflow-hidden bg-white shadow-sm transition-all duration-300 hover:shadow-md border border-gray-200 rounded-xl">
       <div className="!p-4 sm:!p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -65,9 +74,19 @@ const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false }) => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h4 className="text-lg font-bold text-gray-900">
-              {group.owner?.name || group.owner?.owner_name || t("UnknownOwner")}
-            </h4>
+            <div className="flex items-center gap-2">
+              <h4 className="text-lg font-bold text-gray-900">
+                {group.owner?.name || group.owner?.owner_name || t("UnknownOwner")}
+              </h4>
+              {showStatus && (
+                <Badge 
+                  variant="outline" 
+                  className={`${statusColors[rentStatus]} !p-2 text-xs font-semibold capitalize`}
+                >
+                  {t(rentStatus)}
+                </Badge>
+              )}
+            </div>
             <div className="flex items-center gap-2 text-sm text-gray-500 !mt-1">
               <CalendarDays className="h-4 w-4" />
               <span>

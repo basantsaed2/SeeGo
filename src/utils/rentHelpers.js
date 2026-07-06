@@ -110,3 +110,18 @@ export const groupRentsByOwner = (renters) => {
 
   return Object.values(rentGroups);
 };
+
+// Determine rent status based on dates
+export const getRentStatus = (fromDate, toDate) => {
+  const now = new Date();
+  const from = new Date(fromDate);
+  const to = new Date(toDate);
+
+  if (now < from) {
+    return "upcoming";
+  } else if (now >= from && now <= to) {
+    return "current";
+  } else {
+    return "past";
+  }
+};

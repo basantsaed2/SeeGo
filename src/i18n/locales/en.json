@@ -366,6 +366,19 @@
   "CurrentPackage": "Current Package",
   "ConfirmUpgrade": "Confirm Upgrade",
   "ConfirmPayment": "Confirm Payment",
-  "Processing...": "Processing..."
+  "Processing...": "Processing...",
+  "upcoming": "Upcoming",
+  "current": "Current",
+  "past": "Past",
+  "all": "All",
+  "Show Details": "Show Details",
+  "Hide Details": "Hide Details",
+  "People": "People",
+  "No Renters Found": "No Renters Found",
+  "UnknownOwner": "Unknown Owner",
+  "View Id": "View Id",
+  "Rent id Image": "Rent id Image",
+  "No users have claimed this code yet": "No users have claimed this code yet",
+  "N/A": "N/A"
 
 }

@@ -7,15 +7,25 @@ import FullPageLoader from "@/components/Loading";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { groupRentsByOwner } from "@/utils/rentHelpers";
 import RentGroupCard from "@/components/Rent/RentGroupCard";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 const Rent = () => {
   const { t } = useTranslation();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [status, setStatus] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const url = status === "all"
-    ? `${apiUrl}/rents/all`
-    : `${apiUrl}/rents/all?status=${status}`;
+    ? `${apiUrl}/rents/all?page=${currentPage}`
+    : `${apiUrl}/rents/all?status=${status}&page=${currentPage}`;
 
   const { data, loading, refetch } = useGet({
     url: url,
@@ -26,12 +36,42 @@ const Rent = () => {
   }
 
   const allRenters = data?.rents?.data || [];
+  const paginationData = data?.rents || {};
   const rentGroupsArray = groupRentsByOwner(allRenters);
+
+  // Handle tab change
+  const handleTabChange = (newStatus) => {
+    setStatus(newStatus);
+    setCurrentPage(1); // Reset to page 1 when changing tabs
+  };
+
+  // Generate pagination page numbers
+  const generatePaginationPages = () => {
+    const pages = [];
+    const totalPages = paginationData.last_page || 1;
+    const currentPg = paginationData.current_page || 1;
+    
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPg <= 3) {
+        pages.push(1, 2, 3, 4, '...', totalPages);
+      } else if (currentPg >= totalPages - 2) {
+        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', currentPg - 1, currentPg, currentPg + 1, '...', totalPages);
+      }
+    }
+    
+    return pages;
+  };
 
   if (rentGroupsArray.length === 0) {
     return (
       <div className="!p-6">
-        <Tabs defaultValue="all" onValueChange={setStatus} className="w-full !mb-6">
+        <Tabs value={status} onValueChange={handleTabChange} className="w-full !mb-6">
           <TabsList className="bg-slate-100 !p-1 rounded-xl w-full flex justify-between">
             {["all", "upcoming", "current", "past"].map((tab) => (
               <TabsTrigger
@@ -61,7 +101,7 @@ const Rent = () => {
 
   return (
     <div className="!p-6">
-      <Tabs defaultValue="all" onValueChange={setStatus} className="w-full !mb-6">
+      <Tabs value={status} onValueChange={handleTabChange} className="w-full !mb-6">
         <TabsList className="bg-slate-100 !p-1 rounded-xl w-full flex justify-between">
           {["all", "upcoming", "current", "past"].map((tab) => (
             <TabsTrigger
@@ -84,9 +124,63 @@ const Rent = () => {
             apiUrl={apiUrl}
             refetch={refetch}
             showUnit={true}
+            showStatus={status === "all"}
           />
         ))}
       </div>
+
+      {/* Pagination */}
+      {paginationData.last_page > 1 && (
+        <Pagination className="!mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => {
+                  if (paginationData.current_page > 1) {
+                    setCurrentPage(paginationData.current_page - 1);
+                  }
+                }}
+                className={
+                  paginationData.current_page === 1
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+
+            {generatePaginationPages().map((page, index) => (
+              <PaginationItem key={index}>
+                {page === '...' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    onClick={() => setCurrentPage(page)}
+                    isActive={paginationData.current_page === page}
+                    className="cursor-pointer"
+                  >
+                    {page}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => {
+                  if (paginationData.current_page < paginationData.last_page) {
+                    setCurrentPage(paginationData.current_page + 1);
+                  }
+                }}
+                className={
+                  paginationData.current_page === paginationData.last_page
+                    ? "pointer-events-none opacity-50"
+                    : "cursor-pointer"
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
