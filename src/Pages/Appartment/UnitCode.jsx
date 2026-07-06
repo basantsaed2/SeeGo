@@ -10,6 +10,7 @@ import TitleSection from "@/components/TitleSection";
 import { useGet } from "@/Hooks/UseGet";
 import Add from "@/components/AddFieldSection";
 import { useTranslation } from "react-i18next";
+import { formatDateForBackend } from "@/utils/rentHelpers";
 
 export default function UnitCode() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -97,15 +98,6 @@ export default function UnitCode() {
     setGeneratedCode("");
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "";
-    const date = new Date(dateStr);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGeneratedCode("");
@@ -116,8 +108,8 @@ export default function UnitCode() {
     body.append("people", formData.en.people);
 
     if (formData.en.type === "renter") {
-      body.append("from", formatDate(formData.en.from));
-      body.append("to", formatDate(formData.en.to));
+      body.append("from", formatDateForBackend(formData.en.from));
+      body.append("to", formatDateForBackend(formData.en.to));
       if (formData.en.image) body.append("image", formData.en.image);
     }
 

@@ -30,6 +30,32 @@ export const formatDateTimeForInput = (dateString) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
+// Format date for backend (Y-m-d H:i:s format)
+export const formatDateForBackend = (dateString) => {
+  if (!dateString) return "";
+  
+  // إذا كان التاريخ من input type="date" هيبقى بصيغة YYYY-MM-DD
+  // نضيف الوقت الافتراضي 00:00:00
+  let date;
+  if (typeof dateString === 'string' && dateString.length === 10 && dateString.includes('-')) {
+    // صيغة YYYY-MM-DD - نضيف الوقت الافتراضي
+    date = new Date(dateString + 'T00:00:00');
+  } else {
+    date = new Date(dateString);
+  }
+  
+  if (isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
 // API call functions
 export const deleteRent = async (apiUrl, token, rentId, t) => {
   try {
