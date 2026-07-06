@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,8 +16,6 @@ import {
   ImageIcon
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { useChangeState } from "@/Hooks/useChangeState";
@@ -30,56 +28,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const formatDate = (dateString) => {
-  return dateString
-    ? new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-    : "N/A";
-};
-
-// تنسيق التاريخ ليطابق صيغة حقل الإدخال العادي YYYY-MM-DD
-const formatDateForInput = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-// تنسيق التاريخ والوقت للعرض النصي في الكارت
-const formatDateTime = (dateString) => {
-  if (!dateString) return "N/A";
-  const date = new Date(dateString);
-  
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const hh = String(date.getHours()).padStart(2, '0');
-  const mm = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
-  
-  return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
-};
-
-// تنسيق التاريخ والوقت ليطابق صيغة حقل الإدخال datetime-local (YYYY-MM-DDTHH:mm)
-const formatDateTimeForInput = (dateString) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return ""; // للتأكد من صحة التاريخ
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-};
+import { 
+  formatDateTime, 
+  formatDateTimeForInput, 
+  deleteRent, 
+  deleteCode,
+  groupRentsByOwner 
+} from "@/utils/rentHelpers";
 
 const UnitRenters = ({ appartmentId, apiUrl }) => {
   const { t } = useTranslation();
@@ -98,23 +53,7 @@ const UnitRenters = ({ appartmentId, apiUrl }) => {
     (renter) => String(renter.appartment_id) === String(appartmentId)
   );
 
-  const rentGroups = renters.reduce((acc, renter) => {
-    const key = `${renter.owner_id}_${renter.from}_${renter.to}`;
-    if (!acc[key]) {
-      acc[key] = {
-        key,
-        owner: renter.owner || renter.user,
-        from: renter.from,
-        to: renter.to,
-        people: renter.people,
-        codes: [],
-      };
-    }
-    acc[key].codes.push(renter);
-    return acc;
-  }, {});
-
-  const rentGroupsArray = Object.values(rentGroups);
+  const rentGroupsArray = groupRentsByOwner(renters);
 
   if (rentGroupsArray.length === 0) {
     return (
@@ -156,30 +95,18 @@ const RentGroupCard = ({ group, apiUrl, refetch }) => {
   const [currentImage, setCurrentImage] = useState("");
 
   const handleDeleteRent = async () => {
-    try {
-      setIsDeletingRent(true);
-
-      const primaryCode = group.codes[0];
-
-      if (primaryCode) {
-        await axios.post(
-          `${apiUrl}/rents/delete_user`,
-          {
-            id: primaryCode.id,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+    setIsDeletingRent(true);
+    const primaryCode = group.codes[0];
+    
+    if (primaryCode) {
+      const success = await deleteRent(apiUrl, token, primaryCode.id, t);
+      if (success) {
+        refetch();
       }
-
-      toast.success(t("Rent deleted successfully"));
-      refetch();
-    } catch (error) {
-      console.error("Error deleting rent:", error);
-      toast.error(error.response?.data?.message || t("Failed to delete rent"));
-    } finally {
-      setIsDeletingRent(false);
-      setIsDeleteDialogOpen(false);
     }
+    
+    setIsDeletingRent(false);
+    setIsDeleteDialogOpen(false);
   };
 
   const rentImage = group.codes[0]?.image_id_link;
@@ -361,25 +288,21 @@ const GroupPeopleEditor = ({ group, apiUrl, refetch }) => {
     const primaryCode = group.codes[0];
     if (!primaryCode) return;
 
-    try {
-      setIsDeletingCode(true);
-      await axios.post(
-        `${apiUrl}/rents/delete_code`,
-        {
-          code: primaryCode.code,
-          user_id: primaryCode.user_id || primaryCode.user?.id
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success(t("Code deleted successfully"));
+    setIsDeletingCode(true);
+    const success = await deleteCode(
+      apiUrl, 
+      token, 
+      primaryCode.code, 
+      primaryCode.user_id || primaryCode.user?.id,
+      t
+    );
+    
+    if (success) {
       refetch();
-    } catch (error) {
-      console.error("Error deleting code:", error);
-      toast.error(error.response?.data?.message || t("Failed to delete code"));
-    } finally {
-      setIsDeletingCode(false);
-      setIsDeleteDialogOpen(false);
     }
+    
+    setIsDeletingCode(false);
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -462,25 +385,15 @@ const RenterUserItem = ({ code, apiUrl, refetch, token }) => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-      await axios.post(
-        `${apiUrl}/rents/delete_code`,
-        {
-          code: code.code,
-          user_id: code.user_id || code.user?.id
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      toast.success(t("Renter deleted successfully"));
+    setIsDeleting(true);
+    const success = await deleteRent(apiUrl, token, code.id, t);
+    
+    if (success) {
       refetch();
-    } catch (error) {
-      console.error("Error deleting renter:", error);
-      toast.error(error.response?.data?.message || t("Failed to delete renter"));
-    } finally {
-      setIsDeleting(false);
-      setIsDeleteDialogOpen(false);
     }
+    
+    setIsDeleting(false);
+    setIsDeleteDialogOpen(false);
   };
 
   const user = code.user;
