@@ -392,7 +392,7 @@ const filteredData = useMemo(() => {
               onChange={(e) => {
                 const val = e.target.value;
                 setSearchValue(val);
-                if (onSearchChange) onSearchChange(val); // 💡 إرسال القيمة للمكون الأب فوراً
+                if (onSearchChange) onSearchChange(val); 
               }}
             />
             <span className="text-sm text-gray-500 whitespace-nowrap">

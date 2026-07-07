@@ -36,10 +36,10 @@ const UnitCell = ({ appartments }) => {
       <DialogTrigger asChild>
         <button
           className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors"
-          aria-label={t("ViewAllUnits", { count: appartments.length })} // Use translation for accessibility
+          aria-label={t("ViewAllUnits", { count: appartments.length })}
         >
           {appartments[0].unit}...
-          <span className="!ml-1">›</span> {/* Simple chevron replacement */}
+          <span className="!ml-1">›</span>
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md bg-gradient-to-b from-white to-gray-50 border-2 border-transparent bg-clip-padding rounded-xl shadow-xl">
@@ -73,39 +73,62 @@ const Owners = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const isLoading = useSelector((state) => state.loader.isLoading);
   const [owners, setOwners] = useState([]);
-  const [ownerTypes, setOwnerTypes] = useState([]); // State to store unique owner types
+  const [ownerTypes, setOwnerTypes] = useState([]);
   const { t } = useTranslation();
 
+  // 🌟 حقول البحث والترقيم
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(""); // الحقل المكتوم (المتأخر) الجديد
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [perPage, setPerPage] = useState(15);
+
+  // 🌟 تأثير الـ Debounce: ينتظر 600 ملي ثانية بعد آخر ضغطة زر قبل تحديث القيمة الفعلية للبحث
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setCurrentPage(1); // تصفير الصفحة للرقم 1 عند إتمام البحث الجديد
+    }, 600); // يمكنكِ زيادة أو تقليل الـ 600 حسب الرغبة
+
+    return () => clearTimeout(delayDebounceFn); // تنظيف التايمر القديم مع كل نقرة جديدة
+  }, [searchTerm]);
+
+  // 🌟 الريكويست يعتمد الآن على debouncedSearchTerm بدلاً من القيمة اللحظية
   const {
     refetch: refetchOwner,
     loading: loadingOwner,
     data: OwnerData,
   } = useGet({
-    url: `${apiUrl}/owner`,
+    url: `${apiUrl}/owner/owners?page=${currentPage}&search=${debouncedSearchTerm}`,
   });
 
+  // إعادة جلب البيانات عند تغير الصفحة أو كلمة البحث المستقرة
   useEffect(() => {
     refetchOwner();
-  }, [refetchOwner]);
+  }, [refetchOwner, debouncedSearchTerm, currentPage]);
 
   useEffect(() => {
-    if (OwnerData && OwnerData.owners) {
-      console.log("Owner Data:", OwnerData);
-      const uniqueOwnerTypes = new Set(); // Use a Set to store unique types
+    if (OwnerData && OwnerData.owners && OwnerData.owners.data) {
+      const uniqueOwnerTypes = new Set();
 
-      const formatted = OwnerData?.owners?.map((u) => {
+      setTotalPages(OwnerData.owners.last_page || 1);
+      setTotalItems(OwnerData.owners.total || 0);
+      setPerPage(OwnerData.owners.per_page || 15);
+
+      const formatted = OwnerData.owners.data.map((u) => {
         const ownerType = u.user_type || "—";
-        uniqueOwnerTypes.add(ownerType); // Add owner type to the Set
+        uniqueOwnerTypes.add(ownerType);
 
         return {
           id: u.id,
           name: u.name || "—",
-          parent: ownerType, // Use user_type as the owner type for filtering
+          parent: ownerType,
           email: u.email || "—",
           phone: u.phone || "—",
           gender: u.gender || "—",
           appartment: <UnitCell appartments={u.appartments} />,
-          status: u.status === 1 ? t("Active") : t("Inactive"), // Still formatting status for display, but not for filter
+          status: u.status === 1 ? t("Active") : t("Inactive"),
           img: u.image_link ? (
             <img
               src={u.image_link}
@@ -123,24 +146,23 @@ const Owners = () => {
       });
       setOwners(formatted);
 
-      // Convert Set to array for filter options, add 'all'
-setOwnerTypes([
-  {
-    key: "parent",
-    label: t("OwnerType"), // أو "Owner Type"
-    options: ["all", ...Array.from(uniqueOwnerTypes)].map((type) => ({
-      value: type,
-      label: type === "all" ? t("AllOwnerTypes") : type,
-    }))
-  }
-]);
+      setOwnerTypes([
+        {
+          key: "parent",
+          label: t("OwnerType"),
+          options: ["all", ...Array.from(uniqueOwnerTypes)].map((type) => ({
+            value: type,
+            label: type === "all" ? t("AllOwnerTypes") : type,
+          })),
+        },
+      ]);
     }
-  }, [OwnerData, t]); // Add t to dependency array for translation in useEffect
+  }, [OwnerData, t]);
 
   const columns = [
     { key: "img", label: t("Image") },
     { key: "name", label: t("OwnerName") },
-    { key: "parent", label: t("OwnerType") }, // This will be the column used for filtering
+    { key: "parent", label: t("OwnerType") },
     { key: "appartment", label: t("Unit") },
     { key: "email", label: t("Email") },
     { key: "phone", label: t("Phone") },
@@ -154,15 +176,25 @@ setOwnerTypes([
   return (
     <div className="p-4">
       <ToastContainer />
-<DataTable
-  data={owners}
-  columns={columns}
-  showAddButton={false}
-  showActionColumns={false}
-  pageDetailsRoute={true}
-  filterOptions={ownerTypes}
-/>
-
+      <DataTable
+        data={owners}
+        columns={columns}
+        showAddButton={false}
+        showActionColumns={false}
+        pageDetailsRoute={true}
+        filterOptions={ownerTypes}
+        
+        isBackendPagination={true}
+        backendCurrentPage={currentPage}
+        backendTotalPages={totalPages}
+        backendTotalItems={totalItems}
+        backendPerPage={perPage}
+        onBackendPageChange={(page) => setCurrentPage(page)}
+        
+        // هنا نمرر التحديث اللحظي لـ DataTable ليبقى حقل الكتابة سريعاً جداً وغير معلق
+        onSearchChange={(query) => setSearchTerm(query)}
+        initialSearchValue={searchTerm}
+      />
     </div>
   );
 };
