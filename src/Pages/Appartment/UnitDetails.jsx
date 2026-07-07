@@ -74,6 +74,7 @@ const UnitDetails = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState("");
+  const [rentersCount, setRentersCount] = useState(0);
 
   // حالات الـ Delete Dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -368,7 +369,7 @@ const UnitDetails = () => {
 
             <TabsTrigger value="renters" className="flex items-center gap-2 !p-2">
               <Users className="h-4 w-4" />
-              {t("Renters")} ({renters.length})
+              {t("Renters")} ({rentersCount})
             </TabsTrigger>
             <TabsTrigger value="code" className="flex items-center gap-2 !p-2">
               <Users className="h-4 w-4" />
@@ -453,7 +454,11 @@ const UnitDetails = () => {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                <UnitRenters appartmentId={id} apiUrl={apiUrl} />
+                <UnitRenters 
+                  appartmentId={id} 
+                  apiUrl={apiUrl} 
+                  onCountChange={setRentersCount}
+                />
               </motion.div>
             </TabsContent>
 

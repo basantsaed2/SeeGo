@@ -1,30 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useGet } from "@/Hooks/UseGet";
+import { usePost } from "@/Hooks/UsePost";
 import FullPageLoader from "@/components/Loading";
 import { groupRentsByOwner } from "@/utils/rentHelpers";
 import RentGroupCard from "@/components/Rent/RentGroupCard";
 
-const UnitRenters = ({ appartmentId, apiUrl }) => {
+const UnitRenters = ({ appartmentId, apiUrl, onCountChange }) => {
   const { t } = useTranslation();
+  const [rentData, setRentData] = useState(null);
 
-  const { data, loading, refetch } = useGet({
-    url: `${apiUrl}/rents`,
+  const { postData, loadingPost, response } = usePost({
+    url: `${apiUrl}/rents/unit_renters`,
+    type: true
   });
 
-  if (loading) {
+  const fetchRents = () => {
+    const body = { appartment_id: appartmentId };
+    postData(body);
+  };
+
+  useEffect(() => {
+    fetchRents();
+  }, [appartmentId]);
+
+  useEffect(() => {
+    if (response?.data) {
+      setRentData(response.data);
+      // إرسال العدد للـ parent
+      if (onCountChange && response.data.rents_count !== undefined) {
+        onCountChange(response.data.rents_count);
+      }
+    }
+  }, [response, onCountChange]);
+
+  if (loadingPost && !rentData) {
     return <FullPageLoader />;
   }
 
-  const allRenters = data?.rents || [];
-
-  const renters = allRenters.filter(
-    (renter) => String(renter.appartment_id) === String(appartmentId)
-  );
-
-  const rentGroupsArray = groupRentsByOwner(renters);
+  const allRenters = rentData?.rents || [];
+  const rentGroupsArray = groupRentsByOwner(allRenters);
 
   if (rentGroupsArray.length === 0) {
     return (
@@ -47,7 +63,7 @@ const UnitRenters = ({ appartmentId, apiUrl }) => {
           key={group.key}
           group={group}
           apiUrl={apiUrl}
-          refetch={refetch}
+          refetch={fetchRents}
           showUnit={false}
         />
       ))}
