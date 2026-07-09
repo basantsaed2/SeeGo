@@ -10,44 +10,47 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
             phone: "",
             email: "",
             password: "",
-            types: [], // Changed to array for multi-select
+            types: [], 
             status: isEdit ? 0 : "",
             image: null,
             pool_ids: [],
             beach_ids: [],
             gate_ids: [],
+            gate_visitors: true,
+            gate_entrance: true,
         },
     });
     const { t } = useTranslation();
 
-    const { refetch: refetchList,  data: listData } = useGet({ url: `${apiUrl}/security` });
+    const { refetch: refetchList, data: listData } = useGet({ url: `${apiUrl}/security` });
 
     const [pools, setPools] = useState([]);
     const [beaches, setBeaches] = useState([]);
     const [gates, setGates] = useState([]);
     const [dynamicFields, setDynamicFields] = useState([]);
 
-   useEffect(() => {
-  if (isEdit && initialData) {
-    console.log("Initial data received:", initialData);
-    setFormData({
-      en: {
-        name: initialData.name || "",
-        phone: initialData.phone || "",
-        email: initialData.email || "",
-        password: "", // Typically not returned by API for security
-        types: initialData.types || [], // Ensure types is an array
-        status: initialData.status === t("Active") ? 1 : 0,
-        image_link: initialData.image_link || null,
-        image: initialData.image_link || null,
-        pool_ids: initialData.pool_ids || [], // Should be array of strings
-        beach_ids: initialData.beach_ids || [], // Should be array of strings
-        gate_ids: initialData.gate_ids || [], // Should be array of strings
-      }
-    });
-  }
-}, [initialData, isEdit, t]);
-
+    useEffect(() => {
+        if (isEdit && initialData) {
+            console.log("Initial data received:", initialData);
+            setFormData({
+                en: {
+                    name: initialData.name || "",
+                    phone: initialData.phone || "",
+                    email: initialData.email || "",
+                    password: "", 
+                    types: initialData.types || [], 
+                    status: initialData.status === t("Active") ? 1 : 0,
+                    image_link: initialData.image_link || null,
+                    image: initialData.image_link || null,
+                    pool_ids: initialData.pool_ids || [], 
+                    beach_ids: initialData.beach_ids || [], 
+                    gate_ids: initialData.gate_ids || [],
+                    gate_visitors: initialData.gate_visitors || false,
+                    gate_entrance: initialData.gate_entrance || false,
+                }
+            });
+        }
+    }, [initialData, isEdit, t]);
 
     useEffect(() => {
         refetchList();
@@ -76,7 +79,6 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         }
     }, [listData]);
 
-    // Update dynamic fields based on selected types
     useEffect(() => {
         const baseFields = [
             { type: "input", placeholder: t("SecurityManName"), name: "name", required: true },
@@ -94,11 +96,26 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
                     { value: "gate", label: t("Gate") },
                 ],
             },
+            {
+                type: "switch",
+                name: "gate_visitors",
+                placeholder: t("GateVisitors"),
+                returnType: "binary",
+                activeLabel: "Yes",
+                inactiveLabel: "No"
+            },
+            {
+                type: "switch",
+                name: "gate_entrance",
+                placeholder: t("GateEntrance"),
+                returnType: "binary",
+                activeLabel: "Yes",
+                inactiveLabel: "No"
+            },
         ];
 
         const locationFields = [];
 
-        // Add location fields for each selected type
         if (formData.en.types.includes("pool")) {
             locationFields.push({
                 type: "multi-select",
@@ -161,13 +178,18 @@ export const useSecurityManForm = (apiUrl, isEdit = false, initialData = null) =
         body.append("phone", formData.en.phone);
         body.append("email", formData.en.email);
         body.append("password", formData.en.password);
+        
+        // 🛠️ التعديل هنا: نتحقق من القيمة ونرسل "1" أو "0" لتخطي الـ Validation بنجاح
+        const visitorsValue = (formData.en.gate_visitors === true || formData.en.gate_visitors === 1 || formData.en.gate_visitors === "1") ? "1" : "0";
+        const entranceValue = (formData.en.gate_entrance === true || formData.en.gate_entrance === 1 || formData.en.gate_entrance === "1") ? "1" : "0";
+        
+        body.append("gate_visitors", visitorsValue);
+        body.append("gate_entrance", entranceValue);
 
-        // Append each type separately
         formData.en.types.forEach(type => body.append("types[]", type));
 
         body.append("status", formData.en.status.toString() || "0");
 
-        // Append the selected IDs for each type
         if (formData.en.types.includes("pool") && formData.en.pool_ids) {
             formData.en.pool_ids.forEach(id => body.append("pool_ids[]", id));
         }
