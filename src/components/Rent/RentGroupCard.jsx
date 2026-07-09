@@ -34,8 +34,9 @@ const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false, showStatus = 
   const [isDeletingRent, setIsDeletingRent] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  // 1. تعديل الـ State هنا لتكون مصفوفة فارغة [] بدلاً من نص ""
+  const [currentImages, setCurrentImages] = useState([]);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState("");
 
   const handleDeleteRent = async () => {
     setIsDeletingRent(true);
@@ -52,9 +53,10 @@ const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false, showStatus = 
     setIsDeleteDialogOpen(false);
   };
 
-  const rentImage = group.codes[0]?.image_id_link;
-  const hasValidImage = rentImage;
-
+  // جلب الصور كمصفوفة
+  const rentImages = group.codes[0]?.image_id_link || [];
+  const hasValidImage = Array.isArray(rentImages) && rentImages.length > 0;
+  
   // Get rent status and color
   const rentStatus = getRentStatus(group.from, group.to);
   const statusColors = {
@@ -112,12 +114,13 @@ const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false, showStatus = 
               variant="outline"
               className="flex-1 sm:flex-none !py-2 !px-4 flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
               onClick={() => {
-                setCurrentImage(rentImage);
+                // 2. تم تصحيح اسم المتغير هنا إلى rentImages (بالجمع) وتمريره للـ State الجديدة
+                setCurrentImages(rentImages);
                 setIsImageModalOpen(true);
               }}
             >
               <ImageIcon className="h-4 w-4" />
-              {t("View Id")}
+              {t("View Id")} {rentImages.length > 1 && `(${rentImages.length})`}
             </Button>
           )}
 
@@ -144,19 +147,28 @@ const RentGroupCard = ({ group, apiUrl, refetch, showUnit = false, showStatus = 
       />
 
       <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
-        <DialogContent className="max-w-3xl p-0 overflow-hidden">
+        <DialogContent className="max-w-3xl p-0 overflow-hidden max-h-[90vh] flex flex-col">
           <DialogHeader className="!p-4 !pb-0">
             <DialogTitle>{t("Rent id Image")}</DialogTitle>
           </DialogHeader>
-          {currentImage && (
-            <div className="flex justify-center items-center !p-4 bg-slate-50/50">
-              <img
-                src={currentImage}
-                alt="id"
-                className="max-w-full h-auto max-h-[75vh] object-contain rounded-md shadow-sm border border-slate-200"
-              />
-            </div>
-          )}
+          
+          <div className="!p-4 bg-slate-50/50 overflow-y-auto space-y-6 max-h-[75vh]">
+            {/* 3. تعديل الخريطة لتعمل على الـ State الجديدة currentImages */}
+            {Array.isArray(currentImages) && currentImages.map((imgUrl, index) => (
+              <div key={index} className="flex flex-col items-center gap-2">
+                {currentImages.length > 1 && (
+                  <span className="text-xs font-semibold text-gray-500 bg-gray-200 px-2 py-1 rounded">
+                    {t("Image")} {index + 1} / {currentImages.length}
+                  </span>
+                )}
+                <img
+                  src={imgUrl}
+                  alt={`id-${index + 1}`}
+                  className="max-w-full h-auto max-h-[65vh] object-contain rounded-md shadow-sm border border-slate-200"
+                />
+              </div>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
 
