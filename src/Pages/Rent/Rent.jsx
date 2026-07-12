@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Users, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useGet } from "@/Hooks/UseGet";
 import FullPageLoader from "@/components/Loading";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import { groupRentsByOwner } from "@/utils/rentHelpers";
 import RentGroupCard from "@/components/Rent/RentGroupCard";
 import {
@@ -22,18 +23,38 @@ const Rent = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [status, setStatus] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to page 1 when searching
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // 1. جلب أعداد الإيجارات لكل تاب باستخدام الـ API المطلوب
   const { data: countsData } = useGet({
     url: "https://bcknd.sea-go.org/village/rents/renters_numbers",
   });
 
-  const url = status === "all"
-    ? `${apiUrl}/rents/all?page=${currentPage}`
-    : `${apiUrl}/rents/all?status=${status}&page=${currentPage}`;
+  // Build URL with search parameter
+  const buildUrl = () => {
+    let url = `${apiUrl}/rents/all?page=${currentPage}`;
+    if (status !== "all") {
+      url += `&status=${status}`;
+    }
+    if (debouncedSearch) {
+      url += `&search=${encodeURIComponent(debouncedSearch)}`;
+    }
+    return url;
+  };
 
   const { data, loading, refetch } = useGet({
-    url: url,
+    url: buildUrl(),
   });
 
   if (loading) {
@@ -114,16 +135,30 @@ const Rent = () => {
     </Tabs>
   );
 
+  const renderSearchBar = () => (
+    <div className="relative !mb-6">
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <Input
+        type="text"
+        placeholder={t("Search by name, phone, email, unit...")}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="!pl-10 h-11 bg-white border-slate-200 focus:border-primary"
+      />
+    </div>
+  );
+
   if (rentGroupsArray.length === 0) {
     return (
       <div className="!p-6">
         {renderTabs()}
+        {renderSearchBar()}
         <Card className="text-center !py-12 border border-slate-100 shadow-sm rounded-2xl">
           <CardContent className="flex flex-col items-center justify-center !p-6 text-muted-foreground">
             <Users className="h-12 w-12 text-slate-300 !mb-3" />
             <h3 className="text-lg font-bold text-slate-700">{t("No Renters Found")}</h3>
             <p className="text-sm font-medium text-slate-400 !mt-1">
-              {t("Norentersfoundforthisunit")}
+              {searchQuery ? t("No results found for your search") : t("Norentersfoundforthisunit")}
             </p>
           </CardContent>
         </Card>
@@ -134,6 +169,7 @@ const Rent = () => {
   return (
     <div className="!p-6">
       {renderTabs()}
+      {renderSearchBar()}
 
       <div className="grid grid-cols-1 gap-6">
         {rentGroupsArray.map((group) => (
