@@ -53,6 +53,7 @@ export function AppSidebar() {
   const navItems = [
     { label: t("Home"), to: "/", icon: <Home size={20} /> },
     { label: t("Units"), to: "/units", icon: <Building size={20} /> },
+    { label: t("UnitTypes"), to: "/unit-type", icon: <Building size={20} /> },
     {
       label: t("Assets"),
       icon: <Building2 size={20} />,

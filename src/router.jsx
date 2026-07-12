@@ -57,6 +57,10 @@ import LandingPage from "./Pages/LandingPage/LandingPage";
 import PendingRequest from "./Pages/PendingRequest/PendingRequest";
 import OnlineUsers from "./Pages/Profile/OnlineUsers";
 import LoginRequest from "./Pages/Requests/LoginRequest";
+import UnitType from "./Pages/UnitType/UmbrellasList";
+import UnitTypeAdd from "./Pages/UnitType/UmbrellaAdd";
+import UmbrellasList from "./Pages/UnitType/UmbrellasList";
+import UmbrellaAdd from "./Pages/UnitType/UmbrellaAdd";
 
 const router = createBrowserRouter([
   // ✅ صفحات تسجيل الدخول و auth layout
@@ -117,6 +121,13 @@ const router = createBrowserRouter([
           { path: "add", element: <AppartmentsAdd /> },
           { path: "create_code", element: <UnitCode /> },
           { path: "details/:id", element: <UnitDetails /> },
+        ],
+      },
+            {
+        path: "unit-type",
+        children: [
+          { index: true, element: <UmbrellasList /> },
+          { path: "add", element: <UmbrellaAdd /> },
         ],
       },
       {
